@@ -24,7 +24,7 @@ class ApiController extends Controller
                 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['signup'],
+                        'actions' => ['signup', 'receive-task'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
