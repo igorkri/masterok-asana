@@ -44,21 +44,37 @@ class ApiController extends Controller
         ];
     }
 
+    // В контроллере, например, WebhookController.php
     public function actionReceiveTask()
     {
+        $request = Yii::$app->request;
 
-        $data = Yii::$app->request->rawBody;
-        $taskData = json_decode($data, true);
+        // Убедитесь, что запрос является POST
+        if ($request->isPost) {
+            $rawData = $request->rawBody;
+            $taskData = json_decode($rawData, true);
 
-        // Запись данных задачи в файл для отладки
-        $logFile = Yii::getAlias('@runtime/logs/task_received.log');
-        $logEntry = "Received Task Data: " . date('Y-m-d H:i:s') . "\n" . print_r($taskData, true) . "\n\n";
-        file_put_contents($logFile, $logEntry, FILE_APPEND);
+            // Проверка, что данные успешно декодированы
+            if (json_last_error() === JSON_ERROR_NONE) {
+                // Логирование полученных данных для отладки
+                $logFile = Yii::getAlias('@runtime/logs/task_received.log');
+                file_put_contents($logFile, print_r($taskData, true), FILE_APPEND);
 
-        // Ваш код для дальнейшей обработки данных задачи
-
-        return ['status' => 'success'];
+                // Возвращаем успешный ответ
+                Yii::$app->response->statusCode = 200;
+                return ['status' => 'success'];
+            } else {
+                // Неверный формат JSON
+                Yii::$app->response->statusCode = 400;
+                return ['status' => 'error', 'message' => 'Invalid JSON format'];
+            }
+        } else {
+            // Неверный метод запроса
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Invalid request method'];
+        }
     }
+
 
 
 }
