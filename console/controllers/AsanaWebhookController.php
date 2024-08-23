@@ -16,7 +16,7 @@ class AsanaWebhookController extends Controller
         self::$TOKEN = Yii::$app->params['tokenAsana'];
     }
     const WORKSPACE_GID = '1202666709283080'; // GID рабочей области Asana
-    const TARGET_URL = 'https://yourdomain.com/webhook-handler'; // URL вашего сайта для получения вебхуков
+    const TARGET_URL = 'https://asana.masterok-market.com.ua/webhook-handler'; // URL вашего сайта для получения вебхуков
 
     /**
      * Инициализация клиента Asana
@@ -84,7 +84,7 @@ class AsanaWebhookController extends Controller
      */
     private function sendToSite($event)
     {
-        $url = 'https://yourdomain.com/api/receive-task'; // URL вашего API для получения данных
+        $url = 'https://asana.masterok-market.com.ua/api/receive-task'; // URL вашего API для получения данных
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
