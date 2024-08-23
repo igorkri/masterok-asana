@@ -281,6 +281,7 @@ class AsanaController extends Controller
     public function actionCheckToken()
     {
         $client = Asana\Client::accessToken(self::$TOKEN);
+        $client->options['headers']['Asana-Enable'] = 'new_goal_memberships';
 
         try {
             // Попытка получить список проектов в рабочей области
@@ -303,6 +304,8 @@ class AsanaController extends Controller
     public function actionTestWebhookCreation()
     {
         $client = Asana\Client::accessToken(self::$TOKEN); // Замените на ваш токен
+        $client->options['headers']['Asana-Enable'] = 'new_goal_memberships';
+
 
         $workspaceGid = self::WORKSPACE_INGSOT_GID; // Замените на ваш GID рабочей области
         $targetUrl = 'https://asana.masterok-market.com.ua/webhook-handler'; // Замените на ваш URL
