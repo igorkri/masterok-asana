@@ -277,4 +277,52 @@ class AsanaController extends Controller
             print_r($e->response->raw_body);
         }
     }
+
+    public function actionCheckToken()
+    {
+        $client = Asana\Client::accessToken(self::$TOKEN);
+
+        try {
+            // Попытка получить список проектов в рабочей области
+            $workspaceGid = 'your_workspace_gid'; // Замените на ваш GID рабочей области
+            $projects = $client->projects->getProjectsForWorkspace($workspaceGid);
+
+            echo "Token is valid. List of projects:" . PHP_EOL;
+            foreach ($projects as $project) {
+                echo 'Project: ' . $project->name . ' (GID: ' . $project->gid . ')' . PHP_EOL;
+            }
+        } catch (\Asana\Errors\ForbiddenError $e) {
+            echo "Forbidden Error: Token does not have sufficient permissions." . PHP_EOL;
+        } catch (\Asana\Errors\InvalidRequestError $e) {
+            echo "Invalid Request Error: Check if the GID is correct and token has access." . PHP_EOL;
+        } catch (\Asana\Errors\AsanaError $e) {
+            echo "Asana Error: " . $e->getMessage() . PHP_EOL;
+        }
+    }
+
+    public function actionTestWebhookCreation()
+    {
+        $client = Asana\Client::accessToken(self::$TOKEN); // Замените на ваш токен
+
+        $workspaceGid = self::WORKSPACE_INGSOT_GID; // Замените на ваш GID рабочей области
+        $targetUrl = 'https://asana.masterok-market.com.ua/webhook-handler'; // Замените на ваш URL
+
+        try {
+            $webhook = $client->webhooks->create([
+                'resource' => $workspaceGid, // Укажите GID рабочей области или проекта
+                'target' => $targetUrl, // URL, на который будут отправляться данные вебхука
+            ]);
+
+            echo "Webhook created successfully!" . PHP_EOL;
+            print_r($webhook);
+        } catch (\Asana\Errors\ForbiddenError $e) {
+            echo "Forbidden Error: Token does not have permission to create a webhook." . PHP_EOL;
+        } catch (\Asana\Errors\InvalidRequestError $e) {
+            echo "Invalid Request Error: " . $e->getMessage() . PHP_EOL;
+            print_r($e->response->raw_body);
+        } catch (\Asana\Errors\AsanaError $e) {
+            echo "Asana Error: " . $e->getMessage() . PHP_EOL;
+        }
+    }
+
 }
