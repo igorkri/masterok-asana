@@ -33,9 +33,12 @@ class AsanaWebhookController extends Controller
     {
         $client = $this->getClient();
 
+        // Установка заголовков для подавления предупреждения
+        $client->options['headers']['Asana-Disable'] = 'new_goal_memberships';
+
         try {
             $webhook = $client->webhooks->create([
-                'resource' => self::WORKSPACE_GID,
+                'resource' => self::WORKSPACE_GID, // Или другой GID ресурса
                 'target' => self::TARGET_URL,
             ]);
 
@@ -45,6 +48,7 @@ class AsanaWebhookController extends Controller
             print_r($e->response->raw_body);
         }
     }
+
 
     /**
      * Обработчик вебхуков от Asana
