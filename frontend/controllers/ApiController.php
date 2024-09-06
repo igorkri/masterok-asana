@@ -4,8 +4,9 @@
 namespace frontend\controllers;
 
 use Yii;
-use yii\rest\Controller;
-use yii\web\Response;
+use yii\web\Controller;
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * Site controller
@@ -15,64 +16,65 @@ class ApiController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
-        $behaviors = parent::behaviors();
-        // Удаление проверки CSRF для API-запросов
-        unset($behaviors['csrf']);
-
-        $behaviors['contentNegotiator'] = [
-            'class' => \yii\filters\ContentNegotiator::class,
-            'formats' => [
-                'application/json' => Response::FORMAT_JSON,
-            ],
-        ];
-
-        return $behaviors;
-    }
-
-
-//    public function beforeAction($action)
+//    public function behaviors()
 //    {
-//        if ($action->id == 'receive-task') {
-//            $this->enableCsrfValidation = false;
-//        }
-//        return parent::beforeAction($action);
+//        return [
+//            'access' => [
+//                'class' => AccessControl::class,
+//                'only' => ['logout', 'signup'],
+//                'rules' => [
+//                    [
+//                        'actions' => ['signup', 'receive-task'],
+//                        'allow' => true,
+//                        'roles' => ['?'],
+//                    ],
+//                    [
+//                        'actions' => ['logout'],
+//                        'allow' => true,
+//                        'roles' => ['@'],
+//                    ],
+//                ],
+//            ],
+//            'verbs' => [
+//                'class' => VerbFilter::class,
+//                'actions' => [
+//                    'logout' => ['post'],
+//                ],
+//            ],
+//        ];
 //    }
 
+    // В контроллере, например, WebhookController.php
     public function actionReceiveTask()
     {
+//        die('4545');
         $request = Yii::$app->request;
 
+        // Убедитесь, что запрос является POST
         if ($request->isPost) {
             $rawData = $request->rawBody;
             $taskData = json_decode($rawData, true);
 
+            // Проверка, что данные успешно декодированы
             if (json_last_error() === JSON_ERROR_NONE) {
-                // Логирование полученных данных в файл для отладки
+                // Логирование полученных данных для отладки
                 $logFile = Yii::getAlias('@runtime/logs/task_received.log');
                 file_put_contents($logFile, print_r($taskData, true), FILE_APPEND);
-
-                // Дополнительная обработка полученных данных
 
                 // Возвращаем успешный ответ
                 Yii::$app->response->statusCode = 200;
                 return ['status' => 'success'];
             } else {
-                // Логирование ошибки декодирования JSON
-                Yii::error('Invalid JSON format: ' . json_last_error_msg());
+                // Неверный формат JSON
                 Yii::$app->response->statusCode = 400;
                 return ['status' => 'error', 'message' => 'Invalid JSON format'];
             }
         } else {
-            // Логирование неверного метода запроса
-            Yii::error('Invalid request method');
+            // Неверный метод запроса
             Yii::$app->response->statusCode = 400;
             return ['status' => 'error', 'message' => 'Invalid request method'];
         }
     }
-}
-
 
 
 
