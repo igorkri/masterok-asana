@@ -42,8 +42,9 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                'POST webhook-handler' => 'asana-webhook/webhook-handler',
-                'GET webhook-handler' => 'asana-webhook/webhook-handler',
+//                'POST webhook-handler' => 'asana-webhook/webhook-handler',
+//                'GET webhook-handler' => 'asana-webhook/webhook-handler',
+                'webhook-handler' => 'asana-webhook/webhook-handler',
             ],
         ],
     ],
