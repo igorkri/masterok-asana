@@ -8,6 +8,13 @@ use common\models\AsanaTask;
 use common\models\AsanaUser;
 use common\models\AsanaSubTask;
 use common\models\AsanaUsers;
+use common\models\Project;
+use common\models\ProjectCustomFieldEnumOptions;
+use common\models\ProjectCustomFields;
+use common\models\SectionProject;
+use common\models\Task;
+use common\models\TaskChanges;
+use common\models\TaskCustomFields;
 use Yii;
 use yii\db\Exception;
 use yii\console\Controller;
@@ -45,14 +52,19 @@ class AsanaController extends Controller
             // Получаем проекты для конкретной рабочей области
             $projectsAsana = $client->projects->getProjectsForWorkspace(self::WORKSPACE_INGSOT_GID);
             foreach ($projectsAsana as $project) {
+
+                print_r($project) . PHP_EOL;
+
                 $pGid = $project->gid;
-                $is_model = AsanaProject::find()->where(['gid' => $pGid])->exists();
+                $is_model = Project::find()->where(['gid' => $pGid])->exists();
                 if ($is_model) {
                     continue;
                 }
-                $new_model = new AsanaProject();
-                $new_model->gid = $pGid;
+                $new_model = new Project();
+                $new_model->gid = intval($pGid);
                 $new_model->name = $project->name;
+                $new_model->workspace_gid = intval(self::WORKSPACE_INGSOT_GID);
+                $new_model->resource_type = $project->resource_type;
                 try {
                     if (!$new_model->save()) {
                         print_r($new_model->errors);
@@ -67,6 +79,167 @@ class AsanaController extends Controller
             print_r($e->response->raw_body);
         }
     }
+
+    /**
+     * Получение section для проекта
+     *
+     *
+     * stdClass Object
+     * (
+     * [gid] => 1202674272931464
+     * [name] => До роботи
+     * [resource_type] => section
+     * )
+     * stdClass Object
+     * (
+     * [gid] => 1202674272931470
+     * [name] => Потребує уточнення
+     * [resource_type] => section
+     * )
+     * stdClass Object
+     * (
+     * [gid] => 1202674272931468
+     * [name] => Виконується
+     * [resource_type] => section
+     * )
+ */
+    public function actionSections()
+    {
+        $client = $this->getToken();
+        $client->options['headers']['Asana-Enable'] = 'new_goal_memberships';
+
+        try {
+            $projects = Project::find()->all();
+            foreach ($projects as $project) {
+                $sections = $client->sections->getSectionsForProject($project->gid);
+                foreach ($sections as $section) {
+                    //print_r($section) . PHP_EOL; die;
+                    $sGid = intval($section->gid);
+                    $is_model = SectionProject::find()->where(['gid' => $sGid])->exists();
+                    if ($is_model) {
+                        continue;
+                    }
+                    $new_model = new SectionProject();
+                    $new_model->gid = $sGid;
+                    $new_model->name = $section->name;
+                    $new_model->project_gid = intval($project->gid);
+                    $new_model->resource_type = $section->resource_type;
+                    try {
+                        if (!$new_model->save()) {
+                            print_r($new_model->errors);
+                            die;
+                        }
+                    } catch (Exception $e) {
+                        echo "Error: " . $e->getMessage();
+                    }
+                }
+            }
+        } catch (\Asana\Errors\InvalidRequestError $e) {
+            echo "Error: " . $e->getMessage();
+            print_r($e->response->raw_body);
+        }
+    }
+
+
+    /**
+     * Получение custom_fields для проекта через cURL и сохранение в базу данных
+     */
+    public function actionCustomFields()
+    {
+        // Ваш токен доступа
+        $accessToken = self::$TOKEN;
+
+        try {
+            // Получение всех проектов из базы данных
+            $projects = Project::find()->all();
+
+            foreach ($projects as $project) {
+                // Инициализация cURL
+                $ch = curl_init();
+
+                // URL для запроса кастомных полей
+                $url = "https://app.asana.com/api/1.0/projects/{$project->gid}/custom_field_settings";
+
+                // Установка параметров cURL
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Accept: application/json',
+                    "Authorization: Bearer $accessToken",
+                ]);
+
+                // Выполнение запроса
+                $response = curl_exec($ch);
+
+                // Проверка на ошибки cURL
+                if (curl_errno($ch)) {
+                    throw new \Exception('cURL error: ' . curl_error($ch));
+                }
+
+                // Закрытие cURL
+                curl_close($ch);
+
+                // Декодирование и обработка ответа
+                $data = json_decode($response, true);
+
+                if (isset($data['data']) && !empty($data['data'])) {
+                    foreach ($data['data'] as $customFieldData) {
+                        // Проверка существования кастомного поля в базе данных
+                        $customField = ProjectCustomFields::findOne(
+                            ['gid' => $customFieldData['custom_field']['gid'], 'project_gid' => $project->gid]
+                        );
+
+                        if (!$customField) {
+                            // Создание нового кастомного поля, если не существует
+                            $customField = new ProjectCustomFields();
+                            $customField->gid = $customFieldData['custom_field']['gid'];
+                            $customField->project_gid = strval($project->gid);
+                            $customField->name = $customFieldData['custom_field']['name'];
+                            $customField->type = $customFieldData['custom_field']['type'];
+                            $customField->resource_type = $customFieldData['custom_field']['resource_type'];
+                            $customField->resource_subtype = $customFieldData['custom_field']['resource_subtype'];
+                            $customField->is_important = intval($customFieldData['is_important']) ?? false;
+
+                            if (!$customField->save()) {
+                                // Вывод ошибок сохранения
+                                echo "Error saving custom field with GID {$customField->gid}: " . print_r($customField->getErrors(), true) . PHP_EOL;
+                            }
+                        }
+
+                        // Проверка и добавление значений перечисления (enum_options), если они существуют
+                        if (isset($customFieldData['custom_field']['enum_options']) && is_array($customFieldData['custom_field']['enum_options'])) {
+                            foreach ($customFieldData['custom_field']['enum_options'] as $enumOptionData) {
+                                // Проверка существования enum_option в базе данных
+                                $enumOption = ProjectCustomFieldEnumOptions::findOne(['gid' => $enumOptionData['gid']]);
+
+                                if (!$enumOption) {
+                                    // Создание нового enum_option, если не существует
+                                    $enumOption = new ProjectCustomFieldEnumOptions();
+                                    $enumOption->gid = $enumOptionData['gid'];
+                                    $enumOption->custom_field_gid = $customField->gid;
+                                    $enumOption->name = $enumOptionData['name'];
+                                    $enumOption->color = $enumOptionData['color'];
+                                    $enumOption->enabled = intval($enumOptionData['enabled']);
+                                    $enumOption->resource_type = $enumOptionData['resource_type'];
+
+                                    if (!$enumOption->save()) {
+                                        // Вывод ошибок сохранения
+                                        echo "Error saving enum option with GID {$enumOption->gid}: " . print_r($enumOption->getErrors(), true) . PHP_EOL;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    echo "No custom fields found for project with GID: " . $project->gid . PHP_EOL;
+                }
+            }
+        } catch (\Exception $e) {
+            // Общая обработка ошибок
+            echo "Error: " . $e->getMessage() . PHP_EOL;
+        }
+    }
+
 
     /**
      * Получение списка пользователей
@@ -81,6 +254,7 @@ class AsanaController extends Controller
         try {
             $users = $client->users->getUsersForWorkspace(self::WORKSPACE_INGSOT_GID);
             foreach ($users as $user) {
+//                print_r($user) . PHP_EOL; die;
                 $uGid = $user->gid;
                 $is_model = AsanaUsers::find()->where(['gid' => $uGid])->exists();
                 if ($is_model) {
@@ -89,6 +263,7 @@ class AsanaController extends Controller
                 $new_model = new AsanaUsers();
                 $new_model->gid = $uGid;
                 $new_model->name = $user->name;
+                $new_model->resource_type = $user->resource_type;
                 try {
                     if (!$new_model->save()) {
                         print_r($new_model->errors);
@@ -106,55 +281,61 @@ class AsanaController extends Controller
 
 
     /**
-     * Получение списка задач для всех проектов в рабочей области
+     * Получение списка задач для всех проектов в рабочей области и их обновление/добавление в базу данных
      */
     public function actionProjectTasks()
     {
         $client = $this->getToken();
-// Добавляем заголовок для подавления предупреждения
-        $client->options['headers']['Asana-Enable'] = 'new_goal_memberships';  // или 'Asana-Disable'
+        $client->options['headers']['Asana-Enable'] = 'new_goal_memberships';
 
         try {
-            $projects = AsanaProject::find()->all();
+            $projects = Project::find()->all();
 
             foreach ($projects as $project) {
                 $tasksAsana = $client->tasks->getTasksForProject($project->gid);
 
                 foreach ($tasksAsana as $task) {
                     $tGid = $task->gid;
+//                    $fullTask = $this->getTask('1208475558640591');
+//                    print_r($fullTask); die();
                     $fullTask = $this->getTask($tGid);
-//                    print_r($fullTask); die;
-                    $is_model = AsanaTask::find()->where(['gid' => $tGid])->exists();
-                    if ($is_model) {
-                        continue;
-                    }
-                    $new_model = new AsanaTask();
-                    $new_model->gid = $tGid;
-                    $new_model->project_gid = $project->gid ?? null;
-                    $new_model->assignee_gid = $fullTask->assignee->gid ?? null;
-                    $new_model->status_gid = $fullTask->memberships[0]->section->gid ?? null;
-                    $new_model->priority_gid = $fullTask->custom_fields[0]->enum_value->gid ?? null;
-                    $new_model->type_gid = $fullTask->custom_fields[1]->enum_value->gid ?? null;
-                    $new_model->name = $fullTask->name;
-                    $new_model->notes = $fullTask->notes;
-                    $new_model->completed = !empty($fullTask->completed) ? intval($fullTask->completed) : 0;
-                    $new_model->permalink_url = $fullTask->permalink_url;
-                    $new_model->workspace_gid = $fullTask->workspace->gid;
-                    $new_model->followers = $fullTask->followers;
-                    $new_model->created_at = date('Y-m-d H:i:s', strtotime($fullTask->created_at));
-                    $new_model->modified_at = date('Y-m-d H:i:s', strtotime($fullTask->modified_at));
 
-                    try {
-                        if (!$new_model->save()) {
-                            print_r($fullTask);
-                            print_r($new_model->errors);
-                            die;
+                    // Проверка, существует ли задача в базе данных
+                    $existingTask = Task::findOne(['gid' => $tGid]);
+
+                    if ($existingTask) {
+                        // Обновление существующей задачи и отслеживание изменений
+                        $this->updateTask($existingTask, $fullTask);
+                    } else {
+                        // Создание новой записи задачи
+                        $taskModel = new Task();
+                        $taskModel->gid = $fullTask->gid;
+                        $taskModel->name = !empty($fullTask->name) && isset($fullTask->name) ? $fullTask->name : '--- Без назви ---';
+                        $taskModel->assignee_gid = $fullTask->assignee->gid ?? null;
+                        $taskModel->section_project_gid = $fullTask->memberships[0]->section->gid ?? null;
+                        $taskModel->section_project_name = $fullTask->memberships[0]->section->name ?? null;
+                        $taskModel->assignee_name = $fullTask->assignee->name ?? null;
+                        $taskModel->assignee_status = $fullTask->assignee_status ?? null;
+                        $taskModel->completed = intval($fullTask->completed) ?? false;
+                        $taskModel->completed_at = isset($fullTask->completed_at) ? date('Y-m-d H:i:s', strtotime($fullTask->completed_at)) : null;
+                        $taskModel->created_at = date('Y-m-d H:i:s', strtotime($fullTask->created_at));
+                        $taskModel->due_on = $fullTask->due_on ?? null;
+                        $taskModel->start_on = $fullTask->start_on ?? null;
+                        $taskModel->notes = $fullTask->notes ?? null;
+                        $taskModel->permalink_url = $fullTask->permalink_url ?? null;
+                        $taskModel->project_gid = strval($project->gid);
+                        $taskModel->workspace_gid = $fullTask->workspace->gid ?? null;
+                        $taskModel->modified_at = isset($fullTask->modified_at) ? date('Y-m-d H:i:s', strtotime($fullTask->modified_at)) : null;
+                        $taskModel->resource_subtype = $fullTask->resource_subtype ?? null;
+                        $taskModel->num_hearts = $fullTask->num_hearts ?? 0;
+                        $taskModel->num_likes = $fullTask->num_likes ?? 0;
+
+                        if ($taskModel->save()) {
+                            // Сохранение кастомных полей задачи
+                            $this->saveCustomFields($fullTask->custom_fields, $taskModel->gid);
                         } else {
-                            $this->getSubTask($tGid);
-                            echo "SAVED " . $new_model->name . PHP_EOL;
+                            echo "Error saving task with GID {$taskModel->gid}: " . print_r($taskModel->getErrors(), true) . PHP_EOL;
                         }
-                    } catch (Exception $e) {
-                        echo "Error: " . $e->getMessage();
                     }
                 }
             }
@@ -165,8 +346,228 @@ class AsanaController extends Controller
     }
 
     /**
-     * Получение информации о конкретной задаче по её ID
+     * Сравнение и обновление существующей задачи с сохранением изменений
      */
+    private function updateTask($existingTask, $fullTask)
+    {
+        $fieldsToCompare = [
+            'name', 'assignee_gid', 'assignee_name', 'assignee_status', 'completed',
+            'completed_at', 'created_at', 'due_on', 'start_on', 'notes',
+            'permalink_url', 'project_gid', 'workspace_gid', 'modified_at',
+            'resource_subtype', 'num_hearts', 'num_likes', 'section_project_gid'
+        ];
+
+        $hasChanges = false;
+        $i = 1;
+        // Сравнение основных полей задачи
+        foreach ($fieldsToCompare as $field) {
+
+            if ($field === 'project_gid' || $field === 'workspace_gid'){
+                continue;
+            }
+
+            $oldValue = $existingTask->$field;
+            if ($field === 'completed_at' || $field === 'created_at' || $field === 'modified_at') {
+                $newValue = $fullTask->$field ? date('Y-m-d H:i:s', strtotime($fullTask->$field)) : null;
+            } else {
+                $newValue = $fullTask->$field ?? null;
+            }
+            if(hash('sha256', $oldValue) === hash('sha256', $newValue) || $field === 'assignee_gid' || $field === 'assignee_name'){
+                continue;
+            }
+            echo $i .  ' :' . $field . PHP_EOL;
+            echo Task::attribute($field) . ' (старое значение): ' . trim($oldValue) . PHP_EOL;
+            echo Task::attribute($field) . ' (новое значение) : ' . trim($newValue) . PHP_EOL;
+//            print_r($fullTask);
+//            echo hash('sha256', $oldValue) . ' - ' . hash('sha256', $newValue) . PHP_EOL;
+            echo '-------------------' . PHP_EOL;
+            // Проверка на изменение значения поля
+            if ($oldValue != $newValue) {
+                $hasChanges = true;
+
+                // Создание записи об изменении в таблице task_changes
+                $change = new TaskChanges();
+                $change->task_gid = $existingTask->gid;
+                $change->field = $field;
+                $change->old_value = is_string($oldValue) ? $oldValue : json_encode($oldValue);
+                $change->new_value = is_string($newValue) ? $newValue : json_encode($newValue);
+                $change->changed_at = date('Y-m-d H:i:s');
+                $change->save();
+
+                // Обновление значения поля в задаче
+                $existingTask->$field = $newValue;
+            }
+        }
+
+        // Сравнение кастомных полей задачи
+        if (isset($fullTask->custom_fields) && is_array($fullTask->custom_fields)) {
+            foreach ($fullTask->custom_fields as $customField) {
+                $customFieldModel = TaskCustomFields::findOne([
+                    'task_gid' => $existingTask->gid,
+                    'custom_field_gid' => $customField->gid
+                ]);
+
+                $hasCustomFieldChanges = false;
+
+                if ($customFieldModel) {
+                    // Проверка значений существующего кастомного поля
+                    if ($customFieldModel->display_value != $customField->display_value ||
+                        $customFieldModel->enum_option_gid != ($customField->enum_value->gid ?? null) ||
+                        $customFieldModel->enum_option_name != ($customField->enum_value->name ?? null) ||
+                        $customFieldModel->number_value != ($customField->number_value ?? null)) {
+
+                        $hasCustomFieldChanges = true;
+
+                        // Логируем изменения для кастомного поля
+                        $change = new TaskChanges();
+                        $change->task_gid = $existingTask->gid;
+                        $change->field = 'custom_field_' . $customField->gid;
+                        $change->old_value = json_encode([
+                            'display_value' => $customFieldModel->display_value,
+                            'enum_option_gid' => $customFieldModel->enum_option_gid,
+                            'enum_option_name' => $customFieldModel->enum_option_name,
+                            'number_value' => $customFieldModel->number_value,
+                        ]);
+                        $change->new_value = json_encode([
+                            'display_value' => $customField->display_value ?? null,
+                            'enum_option_gid' => $customField->enum_value->gid ?? null,
+                            'enum_option_name' => $customField->enum_value->name ?? null,
+                            'number_value' => $customField->number_value ?? null,
+                        ]);
+                        $change->changed_at = date('Y-m-d H:i:s');
+                        $change->save();
+                    }
+
+                    // Обновляем значения кастомного поля
+                    if ($hasCustomFieldChanges) {
+                        $customFieldModel->display_value = $customField->display_value ?? null;
+                        $customFieldModel->enum_option_gid = $customField->enum_value->gid ?? null;
+                        $customFieldModel->enum_option_name = $customField->enum_value->name ?? null;
+                        $customFieldModel->number_value = $customField->number_value ?? null;
+                        $customFieldModel->save();
+                    }
+
+                } else {
+                    // Если кастомного поля нет в базе, создаем новое
+                    $newCustomField = new TaskCustomFields();
+                    $newCustomField->task_gid = $existingTask->gid;
+                    $newCustomField->custom_field_gid = $customField->gid;
+                    $newCustomField->name = $customField->name;
+                    $newCustomField->type = $customField->type;
+                    $newCustomField->display_value = $customField->display_value ?? null;
+                    $newCustomField->enum_option_gid = $customField->enum_value->gid ?? null;
+                    $newCustomField->enum_option_name = $customField->enum_value->name ?? null;
+                    $newCustomField->number_value = $customField->number_value ?? null;
+                    $newCustomField->save();
+
+                    // Логируем добавление нового кастомного поля
+                    $change = new TaskChanges();
+                    $change->task_gid = $existingTask->gid;
+                    $change->field = 'custom_field_' . $customField->gid;
+                    $change->old_value = null;
+                    $change->new_value = json_encode([
+                        'display_value' => $customField->display_value ?? null,
+                        'enum_option_gid' => $customField->enum_value->gid ?? null,
+                        'enum_option_name' => $customField->enum_value->name ?? null,
+                        'number_value' => $customField->number_value ?? null,
+                    ]);
+                    $change->changed_at = date('Y-m-d H:i:s');
+                    $change->save();
+                }
+            }
+        }
+
+        // Если были изменения, сохраняем задачу
+        if ($hasChanges) {
+            $existingTask->save();
+        }
+    }
+
+    /**
+     * Сохранение кастомных полей для задачи с отслеживанием изменений
+     */
+    private function saveCustomFields($customFields, $taskGid)
+    {
+        if (is_array($customFields)) {
+            foreach ($customFields as $customField) {
+                $customFieldModel = TaskCustomFields::findOne([
+                    'task_gid' => $taskGid,
+                    'custom_field_gid' => $customField->gid
+                ]);
+
+                $hasCustomFieldChanges = false;
+
+                if ($customFieldModel) {
+                    // Проверка значений существующего кастомного поля
+                    if ($customFieldModel->display_value != $customField->display_value ||
+                        $customFieldModel->enum_option_gid != ($customField->enum_value->gid ?? null) ||
+                        $customFieldModel->enum_option_name != ($customField->enum_value->name ?? null) ||
+                        $customFieldModel->number_value != ($customField->number_value ?? null)) {
+
+                        $hasCustomFieldChanges = true;
+
+                        // Логируем изменения для кастомного поля
+//                        $change = new TaskChanges();
+//                        $change->task_gid = $taskGid;
+//                        $change->field = 'custom_field_' . $customField->gid;
+//                        $change->old_value = json_encode([
+//                            'display_value' => $customFieldModel->display_value,
+//                            'enum_option_gid' => $customFieldModel->enum_option_gid,
+//                            'enum_option_name' => $customFieldModel->enum_option_name,
+//                            'number_value' => $customFieldModel->number_value,
+//                        ]);
+//                        $change->new_value = json_encode([
+//                            'display_value' => $customField->display_value ?? null,
+//                            'enum_option_gid' => $customField->enum_value->gid ?? null,
+//                            'enum_option_name' => $customField->enum_value->name ?? null,
+//                            'number_value' => $customField->number_value ?? null,
+//                        ]);
+//                        $change->changed_at = date('Y-m-d H:i:s');
+//                        $change->save();
+                    }
+
+                    // Обновляем значения кастомного поля
+                    if ($hasCustomFieldChanges) {
+                        $customFieldModel->display_value = $customField->display_value ?? null;
+                        $customFieldModel->enum_option_gid = $customField->enum_value->gid ?? null;
+                        $customFieldModel->enum_option_name = $customField->enum_value->name ?? null;
+                        $customFieldModel->number_value = $customField->number_value ?? null;
+                        $customFieldModel->save();
+                    }
+
+                } else {
+                    // Если кастомного поля нет в базе, создаем новое
+                    $newCustomField = new TaskCustomFields();
+                    $newCustomField->task_gid = $taskGid;
+                    $newCustomField->custom_field_gid = $customField->gid;
+                    $newCustomField->name = $customField->name;
+                    $newCustomField->type = $customField->type;
+                    $newCustomField->display_value = $customField->display_value ?? null;
+                    $newCustomField->enum_option_gid = $customField->enum_value->gid ?? null;
+                    $newCustomField->enum_option_name = $customField->enum_value->name ?? null;
+                    $newCustomField->number_value = $customField->number_value ?? null;
+                    $newCustomField->save();
+
+                    // Логируем добавление нового кастомного поля
+//                    $change = new TaskChanges();
+//                    $change->task_gid = $taskGid;
+//                    $change->field = 'custom_field_' . $customField->gid;
+//                    $change->old_value = null;
+//                    $change->new_value = json_encode([
+//                        'display_value' => $customField->display_value ?? null,
+//                        'enum_option_gid' => $customField->enum_value->gid ?? null,
+//                        'enum_option_name' => $customField->enum_value->name ?? null,
+//                        'number_value' => $customField->number_value ?? null,
+//                    ]);
+//                    $change->changed_at = date('Y-m-d H:i:s');
+//                    $change->save();
+                }
+            }
+        }
+    }
+
+
+
     /**
      * Получение информации о конкретной задаче по её ID
      */
@@ -174,7 +575,7 @@ class AsanaController extends Controller
     {
         $client = $this->getToken();
 
-        // Добавляем оба заголовка отдельно
+        // Добавляем заголовки
         $client->options['headers']['Asana-Disable'] = 'new_user_task_lists';
         $client->options['headers']['Asana-Enable'] = 'new_goal_memberships';
 
@@ -185,7 +586,6 @@ class AsanaController extends Controller
             print_r($e->response->raw_body);
         }
     }
-
 
 
     /**
@@ -267,7 +667,7 @@ class AsanaController extends Controller
                 'workspace' => self::WORKSPACE_INGSOT_GID,
                 'projects' => '1203001648489726', // замените на ваш Project ID
                 'name' => 'Test Hello World! brama',
-                'assignee' => self::USER_IV, // замените на нужный User GID
+                'assignee' => self::USER_IG, // замените на нужный User GID
                 'notes' => 'This is a task for testing the Asana API :)',
             ]);
 

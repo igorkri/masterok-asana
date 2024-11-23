@@ -8,11 +8,9 @@ use Yii;
  * This is the model class for table "asana_users".
  *
  * @property int $id
- * @property int|null $gid User ID
- * @property string|null $name Ім\`я
- * @property string|null $email email
- *
- * @property AsanaTask[] $asanaTasks
+ * @property string $gid
+ * @property string $name
+ * @property string|null $resource_type
  */
 class AsanaUsers extends \yii\db\ActiveRecord
 {
@@ -30,8 +28,8 @@ class AsanaUsers extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['gid'], 'integer'],
-            [['name', 'email'], 'string', 'max' => 255],
+            [['gid', 'name'], 'required'],
+            [['gid', 'name', 'resource_type'], 'string', 'max' => 255],
         ];
     }
 
@@ -42,19 +40,9 @@ class AsanaUsers extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'gid' => 'User ID',
-            'name' => 'Ім\\`я',
-            'email' => 'email',
+            'gid' => 'Gid',
+            'name' => 'Name',
+            'resource_type' => 'Resource Type',
         ];
-    }
-
-    /**
-     * Gets query for [[AsanaTasks]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAsanaTasks()
-    {
-        return $this->hasMany(AsanaTask::class, ['assignee_gid' => 'id']);
     }
 }

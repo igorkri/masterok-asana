@@ -11,8 +11,12 @@ class AppAsset extends AssetBundle
 {
     public $basePath = '@webroot';
     public $baseUrl = '@web';
+    public $version = '1.0.0';
     public $css = [
         "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900,900i",
+        "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css",
+        "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/regular.min.css",
+        "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/solid.min.css",
         "vendor/bootstrap/css/bootstrap.ltr.css",
         "vendor/highlight.js/styles/github.css",
         "vendor/simplebar/simplebar.min.css",
@@ -26,7 +30,11 @@ class AppAsset extends AssetBundle
 
     ];
     public $js = [
-        "vendor/jquery/jquery.min.js",
+//        "vendor/jquery/jquery.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/regular.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/solid.min.js",
         "vendor/feather-icons/feather.min.js",
         "vendor/simplebar/simplebar.min.js",
         "vendor/bootstrap/js/bootstrap.bundle.min.js",
@@ -46,9 +54,26 @@ class AppAsset extends AssetBundle
         "js/calendar.js",
         "js/demo.js",
         "js/demo-chart-js.js",
+        'js/main.js',
+        'js/ModalRemote.js',
+        'js/ajaxcrud.js'
     ];
     public $depends = [
-//        'yii\web\YiiAsset',
-//        'yii\bootstrap5\BootstrapAsset',
+        'yii\web\YiiAsset',
+        'yii\bootstrap5\BootstrapAsset',
     ];
+
+    public function init()
+    {
+        parent::init();
+
+        // Добавляем версию к URL каждого ресурса
+        foreach ($this->css as &$cssFile) {
+            $cssFile .= '?v=' . $this->version;
+        }
+
+        foreach ($this->js as &$jsFile) {
+            $jsFile .= '?v=' . $this->version;
+        }
+    }
 }

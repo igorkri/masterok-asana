@@ -52,42 +52,57 @@
     /*
     // Datatables
     */
-    (function() {
-        $.fn.DataTable.ext.pager.numbers_length = 5;
-        $.fn.DataTable.defaults.oLanguage.sInfo = 'Showing _START_ to _END_ of _TOTAL_';
-        $.fn.DataTable.defaults.oLanguage.sLengthMenu = 'Rows per page _MENU_';
-
-        const template = '' +
-            '<"sa-datatables"' +
-                '<"sa-datatables__table"t>' +
-                '<"sa-datatables__footer"' +
-                    '<"sa-datatables__pagination"p>' +
-                    '<"sa-datatables__controls"' +
-                        '<"sa-datatables__legend"i>' +
-                        '<"sa-datatables__divider">' +
-                        '<"sa-datatables__page-size"l>' +
-                    '>' +
-                '>' +
-            '>';
-
-        $('.sa-datatables-init').each(function() {
-            const tableSearchSelector = $(this).data('sa-search-input');
-            const table = $(this).DataTable({
-                dom: template,
-                paging: true,
-                ordering: true,
-                drawCallback: function() {
-                    $(this.api().table().container()).find('.pagination').addClass('pagination-sm');
-                },
-            });
-
-            if (tableSearchSelector) {
-                $(tableSearchSelector).on('input', function() {
-                    table.search(this.value).draw();
-                });
-            }
-        });
-    })();
+    // (function() {
+    //     $.fn.DataTable.ext.pager.numbers_length = 5;
+    //     $.extend($.fn.DataTable.defaults, {
+    //         pagingType: 'full_numbers', // Тип пагинации
+    //         pageLength: 20, // Количество строк на одной странице
+    //         lengthMenu: [30, 50, 100], // Опции выбора количества строк
+    //         language: {
+    //             paginate: {
+    //                 first: 'Перша',
+    //                 last: 'Остання',
+    //                 previous: 'Назад',
+    //                 next: 'Вперед',
+    //             },
+    //             info: 'Показано записи з _START_ по _END_ із _TOTAL_',
+    //             lengthMenu: 'Рядків на сторінці: _MENU_',
+    //         },
+    //     });
+    //
+    //
+    //
+    //     const template = '' +
+    //         '<"sa-datatables"' +
+    //             '<"sa-datatables__table"t>' +
+    //             '<"sa-datatables__footer"' +
+    //                 '<"sa-datatables__pagination"p>' +
+    //                 '<"sa-datatables__controls"' +
+    //                     '<"sa-datatables__legend"i>' +
+    //                     '<"sa-datatables__divider">' +
+    //                     '<"sa-datatables__page-size"l>' +
+    //                 '>' +
+    //             '>' +
+    //         '>';
+    //
+    //     $('.sa-datatables-init').each(function() {
+    //         const tableSearchSelector = $(this).data('sa-search-input');
+    //         const table = $(this).DataTable({
+    //             dom: template,
+    //             paging: true,
+    //             ordering: true,
+    //             drawCallback: function() {
+    //                 $(this.api().table().container()).find('.pagination').addClass('pagination-sm');
+    //             },
+    //         });
+    //
+    //         if (tableSearchSelector) {
+    //             $(tableSearchSelector).on('input', function() {
+    //                 table.search(this.value).draw();
+    //             });
+    //         }
+    //     });
+    // })();
 
     /*
     // Analytics chart

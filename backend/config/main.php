@@ -11,7 +11,21 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
+    'language' => 'uk',
+    'modules' => [
+        'gridview' =>  [
+            'class' => '\kartik\grid\Module'
+        ],
+//        'treemanager' =>  [
+//            'class' => '\igorkri\tree\Module',
+//            // other module settings, refer detailed documentation
+//            'i18n' => [
+//                'class' => 'yii\i18n\PhpMessageSource',
+//                'basePath' => '@backend/messages',
+//                'forceTranslation' => true
+//            ]
+//        ],
+    ],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
@@ -37,6 +51,21 @@ return [
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
+        ],
+        'assetManager' => [
+            'class' => 'yii\web\AssetManager',
+            'bundles' => [
+                'backend\assets\AppAsset' => [
+                    'class' => 'backend\assets\AppAsset',
+                    'version' => time(), // Set the version dynamically
+                ],
+                'nullref\datatable\assets\DataTableAsset' => [
+                    'styling' => \nullref\datatable\assets\DataTableAsset::STYLING_JUI,
+                ],
+                'kartik\form\ActiveFormAsset' => [
+                    'bsDependencyEnabled' => false // do not load bootstrap assets for a specific asset bundle
+                ],
+            ],
         ],
 
         'urlManager' => [

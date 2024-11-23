@@ -28,15 +28,31 @@ use yii\helpers\Url;
                     <ul class="sa-nav__menu sa-nav__menu--root">
                         <li class="sa-nav__menu-item sa-nav__menu-item--has-icon">
                             <a href="<?=Url::to(['/site/index'])?>" class="sa-nav__link">
-                                            <span class="sa-nav__icon">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
-                                                     viewBox="0 0 16 16" fill="currentColor">
-                                                    <path
-                                                            d="M8,13.1c-4.4,0-8,3.4-8-3C0,5.6,3.6,2,8,2s8,3.6,8,8.1C16,16.5,12.4,13.1,8,13.1zM8,4c-3.3,0-6,2.7-6,6c0,4,2.4,0.9,5,0.2C7,9.9,7.1,9.5,7.4,9.2l3-2.3c0.4-0.3,1-0.2,1.3,0.3c0.3,0.5,0.2,1.1-0.2,1.4l-2.2,1.7c2.5,0.9,4.8,3.6,4.8-0.2C14,6.7,11.3,4,8,4z"
-                                                    ></path>
-                                                </svg>
-                                            </span>
+                                <span class="sa-nav__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                         viewBox="0 0 16 16" fill="currentColor">
+                                        <path
+                                                d="M8,13.1c-4.4,0-8,3.4-8-3C0,5.6,3.6,2,8,2s8,3.6,8,8.1C16,16.5,12.4,13.1,8,13.1zM8,4c-3.3,0-6,2.7-6,6c0,4,2.4,0.9,5,0.2C7,9.9,7.1,9.5,7.4,9.2l3-2.3c0.4-0.3,1-0.2,1.3,0.3c0.3,0.5,0.2,1.1-0.2,1.4l-2.2,1.7c2.5,0.9,4.8,3.6,4.8-0.2C14,6.7,11.3,4,8,4z"
+                                        ></path>
+                                    </svg>
+                                </span>
                                 <span class="sa-nav__title">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="sa-nav__menu-item sa-nav__menu-item--has-icon">
+                            <a href="<?=Url::to(['/asana-project/index'])?>" class="sa-nav__link">
+                                <span class="sa-nav__icon">
+                                    <i class="fa-solid fa-diagram-project"></i>
+                                </span>
+                                <span class="sa-nav__title">Проєкти</span>
+                            </a>
+                        </li>
+                        <li class="sa-nav__menu-item sa-nav__menu-item--has-icon">
+                            <a href="<?=Url::to(['/asana-task/index'])?>" class="sa-nav__link">
+                                            <span class="sa-nav__icon">
+                                                <i class="fa-solid fa-hourglass-half"></i>
+                                            </span>
+                                <span class="sa-nav__title">Задачі</span>
                             </a>
                         </li>
 <!--                        <li class="sa-nav__menu-item sa-nav__menu-item--has-icon"-->
@@ -87,6 +103,22 @@ use yii\helpers\Url;
 <!--                                </li>-->
 <!--                            </ul>-->
 <!--                        </li>-->
+                </li>
+                <li class="sa-nav__section">
+                    <div class="sa-nav__section-title"><span>Проєкти</span></div>
+                    <ul class="sa-nav__menu sa-nav__menu--root">
+                        <?php foreach (\common\models\Project::find()->orderBy('name ASC')->cache(3600)->all() as $project): ?>
+                        <li class="sa-nav__menu-item sa-nav__menu-item--has-icon">
+                            <a href="<?=Url::to(['/task/index', 'project_gid' => $project->gid])?>" class="sa-nav__link">
+                                <span class="sa-nav__icon"><i class="fa-solid fa-diagram-project"></i></span>
+                                <span class="sa-nav__title"><?php echo $project->getName() ?></span>
+                                <?php if ($project->getTaskExecution() > 0): ?>
+                                <span class="sa-nav__menu-item-badge badge badge-sa-pill badge-sa-theme"><?=$project->getTaskExecution()?></span>
+                                <?php endif; ?>
+                            </a>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </li>
             </ul>
         </div>
