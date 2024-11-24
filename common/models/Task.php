@@ -11,6 +11,7 @@ use yii\helpers\Url;
  *
  * @property int $id
  * @property string $gid
+ * @property string $parent_gid
  * @property string $name
  * @property string|null $assignee_gid
  * @property string|null $assignee_name
@@ -52,6 +53,7 @@ class Task extends \yii\db\ActiveRecord
             [['completed_at', 'created_at', 'due_on', 'start_on', 'modified_at'], 'safe'],
             [['name', 'notes'], 'string'],
             [['section_project_name', 'section_project_gid', 'gid', 'assignee_gid', 'assignee_name', 'assignee_status', 'permalink_url', 'project_gid', 'workspace_gid', 'resource_subtype'], 'string', 'max' => 255],
+            [['parent_gid'], 'string', 'max' => 50],
             [['gid'], 'unique'],
         ];
     }
@@ -121,6 +123,92 @@ class Task extends \yii\db\ActiveRecord
     public function getStatus()
     {
         return $this->section_project_name;
+    }
+
+    public function getSubTasks()
+    {
+        return $this->hasMany(Task::class, ['parent_gid' => 'gid']);
+    }
+
+    /**
+     * Get parent task
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStories(): \yii\db\ActiveQuery
+    {
+        return $this->hasMany(TaskStory::class, ['task_gid' => 'gid']);
+    }
+
+    public function getAttachments(): \yii\db\ActiveQuery
+    {
+        return $this->hasMany(TaskAttachment::class, ['task_gid' => 'gid']);
+    }
+
+    /**
+     * Метод для получения файлов задачи через API Asana.
+     *
+     * @param string $task_gid Идентификатор задачи в Asana
+     * @return mixed Ответ от API Asana
+     */
+    public static function getApiAttachments($task_gid)
+    {
+        $token = Yii::$app->params['tokenAsana'];
+        $url = "https://app.asana.com/api/1.0/tasks/{$task_gid}/attachments";
+
+        // Настройка HTTP-запроса с использованием cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: application/json',
+            "Authorization: Bearer {$token}",
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200) {
+            return json_decode($response, true);
+        } else {
+            // Обработка ошибки
+            Yii::error("Ошибка получения файлов задачи: HTTP {$httpCode}");
+            return null;
+        }
+    }
+
+    /**
+     * Метод для получения отдельного файла (вложение) задачи через API Asana.
+     *
+     * @param string $attachment_gid Идентификатор вложения в Asana
+     * @return mixed Ответ от API Asana
+     */
+    public static function getApiAttachment($attachment_gid)
+    {
+        $token = Yii::$app->params['tokenAsana'];
+        $url = "https://app.asana.com/api/1.0/attachments/{$attachment_gid}";
+
+        // Настройка HTTP-запроса с использованием cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: application/json',
+            "Authorization: Bearer {$token}",
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200) {
+            return json_decode($response, true);
+        } else {
+            // Обработка ошибки
+            Yii::error("Ошибка получения вложения: HTTP {$httpCode}");
+            return null;
+        }
     }
 
     public function getStatusList()

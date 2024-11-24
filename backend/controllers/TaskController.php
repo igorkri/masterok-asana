@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use common\models\Project;
+use common\models\TaskAttachment;
 use Yii;
 use common\models\Task;
 use backend\models\search\TaskSearch;
@@ -11,6 +12,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use \yii\web\Response;
 use yii\helpers\Html;
+use yii\web\ServerErrorHttpException;
 
 /**
  * TaskController implements the CRUD actions for Task model.
@@ -151,8 +153,6 @@ class TaskController extends Controller
         $request = Yii::$app->request;
         $model = Task::findOne(['gid' => $gid]);
 
-
-
         if ($model->load($request->post()) && $model->save()) {
             return $this->redirect(['update', 'gid' => $model->id]);
         } else {
@@ -237,4 +237,68 @@ class TaskController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+    public function actionImage($gid)
+    {
+        $model = TaskAttachment::findOne(['gid' => $gid]);
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return [
+            'title'=> "Файл " . $model->name,
+            'content'=>$this->renderAjax('_image', [
+                'model' => $model,
+            ]),
+            'footer'=> Html::button('Закрити',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
+                Html::button('Зберегти',['class'=>'btn btn-primary','type'=>"submit"])
+
+        ];
+    }
+
+    public function actionGetImage($gid)
+    {
+        // Находим вложение по gid
+        $attachment = TaskAttachment::findOne(['gid' => $gid]);
+        if (!$attachment) {
+            throw new NotFoundHttpException('Attachment not found.');
+        }
+
+        // Получаем URL для скачивания изображения
+        $downloadUrl = $attachment->getPermanentUrl();
+        if ($downloadUrl === null) {
+            throw new ServerErrorHttpException('Unable to fetch the image URL.');
+        }
+
+        // Инициализируем cURL для получения данных изображения
+        $ch = curl_init($downloadUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $imageData = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        // Проверяем успешность получения изображения
+        if ($httpCode !== 200 || $imageData === false) {
+            Yii::error("cURL error: $curlError", __METHOD__);
+            throw new ServerErrorHttpException('Unable to fetch the image.');
+        }
+
+        // Устанавливаем заголовок типа контента (определяем тип по URL или заголовкам ответа)
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $contentType = finfo_buffer($finfo, $imageData);
+        finfo_close($finfo);
+        header('Content-Type: ' . $contentType);
+        header('Content-Length: ' . strlen($imageData));
+
+        // Очищаем буфер вывода и выводим данные изображения
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
+
+        echo $imageData;
+        exit();
+    }
+
+
+
+
 }

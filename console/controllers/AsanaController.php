@@ -13,8 +13,10 @@ use common\models\ProjectCustomFieldEnumOptions;
 use common\models\ProjectCustomFields;
 use common\models\SectionProject;
 use common\models\Task;
+use common\models\TaskAttachment;
 use common\models\TaskChanges;
 use common\models\TaskCustomFields;
+use common\models\TaskStory;
 use Yii;
 use yii\db\Exception;
 use yii\console\Controller;
@@ -593,7 +595,7 @@ class AsanaController extends Controller
      */
     public function actionUpdateCompleted()
     {
-        $tasks = AsanaTask::find()->where(['completed' => 0])->all();
+        $tasks = Task::find()->where(['completed' => 0])->all();
 
         $client = $this->getToken();
 
@@ -611,47 +613,190 @@ class AsanaController extends Controller
     }
 
     /**
+     * Получение списка изменений и комментариев для задачи
+     */
+    public function actionTaskStory()
+    {
+        $tasks = Task::find()->all();
+        foreach ($tasks as $task) {
+            /* @var Task $task */
+            $taskStory = TaskStory::getApiStories($task->gid);
+            if(isset($taskStory['data']) && !empty($taskStory['data'])){
+                foreach ($taskStory['data'] as $story){
+                    $model = TaskStory::find()->where(['gid' => $story['gid']])->one();
+                    if(!$model){
+                        $model = new TaskStory();
+                    }
+                    $model->gid = $story['gid'];
+                    $model->task_gid = $task->gid;
+                    $model->created_at = date('Y-m-d H:i:s', strtotime($story['created_at']));
+                    $model->created_by_gid = $story['created_by']['gid'];
+                    $model->created_by_name = $story['created_by']['name'];
+                    $model->created_by_resource_type = $story['type'];
+                    $model->text = $story['text'];
+                    $model->resource_subtype = $story['resource_subtype'];
+                    if(!$model->save()){
+                        print_r($model->errors);
+                    } else {
+                        echo 'TaskStory created' . $model->text . PHP_EOL;
+                    }
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Получение списка файлов для задачи
+     */
+    public function actionAttachmentTask()
+    {
+        $tasks = Task::find()->all();
+        foreach ($tasks as $task) {
+            $attachments = $task->getApiAttachments($task->gid);
+            if (!empty($attachments['data'])) {
+                foreach ($attachments['data'] as $attachment) {
+                    $att = $task->getApiAttachment($attachment['gid']);
+
+                    $model = TaskAttachment::find()->where(['gid' => $attachment['gid']])->one();
+                    if (!$model) {
+                        $model = new TaskAttachment();
+                    }
+                    /**
+                     * 'id' => 'ID',
+                     * 'task_gid' => 'Ідентифікатор завдання',
+                     * 'attachment_gid' => 'Ідентифікатор вкладення',
+                     * 'created_at' => 'Дата створення',
+                     * 'download_url' => 'URL для завантаження',
+                     * 'name' => 'Назва',
+                     * 'parent_gid' => 'Ідентифікатор батьківського елемента',
+                     * 'parent_name' => 'Назва батьківського елемента',
+                     * 'parent_resource_type' => 'Тип батьківського ресурсу',
+                     * 'parent_resource_subtype' => 'Підтип батьківського ресурсу',
+                     * 'permanent_url' => 'Постійний URL',
+                     * 'resource_type' => 'Тип ресурсу',
+                     * 'resource_subtype' => 'Підтип ресурсу',
+                     * 'view_url' => 'URL для перегляду',
+                     */
+                    $att = $att['data'];
+                    $model->gid = $attachment['gid'];
+                    $model->task_gid = $task->gid;
+                    $model->created_at = date('Y-m-d H:i:s', strtotime($att['created_at']));
+                    $model->download_url = $att['download_url'];
+                    $model->name = $att['name'];
+                    $model->parent_gid = $att['parent']['gid'];
+                    $model->parent_name = $att['parent']['name'];
+                    $model->parent_resource_type = $att['parent']['resource_type'];
+                    $model->parent_resource_subtype = $att['parent']['resource_subtype'];
+                    $model->permanent_url = $att['permanent_url'];
+                    $model->resource_type = $att['resource_type'];
+                    $model->resource_subtype = $att['resource_subtype'];
+                    $model->view_url = $att['view_url'];
+
+
+                    if (!$model->save()) {
+                        print_r($model->errors);
+                    } else {
+                        echo 'TaskAttachment created' . $model->name . PHP_EOL;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Получение списка подзадач для задачи
+     */
+    public function actionSubTask()
+    {
+        $tasks = Task::find()->all();
+        foreach ($tasks as $task) {
+            $subTask = $this->getSubTask($task->gid);
+            if(!empty($subTask['data'])){
+                $subTask = $subTask['data'];
+                foreach ($subTask as $sub){
+                    $sGid = $sub['gid'];
+                    $is_model = Task::find()->where(['gid' => $sGid])->exists();
+                    if ($is_model) {
+                        continue;
+                    }
+                    $new_model = new Task();
+                    $new_model->gid = $sGid;
+                    $new_model->parent_gid = $task->gid;
+                    $new_model->name = $sub['name'] ?? '--- Без назви ---';
+                    $new_model->assignee_gid = $sub['assignee']['gid'] ?? null;
+                    $new_model->assignee_name = $sub['assignee']['name'] ?? null;
+                    $new_model->completed = intval($sub['completed']) ?? 0;
+                    $new_model->completed_at = isset($sub['completed_at']) ? date('Y-m-d H:i:s', strtotime($sub['completed_at'])) : null;
+                    $new_model->notes = $sub['notes'] ?? null;
+                    $new_model->due_on = $sub['due_on'] ?? null;
+                    $new_model->created_at = date('Y-m-d H:i:s', strtotime($sub['created_at']));
+                    $new_model->modified_at = date('Y-m-d H:i:s', strtotime($sub['modified_at']));
+                    $new_model->workspace_gid = self::WORKSPACE_INGSOT_GID;
+                    if(!$new_model->save()){
+                        print_r($new_model->errors);
+//                        die;
+                    } else {
+                        //$new_model->link('subTask', $task);
+                        echo 'SubTask created' . $new_model->name . PHP_EOL;
+                    }
+                }
+//                print_r($subTask); die;
+            }
+        }
+
+    }
+
+
+
+    /**
      * Получение списка подзадач для задачи
      */
     private function getSubTask($taskGid)
     {
-        $client = $this->getToken();
+        $accessToken = self::$TOKEN; // Получите токен доступа
+        $url = "https://app.asana.com/api/1.0/tasks/{$taskGid}/subtasks";
 
-        // Добавляем оба заголовка отдельно
-        $client->options['headers']['Asana-Disable'] = 'new_user_task_lists';
-        $client->options['headers']['Asana-Enable'] = 'new_goal_memberships';
+        // Параметры для запроса
+        $params = http_build_query([
+            'opt_fields' => 'completed,completed_at,name,notes,assignee, assignee.name,due_on,created_at,modified_at'
+        ]);
 
-        try {
-            $subTasksAsana = $client->tasks->getSubTasksForTask($taskGid, [
-                'opt_fields' => 'completed,completed_at,name,notes,assignee,due_on,created_at,modified_at'
-            ]);
-            foreach ($subTasksAsana as $subTask) {
-//                print_r($subTask); die();
-                $sGid = $subTask->gid;
-                $is_model = AsanaSubTask::find()->where(['gid' => $sGid])->exists();
-                if ($is_model) {
-                    continue;
-                }
-                $new_model = new AsanaSubTask();
-                $new_model->gid = $sGid;
-                $new_model->task_gid = $taskGid;
-                $new_model->name = $subTask->name;
-                $new_model->note = $subTask->notes;
-                $new_model->complete = intval($subTask->completed);
-                try {
-                    if (!$new_model->save()) {
-                        print_r($new_model->errors);
-                        die;
-                    }
-                } catch (Exception $e) {
-                    echo "Error: " . $e->getMessage();
-                }
-            }
-        } catch (\Asana\Errors\InvalidRequestError $e) {
-            echo "Error: " . $e->getMessage();
-            print_r($e->response->raw_body);
+        // Инициализация cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url . '?' . $params);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $accessToken,
+            'Content-Type: application/json',
+            // Добавление кастомных заголовков, если необходимо
+            'Asana-Disable: new_user_task_lists',
+            'Asana-Enable: new_goal_memberships'
+        ]);
+
+        // Выполнение запроса и получение результата
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if (curl_errno($ch)) {
+            echo 'cURL Error: ' . curl_error($ch);
+            curl_close($ch);
+            return null;
+        }
+
+        curl_close($ch);
+
+        // Обработка ответа
+        if ($httpCode == 200) {
+            $subTasksAsana = json_decode($response, true);
+            return $subTasksAsana;
+        } else {
+            echo "Error: Received HTTP code $httpCode\n";
+            print_r($response);
+            return null;
         }
     }
+
 
     /**
      * Создание тестовой задачи

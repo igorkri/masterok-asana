@@ -63,9 +63,21 @@ use yii\widgets\ActiveForm;
                                     </div>
                                 </div>
                             </div>
+                            <?php if($model->subTasks):?>
+                            <?=$this->render('sub-task', [
+                                    'model' => $model
+                                ])?>
+                            <?php endif; ?>
+                            <?php if($model->attachments):?>
+                            <?= $this->render('_attachments', [
+                                'model' => $model
+                            ]) ?>
+                            <?php endif; ?>
                             <div class="card w-100 mt-5">
                                 <div class="card-body p-5">
-                                    <?php // $this->render('_chat') ?>
+                                    <?php echo $this->render('_chat',[
+                                        'model' => $model
+                                    ]) ?>
                                 </div>
                             </div>
 
