@@ -54,6 +54,9 @@ use yii\widgets\Pjax;
                 <div class="sa-page-meta__body">
                     <div class="sa-page-meta__list">
                         <div class="sa-page-meta__item">
+                            <?= $model->project->name ?>
+                        </div>
+                        <div class="sa-page-meta__item">
                             Створено: <?= Yii::$app->formatter->asDatetime($model->created_at, 'medium') ?></div>
                         <div class="sa-page-meta__item">
                             Оновлено: <?= Yii::$app->formatter->asDatetime($model->modified_at, 'medium') ?></div>
@@ -166,17 +169,23 @@ use yii\widgets\Pjax;
                             <div class="card-body p-5">
                                 <div class="mb-5"><h2 class="mb-0 fs-exact-18">Статус</h2></div>
                                 <div class="mb-4">
-                                    <?= $form->field($model, 'section_project_name')->radioList(
+                                    <?= $form->field($model, 'section_project_gid')->radioList(
                                         $model->getStatusList(),
                                         [
+                                            'itemOptions' => ['class' => 'form-check-input'], // Добавляем CSS-класс для input
                                             'item' => function ($index, $label, $name, $checked, $value) {
-                                                return '<label class="form-check">' .
-                                                    '<input type="radio" class="form-check-input" name="' . $name . '" value="' . $value . '" ' . ($checked ? 'checked' : '') . '>' .
-                                                    '<span class="form-check-label">' . $label . '</span>' .
-                                                    '</label>';
-                                            }
+                                                return '<div class="form-check">' .
+                                                    Html::radio($name, $checked, [
+                                                        'value' => $value,
+                                                        'class' => 'form-check-input', // Класс для input
+                                                        'id' => $name . '_' . $index, // Уникальный id для каждого input
+                                                    ]) .
+                                                    Html::label($label, $name . '_' . $index, ['class' => 'form-check-label']) . // Класс для label
+                                                    '</div>';
+                                            },
                                         ]
                                     )->label(false) ?>
+
                                 </div>
                             </div>
                         </div>

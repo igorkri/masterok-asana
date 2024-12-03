@@ -35,6 +35,8 @@ use yii\helpers\Url;
  * @property string|null $task_sync
  * @property string|null $task_sync_in
  * @property string|null $task_sync_out
+ * @property string|null $priority
+ * @property string|null $type
  * @property int|null $num_hearts
  * @property int|null $num_likes
  */
@@ -43,9 +45,24 @@ class Task extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+
+    public $priority;
+    public $type;
+
+
     public static function tableName()
     {
         return 'task';
+    }
+
+
+    public function afterFind()
+    {
+        parent::afterFind(); // Вызов родительского метода
+
+        // Устанавливаем значения свойств
+        $this->priority = $this->getPriorityGid();
+        $this->type = $this->getTypeGid();
     }
 
     /**
@@ -59,7 +76,7 @@ class Task extends \yii\db\ActiveRecord
             [['completed_at', 'created_at', 'due_on', 'start_on', 'modified_at'], 'safe'],
             [['name', 'notes', 'work_done'], 'string'],
             [['task_sync_out', 'task_sync_in', 'task_sync', 'section_project_name', 'section_project_gid', 'gid', 'assignee_gid', 'assignee_name', 'assignee_status', 'permalink_url', 'project_gid', 'workspace_gid', 'resource_subtype'], 'string', 'max' => 255],
-            [['parent_gid'], 'string', 'max' => 50],
+            [['parent_gid', 'priority', 'type'], 'string', 'max' => 50],
             [['gid'], 'unique'],
         ];
     }
@@ -109,6 +126,11 @@ class Task extends \yii\db\ActiveRecord
     {
         $labels = (new Task)->attributeLabels();
         return $labels[$attribute] ?? $attribute;
+    }
+
+    public function getAsanaUser()
+    {
+        return $this->hasOne(AsanaUsers::class, ['or', ['gid' => 'assignee_gid', 'name' => 'assignee_name']]);
     }
 
     public function getProject()
@@ -320,20 +342,6 @@ class Task extends \yii\db\ActiveRecord
     }
 
 
-    public function getTypeList($priority_gid = null)
-    {
-        $priorities = TaskCustomFields::find()
-            ->select(['enum_option_gid', 'display_value'])
-            ->where(['custom_field_gid' => '1205860710071790']) //'Тип задачі'
-            ->orderBy('display_value ASC')
-            ->distinct()->all();
-        $list = [];
-        foreach ($priorities as $priority) {
-            $list[$priority->enum_option_gid] = $priority->display_value;
-        }
-        return $priority_gid ? $list[$priority_gid] : $list;
-    }
-
     /**
      * Список Час, план.
      */
@@ -457,7 +465,7 @@ class Task extends \yii\db\ActiveRecord
     {
         $name = '<div class="d-flex align-items-center">
                     <div>
-                        <a href="' . Url::to(['update', 'gid' => $this->gid]) . '" class="text-reset">' . $this->name . '</a>
+                        <a href="' . Url::to(['update', 'gid' => $this->gid]) . '" class="text-reset" data-pjax="0">' . $this->name . '</a>
                         <div class="sa-meta mt-0">
                             <ul class="sa-meta__list">
                                 <li class="sa-meta__item">
@@ -527,11 +535,20 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getAssigneeList($assignee_gid = null)
     {
-        $assignees = Task::find()->select(['assignee_gid', 'assignee_name'])->where(['project_gid' => $this->project_gid])->distinct()->all();
+        $assigneesGid = Task::find()
+            ->select(['assignee_gid'])
+            ->where(['project_gid' => $this->project_gid])
+            ->andWhere(['not', ['assignee_gid' => null]])
+            ->distinct()
+            ->column();
+        $assignees = AsanaUsers::find()
+            ->select(['gid', 'name'])
+            ->where(['gid' => $assigneesGid])
+            ->all();
         $list = [];
         foreach ($assignees as $assignee) {
-            if ($assignee->assignee_name && $assignee->assignee_name != 'Private User') {
-                $list[$assignee->assignee_gid] = $assignee->assignee_name;
+            if ($assignee->name && $assignee->name != 'Private User') {
+                $list[$assignee->gid] = $assignee->name;
             }
         }
         return $assignee_gid ? $list[$assignee_gid] : $list;
@@ -542,20 +559,72 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getPriorityList($priority_gid = null)
     {
-        $priorities = TaskCustomFields::find()
-            ->select(['enum_option_gid', 'display_value'])
+        $priorities = ProjectCustomFieldEnumOptions::find()
+            ->select(['gid', 'name'])
             ->where(['custom_field_gid' => '1202674799521449']) //'Приоритет'
-//            ->where(['name' => 'Приоритет'])
-//            ->andWhere(['task_gid' => $this->gid])
-            ->orderBy('display_value ASC')
-            ->distinct()->all();
+            ->orderBy('name ASC')
+            ->all();
+
         $list = [];
         foreach ($priorities as $priority) {
-            $list[$priority->enum_option_gid] = $priority->display_value;
+            $list[$priority->gid] = $priority->name;
         }
         return $priority_gid ? $list[$priority_gid] : $list;
     }
 
+    /**
+     * Типи задач
+     */
+    public function getTypeList($priority_gid = null)
+    {
+        $priorities = ProjectCustomFieldEnumOptions::find()
+            ->select(['gid', 'name'])
+            ->where(['custom_field_gid' => '1205860710071790']) //'Тип задачі'
+            ->orderBy('name ASC')
+            ->all();
+        $list = [];
+        foreach ($priorities as $priority) {
+            $list[$priority->gid] = $priority->name;
+        }
+        return $priority_gid ? $list[$priority_gid] : $list;
+    }
+
+
+    /**
+     * Сохранение кастомных полей для задачи с отслеживанием изменений
+     */
+    public function updateTaskType()
+    {
+        $priority = TaskCustomFields::findOne(['task_gid' => $this->gid, 'custom_field_gid' => '1205860710071790']);
+        if (!$priority) {
+            $priority = new TaskCustomFields(['task_gid' => $this->gid, 'custom_field_gid' => '1205860710071790']);
+        }
+
+        $priority_gid = Yii::$app->request->post('Task')['type'];
+        $priority->enum_option_gid = $priority_gid;
+        $priority->display_value = $this->getTypeList($priority_gid);
+        $priority->enum_option_name = $this->getTypeList($priority_gid);
+        return $priority->save();
+
+    }
+
+    /**
+     * Сохранение кастомных полей для задачи с отслеживанием изменений
+     */
+    public function updateTaskPriority()
+    {
+        $priority = TaskCustomFields::findOne(['task_gid' => $this->gid, 'custom_field_gid' => '1202674799521449']);
+        if (!$priority) {
+            $priority = new TaskCustomFields(['task_gid' => $this->gid, 'custom_field_gid' => '1202674799521449']);
+        }
+
+        $priority_gid = Yii::$app->request->post('Task')['priority'];
+        $priority->enum_option_gid = $priority_gid;
+        $priority->display_value = $this->getPriorityList($priority_gid);
+        $priority->enum_option_name = $this->getPriorityList($priority_gid);
+        return $priority->save();
+
+    }
 
     /**
      * Сохранение кастомных полей для задачи с отслеживанием изменений
@@ -639,7 +708,7 @@ class Task extends \yii\db\ActiveRecord
 
         if ($taskModel->save()) {
             // Сохранение кастомных полей задачи
-            echo 'date: ' . $taskModel->created_at . ' date_mod: ' . $taskModel->modified_at .' Task created: ' . $taskModel->name . PHP_EOL;
+            echo 'date: ' . $taskModel->created_at . ' date_mod: ' . $taskModel->modified_at . ' Task created: ' . $taskModel->name . PHP_EOL;
             self::saveCustomFields($fullTask->custom_fields, $taskModel->gid);
             self::saveOrUpdateTaskStory($taskModel);
             self::saveOrUpdateAttachmentTask($taskModel);
@@ -857,6 +926,26 @@ class Task extends \yii\db\ActiveRecord
             print_r($response);
             return null;
         }
+    }
+
+    private function getPriorityGid()
+    {
+        $priority = TaskCustomFields::find()
+            ->select(['enum_option_gid'])
+            ->where(['custom_field_gid' => '1202674799521449']) //'Приоритет'
+            ->andWhere(['task_gid' => $this->gid])
+            ->one();
+        return $priority ? $priority->enum_option_gid : null;
+    }
+
+    private function getTypeGid()
+    {
+        $type = TaskCustomFields::find()
+            ->select(['enum_option_gid'])
+            ->where(['custom_field_gid' => '1205860710071790']) //'Тип задачі'
+            ->andWhere(['task_gid' => $this->gid])
+            ->one();
+        return $type ? $type->enum_option_gid : null;
     }
 
 

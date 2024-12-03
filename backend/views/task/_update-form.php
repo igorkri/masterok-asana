@@ -19,7 +19,7 @@ use igorkri\elfinder\ElFinder;
                         <ol class="breadcrumb breadcrumb-sa-simple">
                             <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
                             <li class="breadcrumb-item"><a
-                                    href="<?= yii\helpers\Url::to(['index', 'project_gid' => $model->project_gid]) ?>">Таски</a>
+                                        href="<?= yii\helpers\Url::to(['index', 'project_gid' => $model->project_gid]) ?>">Таски</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">Редагування таска</li>
                         </ol>
@@ -34,22 +34,25 @@ use igorkri\elfinder\ElFinder;
 
         <div class="progress" style="--sa-progress--value: 0%; display: none">
             <div
-                class="
+                    class="
             progress-bar
             progress-bar-sa-primary
             progress-bar-striped
             progress-bar-animated
         "
-                role="progressbar"
-                aria-valuenow="25"
-                aria-valuemin="0"
-                aria-valuemax="100"
+                    role="progressbar"
+                    aria-valuenow="25"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
             ></div>
         </div>
 
         <div class="sa-page-meta mb-5">
             <div class="sa-page-meta__body">
                 <div class="sa-page-meta__list">
+                    <div class="sa-page-meta__item">
+                        <?= $model->project->name ?>
+                    </div>
                     <div class="sa-page-meta__item">
                         Створено: <?= Yii::$app->formatter->asDatetime($model->created_at, 'medium') ?></div>
                     <div class="sa-page-meta__item">
@@ -127,20 +130,59 @@ use igorkri\elfinder\ElFinder;
                 </div>
                 <div class="sa-entity-layout__sidebar">
                     <div class="card w-100">
+                        <div class="card-body d-flex align-items-center justify-content-between pb-0 pt-4">
+                            <h2 class="fs-exact-16 mb-0">Таймер</h2>
+                            <?= Html::a("Детальніше", '#', [
+                                'title' => '',
+                                'class' => 'pull-left detail-button',
+//                                    'style' => 'margin-right: 20px; font-size:22px; color:#35b5f4',
+                                'data-bs-toggle' => "offcanvas",
+                                'data-bs-target' => "#offcanvasSms",
+                                'aria-controls' => "offcanvasSms",
+                                'data-bs-html' => "true"
+                            ]); ?>
+                        </div>
+
+                        <div class="card-body d-flex align-items-center pt-4">
+                            <div class="ms-3 ps-2">
+                                <div class="fs-exact-14 fw-medium">К-ть тайменгів <?= 0 ?></div>
+                                <div class="mt-1">
+                                    <h3>
+                                        <div id="display">00:00:00</div>
+                                    </h3>
+                                    <button type="button" class="btn btn-success btn-sm" id="startButton">Старт
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" id="stopButton">Стоп
+                                    </button>
+                                    <button type="button" class="btn btn-warning btn-sm" id="pauseButton">Пауза
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card w-100 mt-5">
                         <div class="card-body p-5">
                             <div class="mb-5"><h2 class="mb-0 fs-exact-18">Статус</h2></div>
                             <div class="mb-4">
-                                <?= $form->field($model, 'section_project_name')->radioList(
+                                <?= $form->field($model, 'section_project_gid')->radioList(
                                     $model->getStatusList(),
                                     [
+                                        'itemOptions' => ['class' => 'form-check-input'], // Добавляем CSS-класс для input
                                         'item' => function ($index, $label, $name, $checked, $value) {
-                                            return '<label class="form-check">' .
-                                                '<input type="radio" class="form-check-input" name="' . $name . '" value="' . $value . '" ' . ($checked ? 'checked' : '') . '>' .
-                                                '<span class="form-check-label">' . $label . '</span>' .
-                                                '</label>';
-                                        }
+                                            return '<div class="form-check">' .
+                                                Html::radio($name, $checked, [
+                                                    'value' => $value,
+                                                    'class' => 'form-check-input', // Класс для input
+                                                    'id' => $name . '_' . $index, // Уникальный id для каждого input
+                                                ]) .
+                                                Html::label($label, $name . '_' . $index, ['class' => 'form-check-label']) . // Класс для label
+                                                '</div>';
+                                        },
                                     ]
                                 )->label(false) ?>
+
                             </div>
                         </div>
                     </div>

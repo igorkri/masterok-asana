@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use common\models\Project;
 use common\models\TaskAttachment;
+use common\models\TaskCustomFields;
 use Yii;
 use common\models\Task;
 use backend\models\search\TaskSearch;
@@ -155,35 +156,38 @@ class TaskController extends Controller
 
         if($request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
-
-            if ($model->load($request->post()) && $model->save()) {
-                return [
-                    'success' => true,
-                    'toast' => [
-                        'class' => 'toast-sa-success',
-                        'name' => "Task #" . $model->gid,
-                        'message' => 'Успішно оновлено!',
-                    ],
-                    'html' => $this->renderAjax('_update-form', [
-                        'model' => $model,
-                    ]),
-                ];
-            } else {
-                $message = '';
-                foreach ($model->getErrors() as $errors) {
-                    foreach ($errors as $error) {
-                        $message .= $error . '<br>';
+            if ($request->isPost) {
+                $model->updateTaskPriority();
+                $model->updateTaskType();
+                if ($model->load($request->post()) && $model->save()) {
+                    return [
+                        'success' => true,
+                        'toast' => [
+                            'class' => 'toast-sa-success',
+                            'name' => "Task #" . $model->gid,
+                            'message' => 'Успішно оновлено!',
+                        ],
+                        'html' => $this->renderAjax('_update-form', [
+                            'model' => $model,
+                        ]),
+                    ];
+                } else {
+                    $message = '';
+                    foreach ($model->getErrors() as $errors) {
+                        foreach ($errors as $error) {
+                            $message .= $error . '<br>';
+                        }
                     }
-                }
 
-                return [
-                    'success' => false,
-                    'toast' => [
-                        'class' => 'toast-sa-danger',
-                        'name' => "Task #" . $model->gid,
-                        'message' => $message,
-                    ],
-                ];
+                    return [
+                        'success' => false,
+                        'toast' => [
+                            'class' => 'toast-sa-danger',
+                            'name' => "Task #" . $model->gid,
+                            'message' => $message,
+                        ],
+                    ];
+                }
             }
 
         }
