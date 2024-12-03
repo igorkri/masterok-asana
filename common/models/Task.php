@@ -780,6 +780,7 @@ class Task extends \yii\db\ActiveRecord
         if (!empty($subTask['data'])) {
             $subTask = $subTask['data'];
             foreach ($subTask as $sub) {
+//                print_r($sub); die;
                 $sGid = $sub['gid'];
                 $model = Task::find()->where(['gid' => $sGid])->one();
                 if (!$model) {
@@ -787,7 +788,7 @@ class Task extends \yii\db\ActiveRecord
                 }
                 $model->gid = $sGid;
                 $model->parent_gid = $task->gid;
-                $model->name = $sub['name'] ?? '--- Без назви ---';
+                $model->name = empty($sub['name']) ?? '--- Без назви ---';
                 $model->assignee_gid = $sub['assignee']['gid'] ?? null;
                 $model->assignee_name = $sub['assignee']['name'] ?? null;
                 $model->completed = intval($sub['completed']) ?? 0;
