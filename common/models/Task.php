@@ -788,7 +788,7 @@ class Task extends \yii\db\ActiveRecord
                 }
                 $model->gid = $sGid;
                 $model->parent_gid = $task->gid;
-                $model->name = empty($sub['name']) ?? '--- Без назви ---';
+                $model->name = !empty($sub['name']) ? $sub['name'] : '--- Без назви ---';
                 $model->assignee_gid = $sub['assignee']['gid'] ?? null;
                 $model->assignee_name = $sub['assignee']['name'] ?? null;
                 $model->completed = intval($sub['completed']) ?? 0;
