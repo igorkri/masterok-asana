@@ -58,7 +58,18 @@ AppAsset::register($this);
 
     <!-- sa-app__content / end -->
     <!-- sa-app__toasts -->
-    <div class="sa-app__toasts toast-container bottom-0 end-0"></div>
+    <div class="sa-app__toasts toast-container bottom-0 end-0">
+        <div class="toast fade hide" data-bs-autohide="false" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast">
+            <div class="toast toast-sa-dark fade show" data-bs-autohide="false" role="alert" aria-live="assertive" aria-atomic="true" id="live-toast">
+            <div class="toast-header">
+<!--                <img src="/images/customers/customer-4-20x20.jpg" class="rounded me-3" width="20" height="20" alt="">-->
+                <div class="me-auto fw-medium" id="toast-name">name</div>
+                <small class="text-muted"></small>
+                <button type="button" class="sa-close mt-n2 mb-n2 me-n3 ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">text</div>
+        </div>
+    </div>
     <!-- sa-app__toasts / end -->
 </div>
 <?php $this->endBody() ?>

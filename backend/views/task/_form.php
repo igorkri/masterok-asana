@@ -1,167 +1,372 @@
 <?php
+
+use igorkri\ckeditor\CKEditor;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use igorkri\elfinder\ElFinder;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Task */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-    <!-- sa-app__body -->
-    <div id="top" class="sa-app__body">
-        <div class="mx-sm-2 px-2 px-sm-3 px-xxl-4 pb-6">
-            <div class="container">
-                <div class="py-5">
-                    <div class="row g-4 align-items-center">
-                        <div class="col">
-                            <nav class="mb-2" aria-label="breadcrumb">
-                                <ol class="breadcrumb breadcrumb-sa-simple">
-                                    <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-                                    <li class="breadcrumb-item"><a href="<?=\yii\helpers\Url::to(['index', 'project_gid' => $model->project_gid])?>">Таски</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Редагування таска</li>
-                                </ol>
-                            </nav>
-                            <h1 class="h3 m-0">Задача: <?=$model->name?> </h1>
-                        </div>
-                        <div class="col-auto d-flex">
-<!--                            <a href="#" class="btn btn-secondary me-3">Дублювати</a>-->
-                            <a href="#" class="btn btn-primary">Зберегти</a>
-                        </div>
+<!-- sa-app__body -->
+<div id="top" class="sa-app__body">
+    <div class="mx-sm-2 px-2 px-sm-3 px-xxl-4 pb-6">
+        <div class="container">
+            <div class="py-5">
+                <div class="row g-4 align-items-center">
+                    <div class="col">
+                        <nav class="mb-2" aria-label="breadcrumb">
+                            <ol class="breadcrumb breadcrumb-sa-simple">
+                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a
+                                            href="<?= yii\helpers\Url::to(['index', 'project_gid' => $model->project_gid]) ?>">Таски</a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Редагування таска</li>
+                            </ol>
+                        </nav>
+                        <h1 class="h3 m-0">Задача: <?= Html::encode($model->name) ?> </h1>
+                    </div>
+                    <div class="col-auto d-flex">
+                        <?= Html::submitButton('Зберегти', ['class' => 'btn btn-primary', 'id' => 'send-form']) ?>
                     </div>
                 </div>
-                <div class="sa-page-meta mb-5">
-                    <div class="sa-page-meta__body">
-                        <div class="sa-page-meta__list">
-                            <div class="sa-page-meta__item">Створено: <?=Yii::$app->formatter->asDatetime($model->created_at, 'medium')?></div>
-                            <div class="sa-page-meta__item">Оновлено: <?=Yii::$app->formatter->asDatetime($model->modified_at, 'medium')?></div>
-<!--                            <div class="sa-page-meta__item">Total $5,882.00</div>-->
-                            <div class="sa-page-meta__item d-flex align-items-center fs-6">
-                                <span class="badge badge-sa-<?=$model->getPriority2()['color']?> me-2"><?=$model->getPriority2()['name']?></span>
-                                <span class="badge badge-sa-<?=$model->getType2()['color']?> me-2"><?=$model->getType2()['name']?></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="sa-entity-layout" data-sa-container-query='{"920":"sa-entity-layout--size--md","1100":"sa-entity-layout--size--lg"}'>
-                    <div class="sa-entity-layout__body">
-                        <div class="sa-entity-layout__main">
-                            <div class="card">
-                                <div class="card-body p-5">
-                                    <div class="mb-5"><h2 class="mb-0 fs-exact-18">Основна інформація</h2></div>
-                                    <div class="mb-4">
-                                        <label for="form-product/name" class="form-label">Назва</label>
-                                        <textarea id="form-product/name" class="form-control" rows="2"><?=$model->name?></textarea>
-                                    </div>
+            </div>
 
-                                    <div class="mb-4">
-                                        <label for="form-product/description" class="form-label">Опис</label>
-                                        <textarea id="form-product/description" class="sa-quill-control form-control" rows="8"><?=$model->notes?></textarea>
-                                    </div>
-                                    <div>
-                                        <label for="form-product/short-description" class="form-label">ВН Опис</label>
-                                        <textarea id="form-product/short-description" class="form-control" rows="4"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php if($model->subTasks):?>
-                            <?=$this->render('sub-task', [
-                                    'model' => $model
-                                ])?>
-                            <?php endif; ?>
-                            <?php if($model->attachments):?>
-                            <?= $this->render('_attachments', [
-                                'model' => $model
-                            ]) ?>
-                            <?php endif; ?>
-                            <div class="card w-100 mt-5">
-                                <div class="card-body p-5">
-                                    <?php echo $this->render('_chat',[
-                                        'model' => $model
-                                    ]) ?>
-                                </div>
-                            </div>
+            <div class="progress" style="--sa-progress--value: 0%; display: none">
+                <div
+                        class="
+            progress-bar
+            progress-bar-sa-primary
+            progress-bar-striped
+            progress-bar-animated
+        "
+                        role="progressbar"
+                        aria-valuenow="25"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                ></div>
+            </div>
 
-                        </div>
-                        <div class="sa-entity-layout__sidebar">
-                            <div class="card w-100">
-                                <div class="card-body p-5">
-                                    <div class="mb-5"><h2 class="mb-0 fs-exact-18">Статус</h2></div>
-                                    <div class="mb-4">
-                                        <?php foreach ($model->getStatusList() as $key => $value): ?>
-                                        <label class="form-check">
-                                            <input type="radio" value="<?=$key?>" class="form-check-input" name="status" <?=$model->section_project_name == $value ? 'checked=""' : ''?> />
-                                            <span class="form-check-label"><?=$value?></span>
-                                        </label>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card w-100 mt-5">
-                                <div class="card-body p-5">
-                                    <div class="mb-5"><h2 class="mb-0 fs-exact-18">Виконавець задачі</h2></div>
-                                    <select class="form-select">
-                                        <option value="">Виберіть виконавця</option>
-                                        <?php foreach ($model->getAssigneeList() as $key => $value): ?>
-                                        <option value="<?=$key?>" <?=$model->assignee_gid == $key ? 'selected=""' : ''?>><?=$value?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="card w-100 mt-5">
-                                <div class="card-body p-5">
-                                    <div class="mb-5"><h2 class="mb-0 fs-exact-18">Приоритет</h2></div>
-                                    <select class="form-select">
-                                        <option value="">Виберіть приоритет</option>
-                                        <?php foreach ($model->getPriorityList() as $key => $value): ?>
-                                        <option value="<?=$key?>" <?=$model->getPriority2()['name'] == $value ? 'selected=""' : ''?>><?=$value?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="card-body p-5">
-                                    <div class="mb-5"><h2 class="mb-0 fs-exact-18">Тип задачі</h2></div>
-                                    <select class="form-select">
-                                        <option value="">Виберіть тип задачі</option>
-                                        <?php foreach ($model->getTypeList() as $key => $value): ?>
-                                        <option value="<?=$key?>" <?=$model->getType2()['name'] == $value ? 'selected=""' : ''?>><?=$value?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-
-                                <div class="card-body d-flex flex-column align-items-center">
-                                <div class="sa-divider my-5"></div>
-                                <div class="w-100">
-
-                                    <dl class="list-unstyled m-0 mt-4">
-                                        <dt class="fs-exact-14 fw-medium">Час, план.</dt>
-                                        <dd class="fs-exact-13 text-muted mb-0 mt-1"><?=$model->getTimePlan()?> хв.</dd>
-                                    </dl>
-                                    <dl class="list-unstyled m-0 mt-4">
-                                        <dt class="fs-exact-14 fw-medium">Час, факт.</dt>
-                                        <dd class="fs-exact-13 text-muted mb-0 mt-1"><?=$model->getTimeFact()?> хв.</dd>
-                                    </dl>
-                                    <dl class="list-unstyled m-0 mt-4">
-                                        <dt class="fs-exact-14 fw-medium">Час, рахунок.</dt>
-                                        <dd class="fs-exact-13 text-muted mb-0 mt-1"><?=$model->getTimeBill()?> хв.</dd>
-                                    </dl>
-                                    <div class="sa-divider my-5"></div>
-                                    <dl class="list-unstyled m-0 mt-4">
-                                        <dt class="fs-exact-14 fw-medium">Оплата (замовник)</dt>
-                                        <dd class="fs-exact-13 text-muted mb-0 mt-1"><?=$model->getPaymentCustomer()?></dd>
-                                    </dl>
-                                    <dl class="list-unstyled m-0 mt-4">
-                                        <dt class="fs-exact-14 fw-medium">Оплата (фахівець)</dt>
-                                        <dd class="fs-exact-13 text-muted mb-0 mt-1"><?=$model->getPaymentSpecialist()?></dd>
-                                    </dl>
-                                </div>
-                                </div>
-                            </div>
-
+            <div class="sa-page-meta mb-5">
+                <div class="sa-page-meta__body">
+                    <div class="sa-page-meta__list">
+                        <div class="sa-page-meta__item">
+                            Створено: <?= Yii::$app->formatter->asDatetime($model->created_at, 'medium') ?></div>
+                        <div class="sa-page-meta__item">
+                            Оновлено: <?= Yii::$app->formatter->asDatetime($model->modified_at, 'medium') ?></div>
+                        <div class="sa-page-meta__item d-flex align-items-center fs-6">
+                            <span class="badge badge-sa-<?= $model->getPriority2()['color'] ?> me-2"><?= Html::encode($model->getPriority2()['name']) ?></span>
+                            <span class="badge badge-sa-<?= $model->getType2()['color'] ?> me-2"><?= Html::encode($model->getType2()['name']) ?></span>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="sa-entity-layout"
+                 data-sa-container-query='{"920":"sa-entity-layout--size--md","1100":"sa-entity-layout--size--lg"}'>
+                <?php $form = ActiveForm::begin([
+                    'id' => 'task-form',
+                    'enableClientValidation' => true,
+                    'enableAjaxValidation' => false,
+                    'validateOnBlur' => false,
+                    'validateOnChange' => false,
+                    'validateOnType' => false,
+                    'validateOnSubmit' => true,
+                ]); ?>
+                <div class="sa-entity-layout__body">
+                    <div class="sa-entity-layout__main">
+                        <div class="card">
+                            <div class="card-body p-5">
+                                <div class="mb-5"><h2 class="mb-0 fs-exact-18">Основна інформація</h2></div>
+                                <div class="mb-4">
+                                    <?= $form->field($model, 'name')->textarea(['rows' => 2, 'class' => 'form-control']) ?>
+                                </div>
+
+                                <div class="mb-4">
+                                    <?= $form->field($model, 'notes')->widget(CKEditor::class, [
+                                        'id' => 'notes',
+                                        'editorOptions' =>
+                                            ElFinder::ckeditorOptions('elfinder', [
+                                                'preset' => 'custom',
+                                                'height' => 200,
+                                                'language' => 'uk',
+                                                'controller' => 'elfinder',
+                                            ]),
+                                    ]) ?>
+                                </div>
+                                <div>
+                                    <?php echo $form->field($model, 'work_done')->widget(CKEditor::class, [
+                                        'id' => 'work-done',
+                                        'editorOptions' =>
+                                            ElFinder::ckeditorOptions('elfinder', [
+                                                'preset' => 'custom',
+                                                'height' => 200,
+                                                'language' => 'uk',
+                                                'controller' => 'elfinder',
+                                            ]),
+                                    ]) ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php if ($model->subTasks): ?>
+                            <?= $this->render('sub-task', [
+                                'model' => $model
+                            ]) ?>
+                        <?php endif; ?>
+                        <?php if ($model->attachments): ?>
+                            <?= $this->render('_attachments', [
+                                'model' => $model
+                            ]) ?>
+                        <?php endif; ?>
+                        <div class="card w-100 mt-5">
+                            <div class="card-body p-5">
+                                <?= $this->render('_chat', [
+                                    'model' => $model
+                                ]) ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sa-entity-layout__sidebar">
+                        <div class="card w-100">
+                            <div class="card-body d-flex align-items-center justify-content-between pb-0 pt-4">
+                                <h2 class="fs-exact-16 mb-0">Таймер</h2>
+                                <?= Html::a("Детальніше", '#', [
+                                    'title' => '',
+                                    'class' => 'pull-left detail-button',
+//                                    'style' => 'margin-right: 20px; font-size:22px; color:#35b5f4',
+                                    'data-bs-toggle' => "offcanvas",
+                                    'data-bs-target' => "#offcanvasSms",
+                                    'aria-controls' => "offcanvasSms",
+                                    'data-bs-html' => "true"
+                                ]); ?>
+                            </div>
+
+                            <div class="card-body d-flex align-items-center pt-4">
+                                <div class="ms-3 ps-2">
+                                    <div class="fs-exact-14 fw-medium">К-ть тайменгів <?= 0 ?></div>
+                                    <div class="mt-1">
+                                        <h3>
+                                            <div id="display">00:00:00</div>
+                                        </h3>
+                                        <button type="button" class="btn btn-success btn-sm" id="startButton">Старт
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm" id="stopButton">Стоп
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-sm" id="pauseButton">Пауза
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="card w-100 mt-5">
+                            <div class="card-body p-5">
+                                <div class="mb-5"><h2 class="mb-0 fs-exact-18">Статус</h2></div>
+                                <div class="mb-4">
+                                    <?= $form->field($model, 'section_project_name')->radioList(
+                                        $model->getStatusList(),
+                                        [
+                                            'item' => function ($index, $label, $name, $checked, $value) {
+                                                return '<label class="form-check">' .
+                                                    '<input type="radio" class="form-check-input" name="' . $name . '" value="' . $value . '" ' . ($checked ? 'checked' : '') . '>' .
+                                                    '<span class="form-check-label">' . $label . '</span>' .
+                                                    '</label>';
+                                            }
+                                        ]
+                                    )->label(false) ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card w-100 mt-5">
+                            <div class="card-body p-5">
+                                <div class="mb-5"><h2 class="mb-0 fs-exact-18">Виконавець задачі</h2></div>
+                                <?= $form->field($model, 'assignee_gid')
+                                    ->dropDownList($model->getAssigneeList(), [
+                                        'prompt' => 'Виберіть виконавця',
+                                        'class' => 'form-select'
+                                    ])->label(false) ?>
+                            </div>
+                        </div>
+                        <div class="card w-100 mt-5">
+                            <div class="card-body p-5">
+                                <div class="mb-5"><h2 class="mb-0 fs-exact-18">Приоритет</h2></div>
+                                <?= $form->field($model, 'priority')
+                                    ->dropDownList($model->getPriorityList(), [
+                                        'prompt' => 'Виберіть приоритет',
+                                        'class' => 'form-select'
+                                    ])->label(false) ?>
+                            </div>
+                            <div class="card-body p-5">
+                                <div class="mb-5"><h2 class="mb-0 fs-exact-18">Тип задачі</h2></div>
+                                <?= $form->field($model, 'type')
+                                    ->dropDownList($model->getTypeList(), [
+                                        'prompt' => 'Виберіть тип задачі',
+                                        'class' => 'form-select'
+                                    ])->label(false) ?>
+                            </div>
+                            <div class="card-body d-flex flex-column align-items-center">
+                                <div class="sa-divider my-5"></div>
+                                <div class="w-100">
+                                    <dl class="list-unstyled m-0 mt-4">
+                                        <dt class="fs-exact-14 fw-medium">Час, план.</dt>
+                                        <dd class="fs-exact-13 text-muted mb-0 mt-1"><?= $model->getTimePlan() ?>хв.
+                                        </dd>
+                                    </dl>
+                                    <dl class="list-unstyled m-0 mt-4">
+                                        <dt class="fs-exact-14 fw-medium">Час, факт.</dt>
+                                        <dd class="fs-exact-13 text-muted mb-0 mt-1"><?= $model->getTimeFact() ?>хв.
+                                        </dd>
+                                    </dl>
+                                    <dl class="list-unstyled m-0 mt-4">
+                                        <dt class="fs-exact-14 fw-medium">Час, рахунок.</dt>
+                                        <dd class="fs-exact-13 text-muted mb-0 mt-1"><?= $model->getTimeBill() ?>хв.
+                                        </dd>
+                                    </dl>
+                                    <div class="sa-divider my-5"></div>
+                                    <dl class="list-unstyled m-0 mt-4">
+                                        <dt class="fs-exact-14 fw-medium">Оплата (замовник)</dt>
+                                        <dd class="fs-exact-13 text-muted mb-0 mt-1"><?= $model->getPaymentCustomer() ?></dd>
+                                    </dl>
+                                    <dl class="list-unstyled m-0 mt-4">
+                                        <dt class="fs-exact-14 fw-medium">Оплата (фахівець)</dt>
+                                        <dd class="fs-exact-13 text-muted mb-0 mt-1"><?= $model->getPaymentSpecialist() ?></dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php ActiveForm::end(); ?>
+            </div>
         </div>
     </div>
-    <!-- sa-app__body / end -->
+</div>
+<!-- sa-app__body / end -->
+<?php echo $this->render('_timer', ['model' => $model]) ?>
+<?php
+$this->registerJs(<<<JS
+    function init() {
+        window.stroyka.containerQuery = (function() {
+            const containerQuery = {
+                init: function(element) {},
+            };
+
+            if (!window.ResizeObserver) {
+                return containerQuery;
+            }
+
+            const ro = new ResizeObserver(function(entries) {
+                const tasks = [];
+
+                entries.forEach(function(entry) {
+                    const breakpoints = JSON.parse(entry.target.dataset.saContainerQuery);
+                    const mode = entry.target.dataset.saContainerQueryMode || 'all'; // all, bigger
+
+                    if (!['all', 'bigger'].includes(mode)) {
+                        throw Error('Undefined mode: ' + mode);
+                    }
+
+                    const sortFn = function(a, b) { return b - a; };
+
+                    const add = [];
+                    const remove = [];
+
+                    Object.keys(breakpoints).map(parseFloat).sort(sortFn).forEach(function(width) {
+                        let elementWidth = 0;
+
+                        if (entry.borderBoxSize) {
+                            const borderBoxSize = Array.isArray(entry.borderBoxSize) ? entry.borderBoxSize[0] : entry.borderBoxSize;
+
+                            elementWidth = borderBoxSize.inlineSize;
+                        } else {
+                            elementWidth = entry.target.getBoundingClientRect().width;
+                        }
+
+                        if (elementWidth >= width
+                            && (mode !== 'bigger' || add.length === 0)
+                        ) {
+                            add.push(breakpoints[width]);
+                        } else {
+                            remove.push(breakpoints[width]);
+                        }
+                    });
+
+                    tasks.push(function() {
+                        entry.target.classList.remove.apply(entry.target.classList, remove);
+                        entry.target.classList.add.apply(entry.target.classList, add);
+                    });
+                });
+
+                setTimeout(function() {
+                    tasks.forEach(function(task) {
+                        task();
+                    });
+                }, 0);
+            });
+
+            containerQuery.init = function(element) {
+                ro.observe(element);
+            };
+
+            $('[data-sa-container-query]').each(function() {
+                containerQuery.init(this);
+            });
+
+            return containerQuery;
+        })();
+    }
+
+    $(document).on('click', '#send-form', function (e) {
+        $('.progress').show();
+        // Заполняем прогресс-бар
+        $('.progress-bar').css('--sa-progress--value', '70%');
+        
+        e.preventDefault();
+        var form = $('#task-form');
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            success: function (data) {
+                if (data.success) {
+                    $('.progress-bar').css('--sa-progress--value', '100%');
+                    $('#live-toast').removeClass('toast-sa-dark').addClass(data.toast.class);
+                    $('.toast #toast-name').text(data.toast.name);
+                    $('.toast .toast-body').html(data.toast.message);
+                    $('#liveToast').removeClass('hide').addClass('show');
+                    
+                    // Скрыть тост через 3 секунды
+                    setTimeout(function () {
+                        $('#liveToast').removeClass('show').addClass('hide');
+                    }, 3000);
+                    setTimeout(function () {
+                        $('.progress').hide();
+                    }, 2000);
+                    $('#top').html(data.html);
+                    init();
+                } else {
+                    $('#live-toast').removeClass('toast-sa-dark').addClass(data.toast.class);
+                    $('.toast #toast-name').text(data.toast.name);
+                    $('.toast .toast-body').html(data.toast.message);
+                    $('.toast').toast('show');
+                }
+            },
+            error: function () {
+                toastr.error('Помилка запиту');
+            }
+        });
+    });
+
+    // Инициализация при загрузке страницы
+    $(document).ready(function() {
+        init();
+    });
+JS
+);
+?>
+
+

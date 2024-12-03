@@ -153,8 +153,43 @@ class TaskController extends Controller
         $request = Yii::$app->request;
         $model = Task::findOne(['gid' => $gid]);
 
+        if($request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+
+            if ($model->load($request->post()) && $model->save()) {
+                return [
+                    'success' => true,
+                    'toast' => [
+                        'class' => 'toast-sa-success',
+                        'name' => "Task #" . $model->gid,
+                        'message' => 'Успішно оновлено!',
+                    ],
+                    'html' => $this->renderAjax('_update-form', [
+                        'model' => $model,
+                    ]),
+                ];
+            } else {
+                $message = '';
+                foreach ($model->getErrors() as $errors) {
+                    foreach ($errors as $error) {
+                        $message .= $error . '<br>';
+                    }
+                }
+
+                return [
+                    'success' => false,
+                    'toast' => [
+                        'class' => 'toast-sa-danger',
+                        'name' => "Task #" . $model->gid,
+                        'message' => $message,
+                    ],
+                ];
+            }
+
+        }
+
         if ($model->load($request->post()) && $model->save()) {
-            return $this->redirect(['update', 'gid' => $model->id]);
+            return $this->redirect(['update', 'gid' => $model->gid]);
         } else {
             return $this->render('update', [
                 'model' => $model,
