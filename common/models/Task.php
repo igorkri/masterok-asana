@@ -49,6 +49,20 @@ class Task extends \yii\db\ActiveRecord
     public $priority;
     public $type;
 
+    const CRON_STATUS_NEW = 'new';
+    const CRON_STATUS_UPDATE = 'update';
+    const CRON_STATUS_DELETE = 'delete';
+    const CRON_STATUS_ERROR = 'error';
+    const CRON_STATUS_STOP = 'stop';
+
+    public static $cronStatus = [
+        self::CRON_STATUS_NEW => 'Новий',
+        self::CRON_STATUS_UPDATE => 'Оновлення',
+        self::CRON_STATUS_DELETE => 'Видалення',
+        self::CRON_STATUS_ERROR => 'Помилка',
+        self::CRON_STATUS_STOP => 'Зупинено',
+    ];
+
 
     public static function tableName()
     {
@@ -251,7 +265,9 @@ class Task extends \yii\db\ActiveRecord
 
     public function getStatusList()
     {
-        $sections = SectionProject::find()->where(['project_gid' => $this->project_gid])->all();
+
+        $project_gid = $this->project_gid ?? Yii::$app->request->get('project_gid');
+        $sections = SectionProject::find()->where(['project_gid' => $project_gid])->all();
         return ArrayHelper::map($sections, 'gid', 'name');
     }
 
@@ -535,16 +551,23 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getAssigneeList($assignee_gid = null)
     {
-        $assigneesGid = Task::find()
-            ->select(['assignee_gid'])
-            ->where(['project_gid' => $this->project_gid])
-            ->andWhere(['not', ['assignee_gid' => null]])
-            ->distinct()
-            ->column();
-        $assignees = AsanaUsers::find()
-            ->select(['gid', 'name'])
-            ->where(['gid' => $assigneesGid])
-            ->all();
+
+        if (!$this->isNewRecord) {
+            $assigneesGid = Task::find()
+                ->select(['assignee_gid'])
+                ->where(['project_gid' => $this->project_gid])
+                ->andWhere(['not', ['assignee_gid' => null]])
+                ->distinct()
+                ->column();
+            $assignees = AsanaUsers::find()
+                ->select(['gid', 'name'])
+                ->where(['gid' => $assigneesGid])
+                ->all();
+        } else {
+            $assignees = AsanaUsers::find()
+                ->select(['gid', 'name'])
+                ->all();
+        }
         $list = [];
         foreach ($assignees as $assignee) {
             if ($assignee->name && $assignee->name != 'Private User') {
@@ -748,7 +771,7 @@ class Task extends \yii\db\ActiveRecord
             $taskModel->num_likes = $fullTask->num_likes ?? 0;
 
             if ($taskModel->save()) {
-                echo 'date: ' . $taskModel->created_at . ' date_mod: ' . $taskModel->modified_at . ' Task update: ' . $taskModel->name . PHP_EOL;
+                echo 'date: ' . $taskModel->created_at . ' date_mod: ' . $taskModel->modified_at . ' Task update: ' . $taskModel->name . ' gid ' . $taskModel->gid . PHP_EOL;
                 // Сохранение
                 self::saveCustomFields($fullTask->custom_fields, $taskModel->gid);
                 self::saveOrUpdateTaskStory($taskModel);
@@ -946,6 +969,21 @@ class Task extends \yii\db\ActiveRecord
             ->andWhere(['task_gid' => $this->gid])
             ->one();
         return $type ? $type->enum_option_gid : null;
+    }
+
+    public function getTimersCount()
+    {
+        return Timer::find()->where(['task_gid' => $this->gid])->count();
+    }
+
+    public function getWorkspaceGid()
+    {
+        return Workspace::WORKSPACE_INGSOT_GID;
+    }
+
+    public function generateGid()
+    {
+        return 'new_task_' . time();
     }
 
 

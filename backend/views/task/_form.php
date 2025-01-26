@@ -1,6 +1,7 @@
 <?php
 
 use igorkri\ckeditor\CKEditor;
+use yii\bootstrap4\Modal;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use igorkri\elfinder\ElFinder;
@@ -9,6 +10,9 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $model common\models\Task */
 /* @var $form yii\widgets\ActiveForm */
+
+
+$this->title = 'Задача: ' . $model->name;
 ?>
 
 <!-- sa-app__body -->
@@ -51,21 +55,23 @@ use yii\widgets\Pjax;
             </div>
 
             <div class="sa-page-meta mb-5">
-                <div class="sa-page-meta__body">
-                    <div class="sa-page-meta__list">
-                        <div class="sa-page-meta__item">
-                            <?= $model->project->name ?>
-                        </div>
-                        <div class="sa-page-meta__item">
-                            Створено: <?= Yii::$app->formatter->asDatetime($model->created_at, 'medium') ?></div>
-                        <div class="sa-page-meta__item">
-                            Оновлено: <?= Yii::$app->formatter->asDatetime($model->modified_at, 'medium') ?></div>
-                        <div class="sa-page-meta__item d-flex align-items-center fs-6">
-                            <span class="badge badge-sa-<?= $model->getPriority2()['color'] ?> me-2"><?= Html::encode($model->getPriority2()['name']) ?></span>
-                            <span class="badge badge-sa-<?= $model->getType2()['color'] ?> me-2"><?= Html::encode($model->getType2()['name']) ?></span>
+                <?php if (!$model->isNewRecord): ?>
+                    <div class="sa-page-meta__body">
+                        <div class="sa-page-meta__list">
+                            <div class="sa-page-meta__item">
+                                <?= $model->project->name ?? '' ?>
+                            </div>
+                            <div class="sa-page-meta__item">
+                                Створено: <?= Yii::$app->formatter->asDatetime($model->created_at, 'medium') ?></div>
+                            <div class="sa-page-meta__item">
+                                Оновлено: <?= Yii::$app->formatter->asDatetime($model->modified_at, 'medium') ?></div>
+                            <div class="sa-page-meta__item d-flex align-items-center fs-6">
+                                <span class="badge badge-sa-<?= $model->getPriority2()['color'] ?> me-2"><?= Html::encode($model->getPriority2()['name']) ?></span>
+                                <span class="badge badge-sa-<?= $model->getType2()['color'] ?> me-2"><?= Html::encode($model->getType2()['name']) ?></span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                <?php endif; ?>
             </div>
             <div class="sa-entity-layout"
                  data-sa-container-query='{"920":"sa-entity-layout--size--md","1100":"sa-entity-layout--size--lg"}'>
@@ -99,70 +105,83 @@ use yii\widgets\Pjax;
                                             ]),
                                     ]) ?>
                                 </div>
-                                <div>
-                                    <?php echo $form->field($model, 'work_done')->widget(CKEditor::class, [
-                                        'id' => 'work-done',
-                                        'editorOptions' =>
-                                            ElFinder::ckeditorOptions('elfinder', [
-                                                'preset' => 'custom',
-                                                'height' => 200,
-                                                'language' => 'uk',
-                                                'controller' => 'elfinder',
-                                            ]),
+                                <?php if (!$model->isNewRecord): ?>
+                                    <div>
+                                        <?php echo $form->field($model, 'work_done')->widget(CKEditor::class, [
+                                            'id' => 'work-done',
+                                            'editorOptions' =>
+                                                ElFinder::ckeditorOptions('elfinder', [
+                                                    'preset' => 'custom',
+                                                    'height' => 200,
+                                                    'language' => 'uk',
+                                                    'controller' => 'elfinder',
+                                                ]),
+                                        ]) ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php if (!$model->isNewRecord): ?>
+                            <?php if ($model->subTasks): ?>
+                                <?= $this->render('sub-task', [
+                                    'model' => $model
+                                ]) ?>
+                            <?php endif; ?>
+                            <?php if ($model->attachments): ?>
+                                <?= $this->render('_attachments', [
+                                    'model' => $model
+                                ]) ?>
+                            <?php endif; ?>
+                            <div class="card w-100 mt-5">
+                                <div class="card-body p-5">
+                                    <?= $this->render('_chat', [
+                                        'model' => $model
                                     ]) ?>
                                 </div>
                             </div>
-                        </div>
-                        <?php if ($model->subTasks): ?>
-                            <?= $this->render('sub-task', [
-                                'model' => $model
-                            ]) ?>
                         <?php endif; ?>
-                        <?php if ($model->attachments): ?>
-                            <?= $this->render('_attachments', [
-                                'model' => $model
-                            ]) ?>
-                        <?php endif; ?>
-                        <div class="card w-100 mt-5">
-                            <div class="card-body p-5">
-                                <?= $this->render('_chat', [
-                                    'model' => $model
-                                ]) ?>
-                            </div>
-                        </div>
                     </div>
                     <div class="sa-entity-layout__sidebar">
-                        <div class="card w-100">
-                            <div class="card-body d-flex align-items-center justify-content-between pb-0 pt-4">
-                                <h2 class="fs-exact-16 mb-0">Таймер</h2>
-                                <?= Html::a("Детальніше", '#', [
-                                    'title' => '',
-                                    'class' => 'pull-left detail-button',
+                        <?php if (!$model->isNewRecord): ?>
+                            <div class="card w-100">
+                                <div class="card-body d-flex align-items-center justify-content-between pb-0 pt-4">
+                                    <h2 class="fs-exact-16 mb-0">Таймер</h2>
+                                    <?= Html::a("Детальніше", '#', [
+                                        'title' => '',
+                                        'class' => 'pull-left detail-button',
 //                                    'style' => 'margin-right: 20px; font-size:22px; color:#35b5f4',
-                                    'data-bs-toggle' => "offcanvas",
-                                    'data-bs-target' => "#offcanvasSms",
-                                    'aria-controls' => "offcanvasSms",
-                                    'data-bs-html' => "true"
-                                ]); ?>
-                            </div>
+                                        'data-bs-toggle' => "offcanvas",
+                                        'data-bs-target' => "#offcanvasSms",
+                                        'aria-controls' => "offcanvasSms",
+                                        'data-bs-html' => "true"
+                                    ]); ?>
+                                </div>
 
-                            <div class="card-body d-flex align-items-center pt-4">
-                                <div class="ms-3 ps-2">
-                                    <div class="fs-exact-14 fw-medium">К-ть тайменгів <?= 0 ?></div>
-                                    <div class="mt-1">
-                                        <h3>
-                                            <div id="display">00:00:00</div>
-                                        </h3>
-                                        <button type="button" class="btn btn-success btn-sm" id="startButton">Старт
-                                        </button>
-                                        <button type="button" class="btn btn-danger btn-sm" id="stopButton">Стоп
-                                        </button>
-                                        <button type="button" class="btn btn-warning btn-sm" id="pauseButton">Пауза
-                                        </button>
+                                <div class="card-body d-flex align-items-center pt-4">
+                                    <div class="ms-3 ps-2">
+                                        <div class="fs-exact-14 fw-medium">К-ть
+                                            тайменгів <?= $model->getTimersCount() ?></div>
+                                        <div class="mt-1">
+                                            <h3>
+                                                <div id="display">00:00:00</div>
+                                            </h3>
+                                            <button type="button" class="btn btn-success btn-sm"
+                                                    data-status="<?= \common\models\Timer::STATUS_PROCESS ?>"
+                                                    id="startButton">Старт
+                                            </button>
+                                            <button type="button" class="btn btn-warning btn-sm"
+                                                    data-status="<?= \common\models\Timer::STATUS_PROCESS ?>"
+                                                    id="pauseButton">Пауза
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                    data-status="<?= \common\models\Timer::STATUS_WAIT ?>"
+                                                    id="stopButton">Стоп
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        <?php endif; ?>
 
 
                         <div class="card w-100 mt-5">
@@ -173,7 +192,10 @@ use yii\widgets\Pjax;
                                         $model->getStatusList(),
                                         [
                                             'itemOptions' => ['class' => 'form-check-input'], // Добавляем CSS-класс для input
-                                            'item' => function ($index, $label, $name, $checked, $value) {
+                                            'item' => function ($index, $label, $name, $checked, $value) use ($model) {
+                                                if ($model->isNewRecord) {
+                                                    $checked = $index === 0;
+                                                }
                                                 return '<div class="form-check">' .
                                                     Html::radio($name, $checked, [
                                                         'value' => $value,
@@ -255,7 +277,7 @@ use yii\widgets\Pjax;
     </div>
 </div>
 <!-- sa-app__body / end -->
-<?php echo $this->render('_timer', ['model' => $model]) ?>
+<?php echo $this->render('_timer', ['model' => $model, 'timers' => $timers]) ?>
 <?php
 $this->registerJs(<<<JS
     function init() {
@@ -333,7 +355,7 @@ $this->registerJs(<<<JS
         $('.progress').show();
         // Заполняем прогресс-бар
         $('.progress-bar').css('--sa-progress--value', '70%');
-        
+       
         e.preventDefault();
         var form = $('#task-form');
         $.ajax({
@@ -346,15 +368,7 @@ $this->registerJs(<<<JS
                     $('#live-toast').removeClass('toast-sa-dark').addClass(data.toast.class);
                     $('.toast #toast-name').text(data.toast.name);
                     $('.toast .toast-body').html(data.toast.message);
-                    $('#liveToast').removeClass('hide').addClass('show');
-                    
-                    // Скрыть тост через 3 секунды
-                    setTimeout(function () {
-                        $('#liveToast').removeClass('show').addClass('hide');
-                    }, 3000);
-                    setTimeout(function () {
-                        $('.progress').hide();
-                    }, 2000);
+                    $('.toast').toast('show');
                     $('#top').html(data.html);
                     init();
                 } else {
@@ -370,12 +384,148 @@ $this->registerJs(<<<JS
         });
     });
 
-    // Инициализация при загрузке страницы
-    $(document).ready(function() {
-        init();
+
+
+    // ---------------------------------------- таймер ----------------------------------------
+   let timerInterval;
+    let totalSeconds = 0;
+    let isPaused = false;
+    let emoji = '🟥'; // Стоп
+    
+    // Обновление отображения таймера
+    function updateTimerDisplay() {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+    
+        const formattedTime = [
+            hours.toString().padStart(2, '0'),
+            minutes.toString().padStart(2, '0'),
+            seconds.toString().padStart(2, '0')
+        ].join(':');
+    
+        document.title = emoji + ' ' + formattedTime;
+        $('#display').text(formattedTime);
+    
+        if (emoji === '🔴') {
+            document.title = isPaused ? '⏸ ' + formattedTime : '🔴 ' + formattedTime;
+        }
+        
+        //отправляем данные на сервер каждую минуту
+        if (totalSeconds % 60 === 0) {
+            sendTimerData($('#startButton').data('status'));
+        }
+    }
+    
+    // Отправка данных таймера на сервер
+    function sendTimerData(status) {
+        const taskId = $('#task-id').data('task-id');
+        $.ajax({
+            url: 'timer',
+            type: 'POST',
+            data: {
+                task_id: taskId,
+                totalSeconds: totalSeconds,
+                status: status
+            },
+            success: function (data) {
+                if (data.success) {
+                    toastr.success(data.toast.message);
+                } else {
+                    toastr.error('Ошибка: ' + data.message);
+                }
+            },
+            error: function () {
+                toastr.error('Ошибка запроса.');
+            }
+        });
+    }
+    
+    // Запуск таймера
+    function startTimer() {
+        isPaused = false;
+        emoji = '🔴'; // Старт
+        sendTimerData($('#startButton').data('status'));
+        timerInterval = setInterval(() => {
+            totalSeconds++;
+            updateTimerDisplay();
+        }, 1000);
+    }
+    
+    // Пауза таймера
+    function pauseTimer() {
+        isPaused = true;
+        emoji = '⏸'; // Пауза
+        clearInterval(timerInterval); // Останавливаем таймер
+        sendTimerData($('#pauseButton').data('status'));
+        updateTimerDisplay();
+    }
+    
+    // Остановка таймера
+    function stopTimer() {
+        isPaused = false;
+        emoji = '🟥'; // Стоп
+        clearInterval(timerInterval);
+        sendTimerData($('#stopButton').data('status'));
+        totalSeconds = 0;
+        updateTimerDisplay();
+    }
+    
+    // Инициализация таймера
+    function initializeTimer() {
+        const taskId = $('#task-id').data('task-id');
+        $.ajax({
+            url: 'get-timer', // Укажите правильный маршрут для получения таймера
+            type: 'GET',
+            data: { task_id: taskId },
+            success: function (data) {
+                if (data.success) {
+                    totalSeconds = data.totalSeconds || 0; // Устанавливаем начальное значение
+                    updateTimerDisplay();
+                } else {
+                    totalSeconds = 0; // Сбрасываем на ноль, если записи нет
+                    updateTimerDisplay();
+                }
+            },
+            error: function () {
+                toastr.error('Ошибка при инициализации таймера.');
+                totalSeconds = 0; // Начинаем с нуля в случае ошибки
+                updateTimerDisplay();
+            }
+        });
+    }
+    
+    $(document).ready(function () {
+        initializeTimer(); // Инициализация таймера при загрузке страницы
+    
+        $('#startButton').on('click', function () {
+            clearInterval(timerInterval);
+            startTimer();
+        });
+    
+        $('#pauseButton').on('click', function () {
+            pauseTimer();
+        });
+    
+        $('#stopButton').on('click', function () {
+            stopTimer();
+        });
     });
+
 JS
 );
 ?>
+
+<?php Modal::begin([
+    "id" => "ajaxCrudModal",
+    "size" => Modal::SIZE_EXTRA_LARGE,
+//    "scrollable" => true,
+//    "options" => [
+//        "data-bs-backdrop" => "static",
+//        // "class" => "modal-dialog-scrollable",
+//    ],
+    "footer" => "", // always need it for jquery plugin
+]) ?>
+<?php Modal::end(); ?>
 
 

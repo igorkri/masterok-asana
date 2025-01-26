@@ -107,7 +107,7 @@ use yii\helpers\Url;
                 <li class="sa-nav__section">
                     <div class="sa-nav__section-title"><span>Проєкти</span></div>
                     <ul class="sa-nav__menu sa-nav__menu--root">
-                        <?php foreach (\common\models\Project::find()->orderBy('name ASC')->cache(3600)->all() as $project): ?>
+                        <?php foreach (\common\models\Project::find()->orderBy('name ASC')/*->cache(3600)*/->all() as $project): ?>
                         <li class="sa-nav__menu-item sa-nav__menu-item--has-icon">
                             <a href="<?=Url::to(['/task/index', 'project_gid' => $project->gid])?>" class="sa-nav__link">
                                 <span class="sa-nav__icon"><i class="fa-solid fa-diagram-project"></i></span>

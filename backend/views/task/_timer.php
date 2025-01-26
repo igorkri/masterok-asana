@@ -4,6 +4,8 @@ use yii\bootstrap5\Html;
 use yii\widgets\Pjax;
 
 /* @var $model common\models\Task */
+/* @var $timers common\models\Timer[] */
+/* @var $timer common\models\Timer */
 
 ?>
 <div style="width: 75%;" class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasSms"
@@ -13,8 +15,8 @@ use yii\widgets\Pjax;
         <button type="button" class="sa-close sa-close--modal" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-        <?php Pjax::begin(['id' => 'time-pjax']) ?>
-        <?=Html::a('+', ['create-track', 'task_id' => Yii::$app->request->get('id')],
+        <?php Pjax::begin(['id' => 'crud-datatable-pjax']) ?>
+        <?=Html::a('+', ['create-track', 'task_id' => Yii::$app->request->get('gid')],
             [
                 'class' => 'btn btn-success',
                 'data-pjax' => 1,
@@ -55,7 +57,7 @@ use yii\widgets\Pjax;
                     $sum += $sum_track;
                     ?>
                     <tr>
-                        <th scope="row"><?=Html::a($i, ['update-track', 'id' => $timer->id], [
+                        <th scope="row"><?=Html::a($i, ['/timer/update', 'id' => $timer->id], [
                                 'class' => 'text-reset', 'data-pjax' => 1,
                                 'role'=>'modal-remote','title'=>'Update', 'data-toggle'=>'tooltip'
                             ]) ?></th>
@@ -117,217 +119,9 @@ $('a.btn-secondary').on('click', function(e) {
         }
     });
 });
-    
-    function status1Time() {
-        return new Promise(function(resolve, reject) {
-            $.ajax({
-                url: 'res-time-task',
-                method: 'get',
-                data: {
-                    task_id: $('#task-id').data('task-id'),
-                    status: 1
-                },
-            })
-            .done(function(data) {
-                resolve(data);
-            })
-            .fail(function(error) {
-                reject(error);
-            });
-        });
-    }
-    
-    status1Time().then(function(data) {
-        let elapsedTimeInSeconds = data * 60; // Здесь можно использовать данные, полученные от сервера
-        let stopwatchInterval;
-        updateDisplay();
-    function formatTime(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secondsPart = seconds % 60;
-    
-        const formattedHours = hours < 10 ? '0' + hours : hours;
-        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-        const formattedSeconds = secondsPart < 10 ? '0' + secondsPart : secondsPart;
-        return formattedHours + ':' + formattedMinutes + ':' + formattedSeconds;
-    }
-
-    function updateDisplay() {
-        const display = $('#display');
-        const title = $('#head-title');
-        if (display.length) {
-            //console.log(elapsedTimeInSeconds);
-            display.text(formatTime(elapsedTimeInSeconds));
-            title.text(formatTime(elapsedTimeInSeconds));
-            
-        }
-        var min = elapsedTimeInSeconds % 60;
-        if(min === 59){
-            stopStopwatch(1)
-        }
-        return elapsedTimeInSeconds;
-    }
-
-    function startStopwatch() {
-        stopwatchInterval = setInterval(function () {
-            elapsedTimeInSeconds++;
-            updateDisplay();
-        }, 1000);
-    }
-
-
-    function stopStopwatch(status = 0) {
-    
-
-    // Получить текущее значение счетчика
-    var elapsedTimeInSeconds = getElapsedTimeInSeconds();
-
-    // Отправить AJAX запрос
-    $.ajax({
-        url: 'it-add-task-time',
-        // url: '/shop-admin/app/ajax/it-add-task-time',
-        method: 'get',
-        data: {
-            task_id: $('#task-id').data('task-id'),
-            time: formatTime(elapsedTimeInSeconds),
-            status: status
-        },
-    })
-    .done(function(data) {
-        
-        console.log(data);
-        
-        if(data.content !== 'update'){
-            clearInterval(stopwatchInterval); // Останавливаем таймер
-            $('.it-work-task-update').html(data.content);
-            // Обнулить счетчик после успешной отправки
-            resetStopwatch();
-        }
-    })
-    .fail(function(error) {
-        console.error('Ошибка при отправке AJAX запроса:', error);
-    });
-}
-
-// Функция для паузы таймера
-    function pauseStopwatch() {
-        clearInterval(stopwatchInterval); // Останавливаем таймер
-        // Получить текущее значение счетчика
-    var elapsedTimeInSeconds = getElapsedTimeInSeconds();
-
-    // Отправить AJAX запрос
-    $.ajax({
-        url: 'it-add-task-time',
-        // url: '/shop-admin/app/ajax/it-add-task-time',
-        method: 'get',
-        data: {
-            task_id: $('#task-id').data('task-id'),
-            time: formatTime(elapsedTimeInSeconds),
-            status: 1
-        },
-    })
-    .done(function(data) {
-        
-    })
-    .fail(function(error) {
-    });
-    }
-
-    function getElapsedTimeInSeconds() {
-        return elapsedTimeInSeconds;
-    }
-
-    function resetStopwatch() {
-        // Обнулить счетчик и обновить дисплей
-        elapsedTimeInSeconds = 0;
-        updateDisplay();
-    }
-    $('#startButton').on('click', function() {
-        startStopwatch(1);
-    });
-
-    $('#stopButton').on('click', function() {
-        stopStopwatch(0);
-    });
-    
-    $('#pauseButton').on('click', function() {
-        pauseStopwatch(0);
-    });
-    }).catch(function(error) {
-        console.error('Произошла ошибка:', error);
-    });
-  
-
-
-    $('#process').fadeIn();
-    $('#process').fadeOut();
-
-     $('#form-application').on('change', function () {
-         var form = $(this);
-         var data = form.serialize();
-
-         $.ajax({
-             url: form.attr('action'),
-             type: form.attr('method'),
-             data: data,
-             beforeSend: function () {
-                 $('#process').fadeIn();
-             }
-         })
-         .done(function (data) {
-             console.log(data);
-             if (data.success == 'true') {
-                 $.toast({
-                     loader: false,
-                     hideAfter: 1000,
-                     position: 'top-right',
-                     text: 'Успешно сохранено!',
-                     bgColor: '#00b52a',
-                     textColor: 'white',
-                     icon: 'success'
-                 });
-             } else {
-                 $.each(data.content.errors, function (index, value) {
-                     $.toast({
-                         loader: true,
-                         hideAfter: 5000,
-                         position: 'top-right',
-                         text: value,
-                         bgColor: '#FF1356',
-                         textColor: 'white',
-                         icon: 'error'
-                     });
-                 });
-             }
-         })
-         .fail(function () {
-             $.each(data.content.errors, function (index, value) {
-                 $.toast({
-                     loader: true,
-                     hideAfter: 5000,
-                     position: 'top-right',
-                     text: value,
-                     bgColor: '#FF1356',
-                     textColor: 'white',
-                     icon: 'error'
-                 });
-             });
-         })
-         .always(function () {
-             $('#process').fadeOut();
-             // $.pjax.reload({ container: '#all-page' });
-         });
-
-         return false;
-     })
-     .on('submit', function (e) {
-         e.preventDefault();
-     });
-
-    
 });
 
-JS;
-$this->registerJs($js, \yii\web\View::POS_READY);
 
-?>
+JS;
+
+//$this->registerJs($js);

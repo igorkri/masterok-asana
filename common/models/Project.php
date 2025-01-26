@@ -114,7 +114,9 @@ class Project extends \yii\db\ActiveRecord
     public function getTaskExecution()
     {
         return $this->hasMany(Task::class, ['project_gid' => 'gid'])
-            ->where(['section_project_name' => 'До роботи'])->count();
+            ->where(['section_project_name' => 'До роботи'])
+            ->andWhere(['assignee_gid' => Yii::$app->user->identity->user_asana_gid])
+            ->count();
     }
 
 

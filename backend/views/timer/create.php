@@ -2,18 +2,19 @@
 
 use yii\helpers\Html;
 
+
 /* @var $this yii\web\View */
-/* @var $model common\models\Task */
+/* @var $model common\models\Timer */
 
-
-$this->title = 'Редагування : ';
+$this->title = 'Створення нового запису';
 $this->params['breadcrumbs'][] = ['label' => 'Список', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => 1, 'url' => ['view', 'id' => 1]];
 $this->params['breadcrumbs'][] = $this->title;
-?>
 
+?>
+<div class="container">
+    <div class="timer-create">
         <?= $this->render('_form', [
             'model' => $model,
-            'timers' => $timers,
         ]) ?>
-
+    </div>
+</div>

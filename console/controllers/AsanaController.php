@@ -93,6 +93,7 @@ class AsanaController extends Controller
             $projects = Project::find()->all();
 
             foreach ($projects as $project) {
+//                $tasksAsana = $client->tasks->getTasksForProject('1208836601411633');
                 $tasksAsana = $client->tasks->getTasksForProject($project->gid);
 
                 foreach ($tasksAsana as $task) {

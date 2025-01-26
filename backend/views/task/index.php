@@ -35,7 +35,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="col-auto d-flex">
                     <a href="#" class="btn btn-secondary me-3">Import</a>
-                    <a href="app-product.html" class="btn btn-primary">New product</a>
+                    <a href="<?=Url::to(['create', 'project_gid' => $project->gid, 'sync' => \common\models\Task::CRON_STATUS_STOP])?>" class="btn btn-secondary me-3">New local</a>
+                    <a href="<?=Url::to(['create', 'project_gid' => $project->gid, 'sync' => \common\models\Task::CRON_STATUS_NEW])?>" class="btn btn-primary">New product</a>
                 </div>
             </div>
         </div>
@@ -55,10 +56,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             'columns' => require(__DIR__ . '/_columns.php'),
                             'toolbar' => [
                                 ['content' =>
-                                    Html::a('<i class="fas fa-plus"></i>', ['create'],
-                                        ['role' => 'modal-remote', 'title' => 'Створити Tasks', 'class' => 'btn btn-warning']) .
+//                                    Html::a('<i class="fas fa-plus"></i>', ['create'],
+//                                        ['role' => 'modal-remote', 'title' => 'Створити Tasks', 'class' => 'btn btn-warning']) .
                                     Html::a('<i class="fas fa-redo"></i>', ['', 'project_gid' => $project->gid],
-                                        ['data-pjax' => 1, 'class' => 'btn btn-default', 'title' => 'Оновити таблицю']) .
+                                        ['data-pjax' => 1, 'class' => 'btn btn-secondary', 'title' => 'Оновити таблицю']) .
                                     '{toggleData}'
 //                        '{export}'
                                 ],

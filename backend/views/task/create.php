@@ -11,10 +11,11 @@ $this->params['breadcrumbs'][] = ['label' => 'Список', 'url' => ['index']]
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="container">
+<div class="container-fluid">
     <div class="task-create">
         <?= $this->render('_form', [
             'model' => $model,
+            'timers' => $timers,
         ]) ?>
     </div>
 </div>

@@ -83,6 +83,14 @@
             "frontend\\tests\\": ["frontend/tests/", "frontend/tests/_support"]
         }
     },
+    "autoload": {
+        "psr-4": {
+            "common\\": "common/",
+            "frontend\\": "frontend/",
+            "backend\\": "backend/",
+            "console\\": "console/"
+        }
+    },
     "config": {
         "allow-plugins": {
             "yiisoft/yii2-composer" : true

@@ -2,12 +2,14 @@
 
 namespace backend\controllers;
 
+
 use common\models\Project;
 use common\models\TaskAttachment;
-use common\models\TaskCustomFields;
+use common\models\Timer;
 use Yii;
 use common\models\Task;
 use backend\models\search\TaskSearch;
+use yii\db\Exception;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -62,19 +64,19 @@ class TaskController extends Controller
      * @return mixed
      */
     public function actionView($id)
-    {   
+    {
         $request = Yii::$app->request;
-        if($request->isAjax){
+        if ($request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return [
-                    'title'=> "Task #".$id,
-                    'content'=>$this->renderAjax('view', [
-                        'model' => $this->findModel($id),
-                    ]),
-                    'footer'=> Html::button('Закрити',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
-                            Html::a('Редагувати',['update','id'=>$id],['class'=>'btn btn-primary','role'=>'modal-remote'])
-                ];    
-        }else{
+                'title' => "Task #" . $id,
+                'content' => $this->renderAjax('view', [
+                    'model' => $this->findModel($id),
+                ]),
+                'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"]) .
+                    Html::a('Редагувати', ['update', 'id' => $id], ['class' => 'btn btn-primary', 'role' => 'modal-remote'])
+            ];
+        } else {
             return $this->render('view', [
                 'model' => $this->findModel($id),
             ]);
@@ -87,59 +89,28 @@ class TaskController extends Controller
      * and for non-ajax request if creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($project_gid, $sync = 'new')
     {
         $request = Yii::$app->request;
-        $model = new Task();  
+        $model = new Task();
+        $model->gid = $model->generateGid();
+        $model->project_gid = $project_gid;
+        $model->task_sync = $sync;
+        $model->workspace_gid = $model->getWorkspaceGid();
+        $model->created_at = date('Y-m-d H:i:s');
 
-        if($request->isAjax){
-            /*
-            *   Process for ajax request
-            */
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            if($request->isGet){
-                return [
-                    'title'=> "Створення Task",
-                    'content'=>$this->renderAjax('create', [
-                        'model' => $model,
-                    ]),
-                    'footer'=> Html::button('Закрити',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
-                                Html::button('Зберегти',['class'=>'btn btn-primary','type'=>"submit"])
-        
-                ];         
-            }else if($model->load($request->post()) && $model->save()){
-                return [
-                    'forceReload'=>'#crud-datatable-pjax',
-                    'title'=> "Створення Task",
-                    'content'=>'<span class="text-success">Успішно створено!</span>',
-                    'footer'=> Html::button('Закрити',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
-                            Html::a('Створити ще',['create'],['class'=>'btn btn-primary','role'=>'modal-remote'])
-        
-                ];         
-            }else{           
-                return [
-                    'title'=> "Створення Task",
-                    'content'=>$this->renderAjax('create', [
-                        'model' => $model,
-                    ]),
-                    'footer'=> Html::button('Закрити',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
-                                Html::button('Зберегти',['class'=>'btn btn-primary','type'=>"submit"])
-        
-                ];         
-            }
-        }else{
-            /*
-            *   Process for non-ajax request
-            */
-            if ($model->load($request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            } else {
-                return $this->render('create', [
-                    'model' => $model,
-                ]);
-            }
+        if ($model->load($request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', 'Task created successfully');
+            return $this->redirect(['update', 'gid' => $model->gid]);
+        } else {
+            Yii::$app->session->setFlash('error', 'Error while creating Task');
+            Yii::error($model->getErrors(), __METHOD__);
+            return $this->render('create', [
+                'model' => $model,
+                'timers' => Timer::find()->where(['task_gid' => $model->gid])->all(),
+            ]);
         }
-       
+
     }
 
     /**
@@ -153,8 +124,9 @@ class TaskController extends Controller
     {
         $request = Yii::$app->request;
         $model = Task::findOne(['gid' => $gid]);
+        $timers = Timer::find()->where(['task_gid' => $model->gid])->all();
 
-        if($request->isAjax) {
+        if ($request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             if ($request->isPost) {
                 $model->updateTaskPriority();
@@ -169,6 +141,7 @@ class TaskController extends Controller
                         ],
                         'html' => $this->renderAjax('_update-form', [
                             'model' => $model,
+                            'timers' => $timers,
                         ]),
                     ];
                 } else {
@@ -197,6 +170,7 @@ class TaskController extends Controller
         } else {
             return $this->render('update', [
                 'model' => $model,
+                'timers' => $timers,
             ]);
         }
 
@@ -214,13 +188,13 @@ class TaskController extends Controller
         $request = Yii::$app->request;
         $this->findModel($id)->delete();
 
-        if($request->isAjax){
+        if ($request->isAjax) {
             /*
             *   Process for ajax request
             */
             Yii::$app->response->format = Response::FORMAT_JSON;
-            return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
-        }else{
+            return ['forceClose' => true, 'forceReload' => '#crud-datatable-pjax'];
+        } else {
             /*
             *   Process for non-ajax request
             */
@@ -230,7 +204,7 @@ class TaskController extends Controller
 
     }
 
-     /**
+    /**
      * Delete multiple existing Task model.
      * For ajax request will return json object
      * and for non-ajax request if deletion is successful, the browser will be redirected to the 'index' page.
@@ -238,27 +212,27 @@ class TaskController extends Controller
      * @return mixed
      */
     public function actionBulkdelete()
-    {        
+    {
         $request = Yii::$app->request;
-        $pks = explode(',', $request->post( 'pks' )); // Array or selected records primary keys
-        foreach ( $pks as $pk ) {
+        $pks = explode(',', $request->post('pks')); // Array or selected records primary keys
+        foreach ($pks as $pk) {
             $model = $this->findModel($pk);
             $model->delete();
         }
 
-        if($request->isAjax){
+        if ($request->isAjax) {
             /*
             *   Process for ajax request
             */
             Yii::$app->response->format = Response::FORMAT_JSON;
-            return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
-        }else{
+            return ['forceClose' => true, 'forceReload' => '#crud-datatable-pjax'];
+        } else {
             /*
             *   Process for non-ajax request
             */
             return $this->redirect(['index']);
         }
-       
+
     }
 
     /**
@@ -282,12 +256,12 @@ class TaskController extends Controller
         $model = TaskAttachment::findOne(['gid' => $gid]);
         Yii::$app->response->format = Response::FORMAT_JSON;
         return [
-            'title'=> "Файл " . $model->name,
-            'content'=>$this->renderAjax('_image', [
+            'title' => "Файл " . $model->name,
+            'content' => $this->renderAjax('_image', [
                 'model' => $model,
             ]),
-            'footer'=> Html::button('Закрити',['class'=>'btn btn-default pull-left','data-bs-dismiss'=>"modal"]).
-                Html::button('Зберегти',['class'=>'btn btn-primary','type'=>"submit"])
+            'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"]) .
+                Html::button('Зберегти', ['class' => 'btn btn-primary', 'type' => "submit"])
 
         ];
     }
@@ -337,6 +311,73 @@ class TaskController extends Controller
         exit();
     }
 
+    /**
+     * @throws Exception
+     */
+    public function actionTimer()
+    {
+
+        $errors = '';
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $taskId = Yii::$app->request->post('task_id');
+        $totalSeconds = Yii::$app->request->post('totalSeconds');
+        $status = Yii::$app->request->post('status');
+
+        if ($totalSeconds <= 0) {
+            return [
+                'success' => false,
+                'message' => 'Недостаточно данных для сохранения таймера.',
+            ];
+        }
+
+        $timer = Timer::findOne(['task_gid' => $taskId, 'status' => Timer::STATUS_PROCESS]) ?? new Timer(['task_gid' => $taskId]);
+        $timer->minute = ceil($totalSeconds / 60); // Сохраняем минуты
+        $timer->time = gmdate('H:i:s', $totalSeconds);
+        $timer->status = $status;
+        $timer->coefficient = 1; // Можно изменить на динамический коэффициент
+
+        if ($timer->save()) {
+            return [
+                'success' => true,
+                'toast' => [
+                    'class' => 'toast-sa-success',
+                    'name' => 'Успех',
+                    'message' => 'Таймер успешно сохранён.',
+                ],
+            ];
+        } else {
+            $errors = $timer->getErrors();
+        }
+
+        return [
+            'success' => false,
+            'message' => 'Ошибка при сохранении таймера.' . $errors,
+        ];
+    }
+
+    public function actionGetTimer(): array
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $taskId = Yii::$app->request->get('task_id');
+
+        $timer = Timer::find()
+            ->where(['task_gid' => $taskId, 'status' => Timer::STATUS_PROCESS])
+            ->orderBy(['created_at' => SORT_DESC])
+            ->one();
+
+        if ($timer) {
+            return [
+                'success' => true,
+                'totalSeconds' => strtotime($timer->time) - strtotime('TODAY'), // Конвертируем формат 00:00:12 в секунды
+                'status' => $timer->status,
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => 'Активного таймера не найдено.',
+        ];
+    }
 
 
 
