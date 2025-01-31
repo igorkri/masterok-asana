@@ -21,7 +21,7 @@ class AppAsset extends AssetBundle
         "vendor/highlight.js/styles/github.css",
         "vendor/simplebar/simplebar.min.css",
         "vendor/quill/quill.snow.css",
-        "vendor/air-datepicker/css/datepicker.min.css",
+//        "vendor/air-datepicker/css/datepicker.min.css",
         "vendor/select2/css/select2.min.css",
         "vendor/datatables/css/dataTables.bootstrap5.min.css",
         "vendor/nouislider/nouislider.min.css",

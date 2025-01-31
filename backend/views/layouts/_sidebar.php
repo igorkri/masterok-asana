@@ -141,6 +141,12 @@ use yii\helpers\Url;
                             <ul class="sa-nav__menu sa-nav__menu--sub"
                                 data-sa-collapse-content="">
                                 <li class="sa-nav__menu-item">
+                                    <a href="<?=Url::to(['/report/invoice/index'])?>" class="sa-nav__link">
+                                        <span class="sa-nav__menu-item-padding"></span>
+                                        <span class="sa-nav__title">Рахунки</span>
+                                    </a>
+                                </li>
+                                <li class="sa-nav__menu-item">
                                     <a href="<?=Url::to(['/report/payer/index'])?>" class="sa-nav__link">
                                         <span class="sa-nav__menu-item-padding"></span>
                                         <span class="sa-nav__title">Платники</span>
