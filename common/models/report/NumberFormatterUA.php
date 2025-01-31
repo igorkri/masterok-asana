@@ -17,7 +17,7 @@ class NumberFormatterUA
         $integerPart = floor($number);
         $decimalPart = round(($number - $integerPart) * 100);
 
-        $integerWords = self::numToWords($integerPart);
+        $integerWords = self::mb_ucfirst(self::numToWords($integerPart));
         $decimalWords = str_pad($decimalPart, 2, '0', STR_PAD_LEFT);
 
         return "$integerWords гривень $decimalWords копійок";
@@ -96,5 +96,19 @@ class NumberFormatterUA
             return $forms[1];
         }
         return $forms[2];
+    }
+
+
+    /**
+     * первый символ в верхнем регистре в строке
+     *
+     * @param string $str
+     */
+    public static function mb_ucfirst($str, $encoding = 'UTF-8')
+    {
+        $str = mb_ereg_replace('^[\ ]+', '', $str);
+        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) .
+            mb_substr($str, 1, mb_strlen($str), $encoding);
+        return $str;
     }
 }

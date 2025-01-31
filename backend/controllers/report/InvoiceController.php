@@ -2,6 +2,8 @@
 
 namespace backend\controllers\report;
 
+use kartik\mpdf\Pdf;
+use Mpdf\Mpdf;
 use Yii;
 use common\models\report\Invoice;
 use backend\models\search\report\InvoiceSearch;
@@ -10,6 +12,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use \yii\web\Response;
 use yii\helpers\Html;
+use yii\helpers\FileHelper;
 
 /**
  * InvoiceController implements the CRUD actions for Invoice model.
@@ -273,7 +276,165 @@ class InvoiceController extends Controller
 
     public function actionGenerateInvoices()
     {
+        $request = Yii::$app->request;
+        $date = date('Y-m-d', time());
+        $outputPath = Yii::getAlias('@frontend/web/report/invoices/' . $date . '/invoices-' . $date . '.pdf');
+        $path = Yii::$app->request->hostInfo . '/report/invoices/' . $date . '/invoices-' . $date . '.pdf';
+
+        // Создаем директорию для хранения PDF
+        FileHelper::createDirectory(dirname($outputPath), 0777, true);
+        FileHelper::createDirectory(Yii::getAlias('@runtime/mpdf'), 0777, true);
+
+        // Инициализация mPDF
+        $pdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'tempDir' => Yii::getAlias('@runtime/mpdf'), // Указываем временную директорию
+        ]);
 
 
+        // Объединение контента для всех счетов
+        $pks = explode(',', $request->post('pks'));
+        foreach ($pks as $pk) {
+            $model = $this->findModel($pk);
+
+            // Генерируем HTML для одной страницы
+            $content = $this->renderPartial('_generate-invoice', ['model' => $model]);
+
+            // Добавляем страницу в PDF
+            $pdf->AddPage();
+            $pdf->WriteHTML($content);
+        }
+
+        // Сохраняем единый PDF-файл
+        $pdf->Output($outputPath, \Mpdf\Output\Destination::FILE);
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return [
+            'forceReload' => '#crud-datatable-pjax',
+            'title' => "Завантаження рахунків",
+            'content' => $this->renderAjax('download', [
+                'type_doc' => Invoice::$pageTypeList[Invoice::PAGE_TYPE_INVOICE],
+                'path' => $path,
+            ]),
+            'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"])
+        ];
+    }
+
+
+
+    /**
+     * Генерация PDF-файла для актов
+     *
+     * @return array
+     */
+    public function actionGenerateActs()
+    {
+        $request = Yii::$app->request;
+        $date = date('Y-m-d', time());
+        $outputPath = Yii::getAlias('@frontend/web/report/acts/' . $date . '/acts-' . $date . '.pdf');
+        $path = Yii::$app->request->hostInfo . '/report/acts/' . $date . '/acts-' . $date . '.pdf';
+
+        // Создаем директорию для хранения PDF
+        FileHelper::createDirectory(dirname($outputPath), 0777, true);
+        FileHelper::createDirectory(Yii::getAlias('@runtime/mpdf'), 0777, true);
+
+        // Инициализация mPDF
+        $pdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'tempDir' => Yii::getAlias('@runtime/mpdf'), // Указываем временную директорию
+        ]);
+
+        // Объединение контента для всех актов
+        $pks = explode(',', $request->post('pks'));
+        foreach ($pks as $pk) {
+            $model = $this->findModel($pk);
+
+            // Генерируем HTML для одной страницы
+            $content = $this->renderPartial('_generate-act', ['model' => $model]);
+
+            // Добавляем страницу в PDF
+            $pdf->AddPage();
+            $pdf->WriteHTML($content);
+        }
+
+        // Сохраняем единый PDF-файл
+        $pdf->Output($outputPath, \Mpdf\Output\Destination::FILE);
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return [
+            'forceReload' => '#crud-datatable-pjax',
+            'title' => "Завантаження актів",
+            'content' => $this->renderAjax('download', [
+                'type_doc' => Invoice::$pageTypeList[Invoice::PAGE_TYPE_ACT],
+                'path' => $path,
+            ]),
+            'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"])
+        ];
+    }
+
+    /**
+     * Генерация PDF-файла для рахунков и актов
+     *
+     * @return array
+     */
+
+    public function actionGenerateActsInvoices()
+    {
+        $request = Yii::$app->request;
+        $date = date('Y-m-d', time());
+        $outputPath = Yii::getAlias('@frontend/web/report/documents/' . $date . '/acts-invoices-' . $date . '.pdf');
+        $path = Yii::$app->request->hostInfo . '/report/documents/' . $date . '/acts-invoices-' . $date . '.pdf';
+
+        // Создаем папку для хранения PDF
+        FileHelper::createDirectory(dirname($outputPath), 0777, true);
+
+        // Инициализируем mPDF
+        $pdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'tempDir' => Yii::getAlias('@runtime/mpdf'),
+        ]);
+
+        $pks = explode(',', $request->post('pks'));
+
+        // Устанавливаем заголовок PDF
+        $pdf->SetTitle("Рахунки та акти");
+        //$pdf->SetHeader("Рахунок - Акт | " . date('d.m.Y H:i:s'));
+
+        // *** Чередуем "Рахунок - Акт" ***
+        foreach ($pks as $pk) {
+            $model = $this->findModel($pk);
+
+            // --- Генерация Рахунку (Invoice) ---
+            $invoiceContent = $this->renderPartial('_generate-invoice', ['model' => $model]);
+            $pdf->AddPage();
+            $pdf->WriteHTML("<h3 style='text-align: center;'>Рахунок-фактура №{$model->invoice_no}</h3>");
+            $pdf->WriteHTML($invoiceContent);
+
+            // --- Генерация Акта (Act) ---
+            $actContent = $this->renderPartial('_generate-act', ['model' => $model]);
+            $pdf->AddPage();
+            $pdf->WriteHTML("<h3 style='text-align: center;'>Акт №{$model->act_no}</h3>");
+            $pdf->WriteHTML($actContent);
+        }
+
+        // Сохраняем единый PDF-файл
+        $pdf->Output($outputPath, \Mpdf\Output\Destination::FILE);
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return [
+            'forceReload' => '#crud-datatable-pjax',
+            'title' => "Завантаження рахунків та актів",
+            'content' => $this->renderAjax('download', [
+                'type_doc' => 'Рахунки та акти',
+                'path' => $path,
+            ]),
+            'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"])
+        ];
     }
 }

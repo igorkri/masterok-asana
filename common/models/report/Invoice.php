@@ -30,14 +30,11 @@ class Invoice extends \yii\db\ActiveRecord
     const PAGE_TYPE_ACT = 'act';
     const PAGE_TYPE_ALL = 'all';
 
-    public static function getPageTypeList()
-    {
-        return [
-            self::PAGE_TYPE_INVOICE => 'Рахунки',
-            self::PAGE_TYPE_ACT => 'Акти',
-            self::PAGE_TYPE_ALL => 'Всі',
-        ];
-    }
+    public static $pageTypeList = [
+        self::PAGE_TYPE_INVOICE => 'Рахунки',
+        self::PAGE_TYPE_ACT => 'Акти',
+        self::PAGE_TYPE_ALL => 'Всі',
+    ];
 
     /**
      * {@inheritdoc}
@@ -92,4 +89,5 @@ class Invoice extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Payer::class, ['id' => 'payer_id']);
     }
+
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cfb9bbdc88d64517cfeea3fca3a98a02",
+    "content-hash": "7740d4d0833ac4aa201e79b9a885a084",
     "packages": [
         {
             "name": "adoy/oauth2",
@@ -276,16 +276,16 @@
         },
         {
             "name": "bower-asset/datatables.net",
-            "version": "2.0.2",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DataTables/Dist-DataTables.git",
-                "reference": "9aa4f629534436babb5abe81f9265c22feada820"
+                "reference": "33f552b5d2829e5768eaeed1e79714dd5c7be6ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables/zipball/9aa4f629534436babb5abe81f9265c22feada820",
-                "reference": "9aa4f629534436babb5abe81f9265c22feada820"
+                "url": "https://api.github.com/repos/DataTables/Dist-DataTables/zipball/33f552b5d2829e5768eaeed1e79714dd5c7be6ac",
+                "reference": "33f552b5d2829e5768eaeed1e79714dd5c7be6ac"
             },
             "require": {
                 "bower-asset/jquery": ">=1.7"
@@ -652,29 +652,27 @@
         },
         {
             "name": "doctrine/deprecations",
-            "version": "1.1.3",
+            "version": "1.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/deprecations.git",
-                "reference": "dfbaa3c2d2e9a9df1118213f3b8b0c597bb99fab"
+                "reference": "31610dbb31faa98e6b5447b62340826f54fbc4e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/dfbaa3c2d2e9a9df1118213f3b8b0c597bb99fab",
-                "reference": "dfbaa3c2d2e9a9df1118213f3b8b0c597bb99fab",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/31610dbb31faa98e6b5447b62340826f54fbc4e9",
+                "reference": "31610dbb31faa98e6b5447b62340826f54fbc4e9",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1 || ^8.0"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^9",
-                "phpstan/phpstan": "1.4.10 || 1.10.15",
-                "phpstan/phpstan-phpunit": "^1.0",
+                "doctrine/coding-standard": "^9 || ^12",
+                "phpstan/phpstan": "1.4.10 || 2.0.3",
+                "phpstan/phpstan-phpunit": "^1.0 || ^2",
                 "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
-                "psalm/plugin-phpunit": "0.18.4",
-                "psr/log": "^1 || ^2 || ^3",
-                "vimeo/psalm": "4.30.0 || 5.12.0"
+                "psr/log": "^1 || ^2 || ^3"
             },
             "suggest": {
                 "psr/log": "Allows logging deprecations via PSR-3 logger implementation"
@@ -682,7 +680,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Doctrine\\Deprecations\\": "lib/Doctrine/Deprecations"
+                    "Doctrine\\Deprecations\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -693,9 +691,9 @@
             "homepage": "https://www.doctrine-project.org/",
             "support": {
                 "issues": "https://github.com/doctrine/deprecations/issues",
-                "source": "https://github.com/doctrine/deprecations/tree/1.1.3"
+                "source": "https://github.com/doctrine/deprecations/tree/1.1.4"
             },
-            "time": "2024-01-30T19:34:25+00:00"
+            "time": "2024-12-07T21:18:45+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -844,20 +842,20 @@
         },
         {
             "name": "ezyang/htmlpurifier",
-            "version": "v4.17.0",
+            "version": "v4.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ezyang/htmlpurifier.git",
-                "reference": "bbc513d79acf6691fa9cf10f192c90dd2957f18c"
+                "reference": "cb56001e54359df7ae76dc522d08845dc741621b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/bbc513d79acf6691fa9cf10f192c90dd2957f18c",
-                "reference": "bbc513d79acf6691fa9cf10f192c90dd2957f18c",
+                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/cb56001e54359df7ae76dc522d08845dc741621b",
+                "reference": "cb56001e54359df7ae76dc522d08845dc741621b",
                 "shasum": ""
             },
             "require": {
-                "php": "~5.6.0 || ~7.0.0 || ~7.1.0 || ~7.2.0 || ~7.3.0 || ~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0"
+                "php": "~5.6.0 || ~7.0.0 || ~7.1.0 || ~7.2.0 || ~7.3.0 || ~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
             },
             "require-dev": {
                 "cerdic/css-tidy": "^1.7 || ^2.0",
@@ -899,9 +897,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ezyang/htmlpurifier/issues",
-                "source": "https://github.com/ezyang/htmlpurifier/tree/v4.17.0"
+                "source": "https://github.com/ezyang/htmlpurifier/tree/v4.18.0"
             },
-            "time": "2023-11-17T15:01:25+00:00"
+            "time": "2024-11-01T03:51:45+00:00"
         },
         {
             "name": "floor12/yii2-metamaster",
@@ -1184,20 +1182,20 @@
         },
         {
             "name": "imagine/imagine",
-            "version": "1.3.5",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-imagine/Imagine.git",
-                "reference": "7151d553edec4dc2bbac60419f7a74ff34700e7f"
+                "reference": "80ab21434890dee9ba54969d31c51ac8d4d551e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-imagine/Imagine/zipball/7151d553edec4dc2bbac60419f7a74ff34700e7f",
-                "reference": "7151d553edec4dc2bbac60419f7a74ff34700e7f",
+                "url": "https://api.github.com/repos/php-imagine/Imagine/zipball/80ab21434890dee9ba54969d31c51ac8d4d551e0",
+                "reference": "80ab21434890dee9ba54969d31c51ac8d4d551e0",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5"
+                "php": ">=7.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5 || ^7.5 || ^8.4 || ^9.3"
@@ -1230,7 +1228,7 @@
                     "homepage": "http://avalanche123.com"
                 }
             ],
-            "description": "Image processing for PHP 5.3",
+            "description": "Image processing for PHP",
             "homepage": "http://imagine.readthedocs.org/",
             "keywords": [
                 "drawing",
@@ -1240,9 +1238,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-imagine/Imagine/issues",
-                "source": "https://github.com/php-imagine/Imagine/tree/1.3.5"
+                "source": "https://github.com/php-imagine/Imagine/tree/1.5.0"
             },
-            "time": "2023-06-07T14:49:52+00:00"
+            "time": "2024-12-03T14:37:55+00:00"
         },
         {
             "name": "kartik-v/bootstrap-fileinput",
@@ -1648,12 +1646,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-date-range.git",
-                "reference": "567ab49bb8262da98f45ea5109a854f85a210474"
+                "reference": "99f37fa14b8e7c99ca538377191c12502002f5d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-date-range/zipball/567ab49bb8262da98f45ea5109a854f85a210474",
-                "reference": "567ab49bb8262da98f45ea5109a854f85a210474",
+                "url": "https://api.github.com/repos/kartik-v/yii2-date-range/zipball/99f37fa14b8e7c99ca538377191c12502002f5d2",
+                "reference": "99f37fa14b8e7c99ca538377191c12502002f5d2",
                 "shasum": ""
             },
             "require": {
@@ -1699,7 +1697,7 @@
                 "issues": "https://github.com/kartik-v/yii2-date-range/issues",
                 "source": "https://github.com/kartik-v/yii2-date-range/tree/master"
             },
-            "time": "2024-09-27T13:25:31+00:00"
+            "time": "2024-12-16T11:55:38+00:00"
         },
         {
             "name": "kartik-v/yii2-detail-view",
@@ -3347,16 +3345,16 @@
         },
         {
             "name": "mpdf/mpdf",
-            "version": "v8.2.4",
+            "version": "v8.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpdf/mpdf.git",
-                "reference": "9e3ff91606fed11cd58a130eabaaf60e56fdda88"
+                "reference": "e175b05e3e00977b85feb96a8cccb174ac63621f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/9e3ff91606fed11cd58a130eabaaf60e56fdda88",
-                "reference": "9e3ff91606fed11cd58a130eabaaf60e56fdda88",
+                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/e175b05e3e00977b85feb96a8cccb174ac63621f",
+                "reference": "e175b05e3e00977b85feb96a8cccb174ac63621f",
                 "shasum": ""
             },
             "require": {
@@ -3366,7 +3364,7 @@
                 "mpdf/psr-log-aware-trait": "^2.0 || ^3.0",
                 "myclabs/deep-copy": "^1.7",
                 "paragonie/random_compat": "^1.4|^2.0|^9.99.99",
-                "php": "^5.6 || ^7.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0",
+                "php": "^5.6 || ^7.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
                 "psr/http-message": "^1.0 || ^2.0",
                 "psr/log": "^1.0 || ^2.0 || ^3.0",
                 "setasign/fpdi": "^2.1"
@@ -3414,7 +3412,7 @@
                 "utf-8"
             ],
             "support": {
-                "docs": "http://mpdf.github.io",
+                "docs": "https://mpdf.github.io",
                 "issues": "https://github.com/mpdf/mpdf/issues",
                 "source": "https://github.com/mpdf/mpdf"
             },
@@ -3424,7 +3422,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2024-06-14T16:06:41+00:00"
+            "time": "2024-11-18T15:30:42+00:00"
         },
         {
             "name": "mpdf/psr-http-message-shim",
@@ -3520,16 +3518,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.12.0",
+            "version": "1.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "3a6b9a42cd8f8771bd4295d13e1423fa7f3d942c"
+                "reference": "123267b2c49fbf30d78a7b2d333f6be754b94845"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/3a6b9a42cd8f8771bd4295d13e1423fa7f3d942c",
-                "reference": "3a6b9a42cd8f8771bd4295d13e1423fa7f3d942c",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/123267b2c49fbf30d78a7b2d333f6be754b94845",
+                "reference": "123267b2c49fbf30d78a7b2d333f6be754b94845",
                 "shasum": ""
             },
             "require": {
@@ -3568,7 +3566,7 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/DeepCopy/issues",
-                "source": "https://github.com/myclabs/DeepCopy/tree/1.12.0"
+                "source": "https://github.com/myclabs/DeepCopy/tree/1.12.1"
             },
             "funding": [
                 {
@@ -3576,7 +3574,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-12T14:39:25+00:00"
+            "time": "2024-11-08T17:47:46+00:00"
         },
         {
             "name": "nategood/httpful",
@@ -4108,16 +4106,16 @@
             "type": "component",
             "extra": {
                 "component": {
-                    "scripts": [
-                        "dist/js/select2.js"
-                    ],
-                    "styles": [
-                        "dist/css/select2.css"
-                    ],
                     "files": [
                         "dist/js/select2.js",
                         "dist/js/i18n/*.js",
                         "dist/css/select2.css"
+                    ],
+                    "styles": [
+                        "dist/css/select2.css"
+                    ],
+                    "scripts": [
+                        "dist/js/select2.js"
                     ]
                 }
             },
@@ -4135,16 +4133,16 @@
         },
         {
             "name": "setasign/fpdi",
-            "version": "v2.6.1",
+            "version": "v2.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Setasign/FPDI.git",
-                "reference": "09a816004fcee9ed3405bd164147e3fdbb79a56f"
+                "reference": "9e013b376939c0d4029f54150d2a16f3c67a5797"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Setasign/FPDI/zipball/09a816004fcee9ed3405bd164147e3fdbb79a56f",
-                "reference": "09a816004fcee9ed3405bd164147e3fdbb79a56f",
+                "url": "https://api.github.com/repos/Setasign/FPDI/zipball/9e013b376939c0d4029f54150d2a16f3c67a5797",
+                "reference": "9e013b376939c0d4029f54150d2a16f3c67a5797",
                 "shasum": ""
             },
             "require": {
@@ -4195,7 +4193,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Setasign/FPDI/issues",
-                "source": "https://github.com/Setasign/FPDI/tree/v2.6.1"
+                "source": "https://github.com/Setasign/FPDI/tree/v2.6.2"
             },
             "funding": [
                 {
@@ -4203,7 +4201,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-02T10:17:15+00:00"
+            "time": "2024-12-10T13:12:19+00:00"
         },
         {
             "name": "statickidz/php-google-translate-free",
@@ -4511,12 +4509,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "3.0-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
@@ -4747,8 +4745,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -4829,8 +4827,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -4913,8 +4911,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -4993,12 +4991,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "3.0-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
@@ -5383,17 +5381,17 @@
             },
             "type": "yii2-extension",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                },
                 "patches": {
-                    "phpunit/phpunit-mock-objects": {
-                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
-                    },
                     "phpunit/phpunit": {
                         "Fix PHP 7 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php7.patch",
                         "Fix PHP 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php8.patch"
+                    },
+                    "phpunit/phpunit-mock-objects": {
+                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
                     }
+                },
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
                 }
             },
             "autoload": {
@@ -5488,10 +5486,10 @@
             },
             "type": "yii2-extension",
             "extra": {
+                "bootstrap": "yii\\bootstrap5\\i18n\\TranslationBootstrap",
                 "branch-alias": {
                     "dev-master": "2.0.x-dev"
-                },
-                "bootstrap": "yii\\bootstrap5\\i18n\\TranslationBootstrap"
+                }
             },
             "autoload": {
                 "psr-4": {
@@ -5642,20 +5640,20 @@
             },
             "type": "yii2-extension",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                },
-                "composer-exit-on-patch-failure": true,
                 "patches": {
-                    "phpunit/phpunit-mock-objects": {
-                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
-                    },
                     "phpunit/phpunit": {
                         "Fix PHP 7 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php7.patch",
                         "Fix PHP 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php8.patch",
                         "Fix PHP 8.1 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php81.patch"
+                    },
+                    "phpunit/phpunit-mock-objects": {
+                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
                     }
-                }
+                },
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                },
+                "composer-exit-on-patch-failure": true
             },
             "autoload": {
                 "psr-4": {
@@ -5730,23 +5728,23 @@
             },
             "type": "yii2-extension",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                },
-                "composer-exit-on-patch-failure": true,
                 "patches": {
-                    "phpunit/phpunit-mock-objects": {
-                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
-                    },
-                    "phpunit/php-file-iterator": {
-                        "Fix PHP 8.1 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_path_file_iterator.patch"
-                    },
                     "phpunit/phpunit": {
                         "Fix PHP 7 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php7.patch",
                         "Fix PHP 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php8.patch",
                         "Fix PHP 8.1 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php81.patch"
+                    },
+                    "phpunit/php-file-iterator": {
+                        "Fix PHP 8.1 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_path_file_iterator.patch"
+                    },
+                    "phpunit/phpunit-mock-objects": {
+                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
                     }
-                }
+                },
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                },
+                "composer-exit-on-patch-failure": true
             },
             "autoload": {
                 "psr-4": {
@@ -5816,19 +5814,19 @@
             },
             "type": "yii2-extension",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                },
-                "composer-exit-on-patch-failure": true,
                 "patches": {
-                    "phpunit/phpunit-mock-objects": {
-                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
-                    },
                     "phpunit/phpunit": {
                         "Fix PHP 7 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php7.patch",
                         "Fix PHP 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php8.patch"
+                    },
+                    "phpunit/phpunit-mock-objects": {
+                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
                     }
-                }
+                },
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                },
+                "composer-exit-on-patch-failure": true
             },
             "autoload": {
                 "psr-4": {
@@ -5899,19 +5897,19 @@
             },
             "type": "yii2-extension",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                },
-                "composer-exit-on-patch-failure": true,
                 "patches": {
-                    "phpunit/phpunit-mock-objects": {
-                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
-                    },
                     "phpunit/phpunit": {
                         "Fix PHP 7 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php7.patch",
                         "Fix PHP 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php8.patch"
+                    },
+                    "phpunit/phpunit-mock-objects": {
+                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
                     }
-                }
+                },
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                },
+                "composer-exit-on-patch-failure": true
             },
             "autoload": {
                 "psr-4": {
@@ -6544,16 +6542,16 @@
         },
         {
             "name": "codeception/module-yii2",
-            "version": "1.1.10",
+            "version": "1.1.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/module-yii2.git",
-                "reference": "2971f1fb44cd3088f7ecbe78bc51161c037a6551"
+                "reference": "1ebe6bc2a7f307a6c246026a905612a40ef64859"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/module-yii2/zipball/2971f1fb44cd3088f7ecbe78bc51161c037a6551",
-                "reference": "2971f1fb44cd3088f7ecbe78bc51161c037a6551",
+                "url": "https://api.github.com/repos/Codeception/module-yii2/zipball/1ebe6bc2a7f307a6c246026a905612a40ef64859",
+                "reference": "1ebe6bc2a7f307a6c246026a905612a40ef64859",
                 "shasum": ""
             },
             "require": {
@@ -6562,10 +6560,11 @@
                 "php": "^8.0"
             },
             "require-dev": {
-                "codeception/module-asserts": "^3.0",
-                "codeception/module-filesystem": "^3.0",
+                "codeception/module-asserts": ">= 3.0",
+                "codeception/module-filesystem": "> 3.0",
                 "codeception/verify": "^3.0",
                 "codemix/yii2-localeurls": "^1.7",
+                "phpstan/phpstan": "^1.10",
                 "yiisoft/yii2": "dev-master",
                 "yiisoft/yii2-app-advanced": "dev-master"
             },
@@ -6598,9 +6597,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/module-yii2/issues",
-                "source": "https://github.com/Codeception/module-yii2/tree/1.1.10"
+                "source": "https://github.com/Codeception/module-yii2/tree/1.1.12"
             },
-            "time": "2023-12-04T09:18:47+00:00"
+            "time": "2024-12-09T14:34:26+00:00"
         },
         {
             "name": "codeception/stub",
@@ -6764,16 +6763,16 @@
         },
         {
             "name": "fakerphp/faker",
-            "version": "v1.23.1",
+            "version": "v1.24.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FakerPHP/Faker.git",
-                "reference": "bfb4fe148adbf78eff521199619b93a52ae3554b"
+                "reference": "e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/bfb4fe148adbf78eff521199619b93a52ae3554b",
-                "reference": "bfb4fe148adbf78eff521199619b93a52ae3554b",
+                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5",
+                "reference": "e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5",
                 "shasum": ""
             },
             "require": {
@@ -6821,9 +6820,9 @@
             ],
             "support": {
                 "issues": "https://github.com/FakerPHP/Faker/issues",
-                "source": "https://github.com/FakerPHP/Faker/tree/v1.23.1"
+                "source": "https://github.com/FakerPHP/Faker/tree/v1.24.1"
             },
-            "time": "2024-01-02T13:46:09+00:00"
+            "time": "2024-11-21T13:46:39+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -6943,16 +6942,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.3.1",
+            "version": "v5.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "8eea230464783aa9671db8eea6f8c6ac5285794b"
+                "reference": "447a020a1f875a434d62f2a401f53b82a396e494"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/8eea230464783aa9671db8eea6f8c6ac5285794b",
-                "reference": "8eea230464783aa9671db8eea6f8c6ac5285794b",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/447a020a1f875a434d62f2a401f53b82a396e494",
+                "reference": "447a020a1f875a434d62f2a401f53b82a396e494",
                 "shasum": ""
             },
             "require": {
@@ -6995,9 +6994,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.3.1"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.4.0"
             },
-            "time": "2024-10-08T18:51:32+00:00"
+            "time": "2024-12-30T11:07:19+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -7595,16 +7594,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.12.4",
+            "version": "v0.12.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "2fd717afa05341b4f8152547f142cd2f130f6818"
+                "reference": "d73fa3c74918ef4522bb8a3bf9cab39161c4b57c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/2fd717afa05341b4f8152547f142cd2f130f6818",
-                "reference": "2fd717afa05341b4f8152547f142cd2f130f6818",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/d73fa3c74918ef4522bb8a3bf9cab39161c4b57c",
+                "reference": "d73fa3c74918ef4522bb8a3bf9cab39161c4b57c",
                 "shasum": ""
             },
             "require": {
@@ -7631,12 +7630,12 @@
             ],
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-main": "0.12.x-dev"
-                },
                 "bamarni-bin": {
                     "bin-links": false,
                     "forward-command": false
+                },
+                "branch-alias": {
+                    "dev-main": "0.12.x-dev"
                 }
             },
             "autoload": {
@@ -7668,9 +7667,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.12.4"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.12.7"
             },
-            "time": "2024-06-10T01:18:23+00:00"
+            "time": "2024-12-10T01:58:33+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -8864,12 +8863,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "3.0-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
@@ -9072,8 +9071,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -9148,8 +9147,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -9524,19 +9523,19 @@
             },
             "type": "yii2-extension",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                },
-                "composer-exit-on-patch-failure": true,
                 "patches": {
-                    "phpunit/phpunit-mock-objects": {
-                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
-                    },
                     "phpunit/phpunit": {
                         "Fix PHP 7 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php7.patch",
                         "Fix PHP 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php8.patch"
+                    },
+                    "phpunit/phpunit-mock-objects": {
+                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
                     }
-                }
+                },
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                },
+                "composer-exit-on-patch-failure": true
             },
             "autoload": {
                 "psr-4": {
@@ -9611,7 +9610,8 @@
     "platform": {
         "php": ">=8.0.0",
         "ext-simplexml": "*",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "ext-zip": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"
