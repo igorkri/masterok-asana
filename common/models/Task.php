@@ -69,6 +69,16 @@ class Task extends \yii\db\ActiveRecord
         return 'task';
     }
 
+    /**
+     *  Вивід gid задач
+     *
+     * {@inheritdoc}
+     */
+    public static function getTaskGids()
+    {
+        return Timer::find()->select('task_gid')->column();
+    }
+
 
     public function afterFind()
     {

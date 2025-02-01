@@ -15,13 +15,13 @@ return [
         // 'vAlign' => GridView::ALIGN_MIDDLE,
         // 'hAlign' => GridView::ALIGN_CENTER,
     ],
-    // [
-    // 'class'=>'\kartik\grid\DataColumn',
-    // 'attribute'=>'id',
-    // 'width' => '5%',
-    // 'vAlign' => GridView::ALIGN_MIDDLE,
-    // 'hAlign' => GridView::ALIGN_CENTER,
-    // ],
+    [
+        'class' => '\kartik\grid\DataColumn',
+        'attribute' => 'id',
+        'width' => '5%',
+        'vAlign' => GridView::ALIGN_MIDDLE,
+        'hAlign' => GridView::ALIGN_CENTER,
+    ],
     [
         'class' => '\kartik\grid\DataColumn',
         'attribute' => 'payer_id',
@@ -35,14 +35,14 @@ return [
     [
         'class' => '\kartik\grid\DataColumn',
         'attribute' => 'invoice_no',
-         'width' => '5%',
+        'width' => '5%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_CENTER,
     ],
     [
         'class' => '\kartik\grid\DataColumn',
         'attribute' => 'act_no',
-         'width' => '5%',
+        'width' => '5%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_CENTER,
     ],
@@ -77,7 +77,7 @@ return [
         // 'width' => '5%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_CENTER,
-    ],[
+    ], [
         'class' => '\kartik\grid\DataColumn',
         'attribute' => 'date_invoice',
         'visible' => $page_type === \common\models\report\Invoice::PAGE_TYPE_INVOICE || $page_type == \common\models\report\Invoice::PAGE_TYPE_ALL,

@@ -14,13 +14,33 @@ class TimerSearch extends Timer
 {
     /**
      * @inheritdoc
-     */
+     *
+     * $_GET = [
+     * 'TimerSearch' => [
+     * 'task_gid' => '',
+     * 'time' => '',
+     * 'coefficient' => '',
+     * 'comment' => '',
+     * 'status' => [
+     * '1',
+     * ],
+     * 'created_at' => '',
+     * 'updated_at' => '',
+     * 'minute' => '',
+     * ],
+     * 'hour' => '',
+     * 'minute' => '',
+     * 'second' => '',
+     * 'meridian' => '',
+     * ];
+ */
     public function rules()
     {
         return [
             [['id', 'minute', 'status'], 'integer'],
             [['task_gid', 'time', 'comment', 'created_at', 'updated_at'], 'safe'],
             [['coefficient'], 'number'],
+//            [['status'], 'each', 'rule' => ['in', 'range' => array_keys(self::$statusList)]],
         ];
     }
 
@@ -42,6 +62,8 @@ class TimerSearch extends Timer
      */
     public function search($params)
     {
+//        debugDie($this->status);
+
         $query = Timer::find();
 
         $dataProvider = new ActiveDataProvider([
@@ -65,6 +87,15 @@ class TimerSearch extends Timer
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
+
+//        if (is_array($this->status) && !empty($this->status)) {
+//            $query->andFilterWhere(['IN', 'status', $this->status]);
+//        } elseif (!empty($this->status)) {
+//            debugDie($this->status);
+//            $query->andFilterWhere(['status' => $this->status]);
+//        }
+
+
 
         $query->andFilterWhere(['like', 'task_gid', $this->task_gid])
             ->andFilterWhere(['like', 'comment', $this->comment]);

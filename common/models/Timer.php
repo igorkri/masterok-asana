@@ -53,11 +53,11 @@ class Timer extends \yii\db\ActiveRecord
     ];
 
     static public array $statusList = [
-        self::STATUS_WAIT => 'Чекає на звіт',
-        self::STATUS_PROCESS => 'В процесі',
-        self::STATUS_PLANNED => 'Заплановано',
-        self::STATUS_INVOICE => 'Рахунок виставлено',
-        self::STATUS_PAID => 'Оплачено',
+        self::STATUS_WAIT               => 'Чекає на звіт',
+        self::STATUS_PROCESS            => 'В процесі',
+        self::STATUS_PLANNED            => 'Заплановано',
+        self::STATUS_INVOICE            => 'Рахунок виставлено',
+        self::STATUS_PAID               => 'Оплачено',
         self::STATUS_NEED_CLARIFICATION => 'Потребує уточнення',
     ];
 
@@ -77,8 +77,8 @@ class Timer extends \yii\db\ActiveRecord
     {
         return [
             [['task_gid', 'time', 'minute', 'coefficient'], 'required'],
-            [['time', 'created_at', 'updated_at'], 'safe'],
-            [['minute', 'status'], 'integer'],
+            [['status', 'time', 'created_at', 'updated_at'], 'safe'],
+            [['minute'], 'integer'],
             [['coefficient'], 'number'],
             [['comment'], 'string'],
             [['task_gid'], 'string', 'max' => 255],
