@@ -55,6 +55,14 @@ use yii\helpers\Url;
                                 <span class="sa-nav__title">Задачі</span>
                             </a>
                         </li>
+                        <li class="sa-nav__menu-item sa-nav__menu-item--has-icon">
+                            <a href="<?= Url::to(['/timer/index']) ?>" class="sa-nav__link">
+                                            <span class="sa-nav__icon">
+                                                <i class="fa-solid fa-stopwatch"></i>
+                                            </span>
+                                <span class="sa-nav__title">Timer</span>
+                            </a>
+                        </li>
                         <!--                        <li class="sa-nav__menu-item sa-nav__menu-item--has-icon"-->
                         <!--                            data-sa-collapse-item="sa-nav__menu-item--open">-->
                         <!--                            <a href="" class="sa-nav__link" data-sa-collapse-trigger="">-->
