@@ -134,6 +134,7 @@ class TimerController extends Controller
             } else {
                 return $this->render('create', [
                     'model' => $model,
+
                 ]);
             }
         }
@@ -151,7 +152,6 @@ class TimerController extends Controller
     {
         $request = Yii::$app->request;
         $model = $this->findModel($id);
-        $model->updated_at = date('Y-m-d H:i:s');
 
         if($request->isAjax){
             /*
@@ -294,5 +294,29 @@ class TimerController extends Controller
             ]),
             'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"])
         ];
+    }
+
+    /*
+     * Update status of Timer model
+     *
+     * @param integer $status
+     *
+     */
+    public function actionUpdateStatus($status)
+    {
+        $request = Yii::$app->request;
+        $pks = explode(',', $request->post( 'pks' ));
+        foreach ( $pks as $pk ) {
+            $model = $this->findModel($pk);
+            $model->status = $status;
+            $model->save();
+        }
+
+        if($request->isAjax){
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
+        }else{
+            return $this->redirect(['index']);
+        }
     }
 }
