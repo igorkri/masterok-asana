@@ -1,5 +1,6 @@
 <?php
 
+use common\models\Timer;
 use yii\bootstrap5\Html;
 use yii\widgets\Pjax;
 
@@ -7,6 +8,9 @@ use yii\widgets\Pjax;
 /* @var $timers common\models\Timer[] */
 /* @var $timer common\models\Timer */
 
+
+$total_minute = 0;
+$total_price = 0;
 ?>
 <div style="width: 75%;" class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasSms"
      aria-labelledby="offcanvasSmsLabel">
@@ -16,7 +20,7 @@ use yii\widgets\Pjax;
     </div>
     <div class="offcanvas-body">
         <?php Pjax::begin(['id' => 'crud-datatable-pjax']) ?>
-        <?=Html::a('+', ['create-track', 'task_id' => Yii::$app->request->get('gid')],
+        <?=Html::a('+', ['/timer/create', 'task_id' => Yii::$app->request->get('gid')],
             [
                 'class' => 'btn btn-success',
                 'data-pjax' => 1,
@@ -31,59 +35,38 @@ use yii\widgets\Pjax;
                 <th scope="col">Час</th>
                 <th scope="col">Хвилини</th>
                 <th scope="col">Коефіцієнт</th>
-                <th scope="col">Ціна</th>
                 <th scope="col">Коментар</th>
             </tr>
             </thead>
             <tbody>
             <?php $i = 1;
-            $totalHours = 0;
-            $totalMinutes = 0;
-            $totalSeconds = 0;
-            $total_minute = 0;
-            $sum = 0;
-            $sum_track = 0;
             if (isset($timers)){
                 foreach ($timers as $timer):
-                    // Разбиваем строку времени на часы, минуты и секунды
-                    list($hours, $minutes, $seconds) = explode(":", $timer->time);
-                    // Суммируем общее время
-                    $totalHours += (int)$hours;
-                    $totalMinutes += (int)$minutes;
-                    $totalSeconds += (int)$seconds;
                     $total_minute += $timer->minute;
-                    // Рассчитываем сумму с учетом коэффициента
-                    $sum_track = ($timer->minute / 60) * 400 * ($timer->coefficient > 0 ? $timer->coefficient : 1);
-                    $sum += $sum_track;
+                    $total_price += Timer::getPrice($timer->minute, $timer->coefficient);
                     ?>
                     <tr>
-                        <th scope="row"><?=Html::a($i, ['/timer/update', 'id' => $timer->id], [
+                        <th scope="row">
+                            <?=Html::a($i, ['/timer/update', 'id' => $timer->id], [
                                 'class' => 'text-reset', 'data-pjax' => 1,
                                 'role'=>'modal-remote','title'=>'Update', 'data-toggle'=>'tooltip'
-                            ]) ?></th>
-                        <td><?= Yii::$app->formatter->asDatetime($timer->created_at, 'medium') ?></td>
+                            ]) ?>
+                        </th>
+                        <td><?= Yii::$app->formatter->asDatetime($timer->created_at, 'php:d.m.Y H:i:s') ?></td>
                         <td><?= $timer->getStatusText($timer->status) ?></td>
                         <td><?= $timer->time ?></td>
-                        <td width="120"><?= $timer->minute ?> (<?=round($timer->minute / 60, 2)?>)</td>
+                        <td width="120"><?= $timer->minute ?> (<?=round($timer->getTimeHour(), 2)?>)</td>
                         <td><?= $timer->coefficient ?></td>
-                        <td width="120"><?= Yii::$app->formatter->asDecimal($sum_track, 2) ?></td>
                         <td><?= $timer->comment ?></td>
                     </tr>
-
                     <?php $i++; endforeach;
-                // Преобразуем секунды и минуты в часы, если необходимо
-                $totalMinutes += floor($totalSeconds / 60);
-                $totalSeconds %= 60;
-                $totalHours += floor($totalMinutes / 60);
-                $totalMinutes %= 60;
             }
             ?>
             <tr style="background: #b4b1b1">
                 <th colspan=3>Загальні дані:</th>
-                <th><?= sprintf("%02d:%02d:%02d", $totalHours, $totalMinutes, $totalSeconds); ?></th>
-                <th width="120"><?= $total_minute ?> (<?=round($total_minute / 60, 2)?>)</th>
-                <th></th>
-                <th width="120"><?=Yii::$app->formatter->asDecimal($sum, 2) ?> грн.</th>
+                <th><?= Timer::getTotalTime($total_minute) ?></th>
+                <th width="120"><?= $total_minute ?> (<?= round($total_minute / 60, 2) ?>)</th>
+                <th><?= round($total_price, 2) ?></th>
                 <th></th>
             </tr>
             </tbody>

@@ -15,7 +15,18 @@ use yii\widgets\ActiveForm;
         <?php echo $form->field($model, 'task_gid')->hiddenInput(['maxlength' => true])->label(false) ?>
 
         <div class="row">
-            <div class="col-md-3"><?= $form->field($model, 'time')->textInput() ?></div>
+            <div class="col-md-3"><?= $form->field($model, 'time')->widget(
+                    \kartik\time\TimePicker::classname(),
+                    [
+                        'pluginOptions' => [
+                            'showSeconds' => true, // show seconds
+                            'showMeridian' => false, // 24 hours format
+                            'minuteStep' => 1, // minute step
+                            'secondStep' => 5, // second step
+                            'defaultTime' => '00:00:00', // default time
+                        ]
+                    ]
+                ) ?></div>
             <div class="col-md-3"><?= $form->field($model, 'minute')->textInput() ?></div>
             <div class="col-md-3">
                 <?php //$form->field($model, 'coefficient')->widget(\kartik\select2\Select2::classname(), [

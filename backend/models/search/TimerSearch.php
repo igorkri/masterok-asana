@@ -78,14 +78,27 @@ class TimerSearch extends Timer
             return $dataProvider;
         }
 
+
+        // ищем в диапазоне дат (01.01.2025 - 23.01.2025) - это в формате даты, нужно преобразовать в формат даты для БД (2025-01-01 - 2025-01-23)
+        if (isset($params['TimerSearch']['created_at']) && !empty($params['TimerSearch']['created_at'])) {
+            $date = explode(' - ', $params['TimerSearch']['created_at']);
+            $query->andFilterWhere(['between', 'created_at', date('Y-m-d', strtotime($date[0])), date('Y-m-d', strtotime($date[1]))]);
+        }
+
+        // ищем в диапазоне дат (01.01.2025 - 23.01.2025) - это в формате даты, нужно преобразовать в формат даты для БД (2025-01-01 - 2025-01-23)
+        if (isset($params['TimerSearch']['updated_at']) && !empty($params['TimerSearch']['updated_at'])) {
+            $date = explode(' - ', $params['TimerSearch']['updated_at']);
+            $query->andFilterWhere(['between', 'updated_at', date('Y-m-d', strtotime($date[0])), date('Y-m-d', strtotime($date[1]))]);
+        }
+
         $query->andFilterWhere([
             'id' => $this->id,
             'time' => $this->time,
             'minute' => $this->minute,
             'coefficient' => $this->coefficient,
             'status' => $this->status,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+//            'created_at' => $this->created_at,
+//            'updated_at' => $this->updated_at,
         ]);
 
 //        if (is_array($this->status) && !empty($this->status)) {

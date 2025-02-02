@@ -63,7 +63,9 @@
         "nullref/yii2-datatables": "^1.1",
         "kartik-v/yii2-field-range": "*",
         "ext-zip": "*",
-        "kartik-v/yii2-widget-timepicker": "^1.0"
+        "kartik-v/yii2-widget-timepicker": "^1.0",
+        "psr/http-message": "^1.0",
+        "phpoffice/phpspreadsheet":"^1.29"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

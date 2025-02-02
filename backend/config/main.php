@@ -78,5 +78,29 @@ return [
         ],
 
     ],
+    'controllerMap' => [
+        'elfinder' => [
+            'class' => 'igorkri\elfinder\PathController',
+//            'class' => 'mihaildev\elfinder\PathController',
+            'plugin' => [
+                [
+                    'class' => '\igorkri\elfinder\plugin\Sluggable',
+                    'lowercase' => true,
+                    'replacement' => '-'
+                ]
+            ],
+            'connectOptions' => [
+                'debug' => true,
+            ],
+            'access' => ['@'],
+            'root' => [
+                'baseUrl' => '@web',
+                'basePath' => '@frontend/web',
+//                'path' => '/',
+                'path' => '/report',
+                'name' => 'Каталог',
+            ],
+        ],
+    ],
     'params' => $params,
 ];

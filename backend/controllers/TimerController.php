@@ -79,10 +79,15 @@ class TimerController extends Controller
      * and for non-ajax request if creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($task_id)
     {
         $request = Yii::$app->request;
-        $model = new Timer();  
+        $model = new Timer();
+        $model->task_gid = $task_id;
+        $model->status = Timer::STATUS_PLANNED;
+        $model->coefficient = 1.0;
+        $model->created_at = date('Y-m-d H:i:s');
+        $model->minute = 0;
 
         if($request->isAjax){
             /*
@@ -145,7 +150,8 @@ class TimerController extends Controller
     public function actionUpdate($id)
     {
         $request = Yii::$app->request;
-        $model = $this->findModel($id);       
+        $model = $this->findModel($id);
+        $model->updated_at = date('Y-m-d H:i:s');
 
         if($request->isAjax){
             /*
@@ -269,5 +275,24 @@ class TimerController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    public function actionExportExcel()
+    {
+        $request = Yii::$app->request;
+        $pks = explode(',', $request->post( 'pks' ));
+        $models = Timer::findAll($pks);
+        $path = Timer::exportExcel($models);
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return [
+            'forceReload' => '#crud-datatable-pjax',
+            'title' => "Завантаження звіту",
+            'content' => $this->renderAjax('/report/invoice/download', [
+                'type_doc' => 'excel',
+                'path' => $path,
+            ]),
+            'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"])
+        ];
     }
 }

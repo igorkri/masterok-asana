@@ -17,3 +17,5 @@ $this->params['breadcrumbs'][] = $this->title;
             'timers' => $timers,
         ]) ?>
 
+<?php
+$this->registerJsFile('@web/vendor/bootstrap/js/bootstrap.bundle.min.js', ['depends' => [\yii\web\JqueryAsset::class]]);
