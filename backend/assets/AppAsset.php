@@ -37,7 +37,7 @@ class AppAsset extends AssetBundle
         "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/solid.min.js",
         "vendor/feather-icons/feather.min.js",
         "vendor/simplebar/simplebar.min.js",
-//        "vendor/bootstrap/js/bootstrap.bundle.min.js",
+        "vendor/bootstrap/js/bootstrap.bundle.min.js",
         "vendor/highlight.js/highlight.pack.js",
         "vendor/quill/quill.min.js",
         "vendor/air-datepicker/js/datepicker.min.js",
