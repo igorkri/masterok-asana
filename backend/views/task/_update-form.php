@@ -21,7 +21,9 @@ use igorkri\elfinder\ElFinder;
                             <li class="breadcrumb-item"><a
                                         href="<?= yii\helpers\Url::to(['index', 'project_gid' => $model->project_gid]) ?>">Таски</a>
                             </li>
-                            <li class="breadcrumb-item active" aria-current="page">Редагування таска</li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <?=Html::a('Таск в asana', $model->permalink_url, ['target' => 'blank'])?>
+                            </li>
                         </ol>
                     </nav>
                     <h1 class="h3 m-0">Задача: <?= Html::encode($model->name) ?> </h1>
