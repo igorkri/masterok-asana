@@ -225,9 +225,12 @@ class Task extends \yii\db\ActiveRecord
         return $this->hasMany(TaskCustomFields::class, ['task_gid' => 'gid']);
     }
 
+
     public function getStatus()
     {
-        return $this->section_project_name;
+        $sp = SectionProject::find()->where(['gid' => $this->section_project_gid])->one();
+        return $sp ? $sp->name : '-- Не визначено --';
+        //return $this->section_project_name;
     }
 
     public function getSubTasks()

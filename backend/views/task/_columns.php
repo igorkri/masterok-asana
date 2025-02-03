@@ -96,7 +96,7 @@ return [
      ],
      [
          'class'=>'\kartik\grid\DataColumn',
-         'attribute'=>'section_project_name',
+         'attribute'=>'section_project_gid',
          'label' => 'Статус',
          'filter' => false,
          'format' => 'raw',
