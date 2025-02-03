@@ -1053,7 +1053,7 @@ class Task extends \yii\db\ActiveRecord
      * @param string $task_gid
      * @return array
      */
-    public static function prepareData($task_gid): array
+    public static function prepareData($task_gid, $task_sync = Task::CRON_STATUS_UPDATE): array
     {
         $taskData = [];
         // получаем задачу
@@ -1077,6 +1077,10 @@ class Task extends \yii\db\ActiveRecord
             $taskData['assignee'] = $task->assignee_gid ?? null;
             $taskData['start_on'] = $task->start_on ?? null;
             $taskData['due_on'] = $task->due_on ?? null;
+            if ($task_sync === Task::CRON_STATUS_NEW) {
+                $taskData['workspace'] = $task->workspace_gid;
+                $taskData['projects'] = [$task->project_gid];
+            }
 
             // Удаляем пустые custom_fields, если они не заданы
             if (empty($taskData['custom_fields'])) {

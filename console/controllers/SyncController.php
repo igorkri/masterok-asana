@@ -19,4 +19,13 @@ class SyncController extends Controller
         SyncAsana::updateTask();
     }
 
+
+    /**
+     * Создание задачи в Asana
+     */
+    public function actionCreateTask()
+    {
+        SyncAsana::createTask();
+    }
+
 }
