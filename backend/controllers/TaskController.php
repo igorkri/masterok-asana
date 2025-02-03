@@ -127,6 +127,8 @@ class TaskController extends Controller
         $request = Yii::$app->request;
         $model = Task::findOne(['gid' => $gid]);
         $timers = Timer::find()->where(['task_gid' => $model->gid])->all();
+        $model->task_sync_out = date('Y-m-d H:i:s');
+
         if ($model->task_sync !== Task::CRON_STATUS_STOP) {
             $model->task_sync = Task::CRON_STATUS_UPDATE;
         }

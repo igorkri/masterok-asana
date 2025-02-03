@@ -104,8 +104,10 @@ class AsanaController extends Controller
                     $existingTask = Task::findOne(['gid' => $tGid]);
 
                     if ($existingTask) {
-                        // Обновление существующей задачи и отслеживание изменений
-                        Task::updateTask($fullTask, $existingTask, $project->gid);
+                        if ($existingTask->task_sync_in < $existingTask->task_sync_out) {
+                            // Обновление существующей задачи и отслеживание изменений
+                            Task::updateTask($fullTask, $existingTask, $project->gid);
+                        }
                     } else {
                         Task::createTask($fullTask, $project->gid);
                     }
