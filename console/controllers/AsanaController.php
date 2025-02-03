@@ -108,6 +108,7 @@ class AsanaController extends Controller
 //                            // Обновление существующей задачи и отслеживание изменений
 //                            Task::updateTask($fullTask, $existingTask, $project->gid);
 //                        }
+
                         if ($existingTask->task_sync !== Task::CRON_STATUS_UPDATE) {
                             Task::updateTask($fullTask, $existingTask, $project->gid);
                         }
