@@ -11,9 +11,7 @@
             <div class="fs-6 fw-medium mb-3">Файли</div>
             <div class="sa-grid">
                 <div class="sa-grid__body">
-                    <?php use yii\bootstrap5\Modal;
-
-                    foreach ($model->attachments as $attachment):?>
+                    <?php foreach ($model->attachments as $attachment):?>
                     <?php /* @var \common\models\TaskAttachment $attachment */ ?>
                     <div class="sa-grid__item">
                         <a href="<?=$attachment->getPermanentUrl()?>" class="sa-file sa-file--type--jpg" target="_blank">
@@ -26,7 +24,9 @@
                                 <div class="sa-file__badge badge badge-sa-dark text-uppercase"><?=$attachment->getExtension()?></div>
                             </div>
                             <div class="sa-file__info">
-                                <div class="sa-file__name"><?=$attachment->getName()?></div>
+                                <div class="sa-file__name" style="font-size: 5px;" title="<?=$attachment->getName()?>">
+                                    <?=$attachment->getName()?>
+                                </div>
                             </div>
                         </a>
                     </div>
@@ -37,15 +37,3 @@
     </div>
 </div>
 </div>
-
-<?php Modal::begin([
-    "id"=>"ajaxCrudModal",
-    //"size" => Modal::SIZE_EXTRA_LARGE,
-//    "scrollable" => true,
-//    "options" => [
-//        "data-bs-backdrop" => "static",
-//        // "class" => "modal-dialog-scrollable",
-//    ],
-    "footer"=>"", // always need it for jquery plugin
-])?>
-<?php Modal::end(); ?>
