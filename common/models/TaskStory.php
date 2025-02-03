@@ -107,5 +107,62 @@ class TaskStory extends \yii\db\ActiveRecord
             return null;
         }
     }
+
+
+    /**
+     * Метод для сохранения историй задачи в asana.
+     *
+     * @param string $task_gid Идентификатор задачи в Asana
+     * @param array $data Данные для сохранения
+     * @return bool Результат сохранения
+     *
+     */
+    public static function saveStories($task_gid, $data)
+    {
+        // проверка наличия данных
+        if (empty($data) || !is_array($data)) {
+            Yii::error("Некорректные данные для сохранения историй: " . print_r($data, true), __METHOD__);
+            return false;
+        }
+
+        // отправляем комментарий в Asana
+        $token = Yii::$app->params['tokenAsana'];
+        $url = "https://app.asana.com/api/1.0/tasks/{$task_gid}/stories";
+
+        // Преобразуем данные в JSON
+        $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        if (!$jsonData) {
+            Yii::error("Ошибка JSON-кодирования данных: " . json_last_error_msg(), __METHOD__);
+            return false;
+        }
+
+        // Настройка HTTP-запроса с использованием cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: application/json',
+            'Content-Type: application/json', // Важно: Asana требует JSON-заголовка
+            "Authorization: Bearer {$token}",
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 201) {
+            Yii::warning($response, __METHOD__);
+            return true;
+        } else {
+            Yii::error([$response, $data], __METHOD__);
+            // Обработка ошибки
+            Yii::error("Ошибка сохранения историй задачи: HTTP {$httpCode}");
+            return false;
+        }
+    }
+
 }
 

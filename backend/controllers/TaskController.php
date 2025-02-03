@@ -5,6 +5,7 @@ namespace backend\controllers;
 
 use common\models\Project;
 use common\models\TaskAttachment;
+use common\models\TaskStory;
 use common\models\Timer;
 use Yii;
 use common\models\Task;
@@ -383,6 +384,32 @@ class TaskController extends Controller
         return [
             'success' => false,
             'message' => 'Активного таймера не найдено.',
+        ];
+    }
+
+
+    public function actionSendMessage()
+    {
+        $post = Yii::$app->request->post();
+        $message = $post['message'];
+        $taskGid = $post['task_gid'];
+
+        $data = [
+            'data' => [
+                'text' => $message
+            ]
+        ];
+
+
+        TaskStory::saveStories($taskGid, $data);
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return [
+            'success' => true,
+            'toast' => [
+                'class' => 'toast-sa-success',
+                'name' => 'Успішно',
+                'message' => 'Повідомлення відправлено! Через хвилину воно з\'явиться в чаті.',
+            ],
         ];
     }
 

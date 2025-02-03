@@ -857,34 +857,41 @@ class Task extends \yii\db\ActiveRecord
      */
     public static function saveOrUpdateTaskStory($task): bool
     {
-
         /* @var Task $task */
         $taskStory = TaskStory::getApiStories($task->gid);
-        if (isset($taskStory['data']) && !empty($taskStory['data'])) {
-            foreach ($taskStory['data'] as $story) {
-                $model = TaskStory::find()->where(['gid' => $story['gid']])->one();
-                if (!$model) {
-                    $model = new TaskStory();
-                }
-                $model->gid = $story['gid'];
-                $model->task_gid = $task->gid;
-                $model->created_at = date('Y-m-d H:i:s', strtotime($story['created_at']));
-                $model->created_by_gid = $story['created_by']['gid'];
-                $model->created_by_name = $story['created_by']['name'];
-                $model->created_by_resource_type = $story['type'];
-                $model->text = $story['text'];
-                $model->resource_subtype = $story['resource_subtype'];
-                if (!$model->save()) {
-                    Yii::error('Error saving TaskStory: ' . print_r($model->getErrors(), true));
-                    return false;
-                } else {
-//                    echo 'TaskStory created' . $model->text . PHP_EOL;
-                    return true;
-                }
+
+        if (!isset($taskStory['data']) || empty($taskStory['data'])) {
+            return false; // Нет данных для обработки
+        }
+
+        $success = false; // Флаг успешного сохранения хотя бы одной записи
+
+        foreach ($taskStory['data'] as $story) {
+            $model = TaskStory::find()->where(['gid' => $story['gid']])->one();
+
+            if (!$model) {
+                $model = new TaskStory();
+            }
+
+            $model->gid = $story['gid'];
+            $model->task_gid = $task->gid;
+            $model->created_at = date('Y-m-d H:i:s', strtotime($story['created_at']));
+            $model->created_by_gid = $story['created_by']['gid'];
+            $model->created_by_name = $story['created_by']['name'];
+            $model->created_by_resource_type = $story['type'];
+            $model->text = $story['text'];
+            $model->resource_subtype = $story['resource_subtype'];
+
+            if (!$model->save()) {
+                Yii::error('Error saving TaskStory: ' . print_r($model->getErrors(), true));
+            } else {
+                $success = true; // Хотя бы одна запись успешно сохранена
             }
         }
-        return false;
+
+        return $success;
     }
+
 
 
     /**
