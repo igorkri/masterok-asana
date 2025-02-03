@@ -789,6 +789,8 @@ class Task extends \yii\db\ActiveRecord
         $taskModel->resource_subtype = $fullTask->resource_subtype ?? null;
         $taskModel->num_hearts = $fullTask->num_hearts ?? 0;
         $taskModel->num_likes = $fullTask->num_likes ?? 0;
+        $taskModel->task_sync_in = date('Y-m-d H:i:s');
+        $taskModel->task_sync = Task::CRON_STATUS_SUCCESS;
 
         if ($taskModel->save()) {
             // Сохранение кастомных полей задачи
@@ -808,6 +810,7 @@ class Task extends \yii\db\ActiveRecord
      */
     public static function updateTask($fullTask, $existingTask, $project_gid)
     {
+        /** @var Task $taskModel */
         $taskModel = $existingTask;
         if ($taskModel) {
             // Обновление существующей записи задачи
@@ -830,6 +833,8 @@ class Task extends \yii\db\ActiveRecord
             $taskModel->resource_subtype = $fullTask->resource_subtype ?? null;
             $taskModel->num_hearts = $fullTask->num_hearts ?? 0;
             $taskModel->num_likes = $fullTask->num_likes ?? 0;
+            $taskModel->task_sync_in = date('Y-m-d H:i:s');
+            $taskModel->task_sync = Task::CRON_STATUS_SUCCESS;
 
             if ($taskModel->save()) {
                 echo 'date: ' . $taskModel->created_at . ' date_mod: ' . $taskModel->modified_at . ' Task update: ' . $taskModel->name . ' gid ' . $taskModel->gid . PHP_EOL;
