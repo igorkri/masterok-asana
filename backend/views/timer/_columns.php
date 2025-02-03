@@ -28,6 +28,9 @@ return [
         'attribute' => 'task_gid',
         'format' => 'raw',
         'value' => function ($model) {
+            if (!$model->taskG) {
+                return '⸺';
+            }
             // Основное значение
             $taskLink = \yii\helpers\Html::a(
                 $model->taskG->name,
