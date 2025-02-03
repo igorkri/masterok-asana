@@ -390,9 +390,22 @@ class TaskController extends Controller
 
     public function actionSendMessage()
     {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         $post = Yii::$app->request->post();
-        $message = $post['message'];
-        $taskGid = $post['task_gid'];
+        $message = $post['message'] ?? null;
+        $taskGid = $post['task_gid'] ?? null;
+
+        if (!$message || !$taskGid) {
+            return [
+                'success' => false,
+                'toast' => [
+                    'class' => 'toast-sa-danger',
+                    'name' => 'Помилка',
+                    'message' => 'Невірні вхідні дані.',
+                ],
+            ];
+        }
 
         $data = [
             'data' => [
@@ -400,15 +413,44 @@ class TaskController extends Controller
             ]
         ];
 
+        $res = TaskStory::saveStories($taskGid, $data);
 
-        TaskStory::saveStories($taskGid, $data);
-        Yii::$app->response->format = Response::FORMAT_JSON;
+        if ($res['success'] && isset($res['response']['data'])) {
+            $asanaStory = $res['response']['data'];
+
+            $story = new TaskStory();
+            $story->story_gid = $asanaStory['gid'];
+            $story->task_gid = $asanaStory['target']['gid'];
+            $story->text = $asanaStory['text'];
+            $story->created_at = date('Y-m-d H:i:s', strtotime($asanaStory['created_at']));
+            $story->created_by_gid = $asanaStory['created_by']['gid'];
+            $story->created_by_name = $asanaStory['created_by']['name'];
+            $story->created_by_resource_type = $asanaStory['resource_type'];
+            $story->resource_type = $asanaStory['resource_type'];
+            $story->resource_subtype = $asanaStory['resource_subtype'];
+
+            if (!$story->save()) {
+                Yii::error("Ошибка сохранения истории в БД: " . json_encode($story->getErrors(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), __METHOD__);
+            }
+
+            return [
+                'success' => true,
+                'toast' => [
+                    'class' => 'toast-sa-success',
+                    'name' => 'Успішно',
+                    'message' => 'Повідомлення відправлено! Воно скоро з\'явиться в чаті.',
+                ],
+            ];
+        }
+
+        // Обработка ошибок API
+        $errorMessage = $res['error'] ?? 'Невідома помилка';
         return [
-            'success' => true,
+            'success' => false,
             'toast' => [
-                'class' => 'toast-sa-success',
-                'name' => 'Успішно',
-                'message' => 'Повідомлення відправлено! Через хвилину воно з\'явиться в чаті.',
+                'class' => 'toast-sa-danger',
+                'name' => 'Помилка',
+                'message' => 'Помилка відправки повідомлення в Asana. <br> ' . $errorMessage,
             ],
         ];
     }

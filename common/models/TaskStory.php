@@ -114,30 +114,25 @@ class TaskStory extends \yii\db\ActiveRecord
      *
      * @param string $task_gid Идентификатор задачи в Asana
      * @param array $data Данные для сохранения
-     * @return bool Результат сохранения
+     * @return bool|array Результат сохранения
      *
      */
     public static function saveStories($task_gid, $data)
     {
-        // проверка наличия данных
         if (empty($data) || !is_array($data)) {
             Yii::error("Некорректные данные для сохранения историй: " . print_r($data, true), __METHOD__);
-            return false;
+            return ['success' => false, 'response' => null, 'error' => 'Некорректные данные'];
         }
 
-        // отправляем комментарий в Asana
         $token = Yii::$app->params['tokenAsana'];
         $url = "https://app.asana.com/api/1.0/tasks/{$task_gid}/stories";
 
-        // Преобразуем данные в JSON
         $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
         if (!$jsonData) {
-            Yii::error("Ошибка JSON-кодирования данных: " . json_last_error_msg(), __METHOD__);
-            return false;
+            Yii::error("Ошибка JSON-кодирования: " . json_last_error_msg(), __METHOD__);
+            return ['success' => false, 'response' => null, 'error' => 'Ошибка кодирования JSON'];
         }
 
-        // Настройка HTTP-запроса с использованием cURL
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -145,7 +140,7 @@ class TaskStory extends \yii\db\ActiveRecord
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Accept: application/json',
-            'Content-Type: application/json', // Важно: Asana требует JSON-заголовка
+            'Content-Type: application/json',
             "Authorization: Bearer {$token}",
         ]);
 
@@ -153,16 +148,25 @@ class TaskStory extends \yii\db\ActiveRecord
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
+        // Проверка успешного ответа
         if ($httpCode === 201) {
-            Yii::warning($response, __METHOD__);
-            return true;
-        } else {
-            Yii::error([$response, $data], __METHOD__);
-            // Обработка ошибки
-            Yii::error("Ошибка сохранения историй задачи: HTTP {$httpCode}");
-            return false;
+            $decodedResponse = json_decode($response, true);
+            return ['success' => true, 'response' => $decodedResponse];
         }
+
+        // Обработка ошибки
+        $decodedResponse = json_decode($response, true);
+        $errorMessage = $decodedResponse['errors'][0]['message'] ?? "Неизвестная ошибка";
+
+        Yii::error("Ошибка сохранения истории в Asana: HTTP {$httpCode} - {$errorMessage}", __METHOD__);
+
+        return [
+            'success' => false,
+            'response' => $decodedResponse,
+            'error' => $errorMessage
+        ];
     }
+
 
 }
 
