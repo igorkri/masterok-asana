@@ -85,16 +85,7 @@ use igorkri\elfinder\ElFinder;
                             </div>
 
                             <div class="mb-4">
-                                <?= $form->field($model, 'notes')->widget(CKEditor::class, [
-                                    'id' => 'notes',
-                                    'editorOptions' =>
-                                        ElFinder::ckeditorOptions('elfinder', [
-                                            'preset' => 'custom',
-                                            'height' => 200,
-                                            'language' => 'uk',
-                                            'controller' => 'elfinder',
-                                        ]),
-                                ]) ?>
+                                <?= $form->field($model, 'notes')->textarea(['rows' => 8])?>
                             </div>
                             <div>
                                 <?php echo $form->field($model, 'work_done')->widget(CKEditor::class, [

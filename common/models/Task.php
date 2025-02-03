@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Asana\Client;
+use common\components\SyncAsana;
 use console\controllers\AsanaController;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -54,6 +55,7 @@ class Task extends \yii\db\ActiveRecord
     const CRON_STATUS_DELETE = 'delete';
     const CRON_STATUS_ERROR = 'error';
     const CRON_STATUS_STOP = 'stop';
+    const CRON_STATUS_SUCCESS = 'success';
 
     public static $cronStatus = [
         self::CRON_STATUS_NEW => 'Новий',
@@ -61,6 +63,7 @@ class Task extends \yii\db\ActiveRecord
         self::CRON_STATUS_DELETE => 'Видалення',
         self::CRON_STATUS_ERROR => 'Помилка',
         self::CRON_STATUS_STOP => 'Зупинено',
+        self::CRON_STATUS_SUCCESS => 'Успішно',
     ];
 
 
@@ -80,6 +83,14 @@ class Task extends \yii\db\ActiveRecord
     }
 
 
+    /**
+     * Метод afterFind() в классе Task вызывается после того, как ActiveRecord объект был найден и загружен из базы данных. Этот метод переопределяет родительский метод afterFind() и выполняет дополнительные действия после загрузки данных.  В данном случае, метод afterFind() выполняет следующие действия:
+     * Вызывает родительский метод afterFind() с помощью parent::afterFind(), чтобы сохранить стандартное поведение.
+     * Устанавливает значения свойств priority и type для текущего объекта, вызывая методы getPriorityGid() и getTypeGid() соответственно.
+     * Таким образом, после загрузки объекта Task из базы данных, его свойства priority и type будут автоматически установлены на основе значений, полученных из соответствующих методов.
+     *
+     * @return void
+     */
     public function afterFind()
     {
         parent::afterFind(); // Вызов родительского метода
@@ -87,6 +98,38 @@ class Task extends \yii\db\ActiveRecord
         // Устанавливаем значения свойств
         $this->priority = $this->getPriorityGid();
         $this->type = $this->getTypeGid();
+    }
+
+    /**
+     * содаем метоод который будет сохранять priority и type в базу данных таблицу task_custom_fields - выполнять только при создании новой задачи
+     *
+     * @return void
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+            $this->saveTaskField('1202674799521449', $this->priority, $this->gid); // Приоритет '1202674799521449'
+            $this->saveTaskField('1205860710071790', $this->type, $this->gid); // Тип задачі '1205860710071790'
+
+    }
+
+    public function saveTaskField($custom_field_gid, $enum_option_gid, $task_gid)
+    {
+        $taskCustomField = TaskCustomFields::findOne(['task_gid' => $task_gid, 'custom_field_gid' => $custom_field_gid]);
+        if (!$taskCustomField) {
+            $taskCustomField = new TaskCustomFields();
+        }
+        $taskCustomField->task_gid = $task_gid;
+        $taskCustomField->custom_field_gid = $custom_field_gid;
+        $taskCustomField->enum_option_gid = $enum_option_gid;
+        $taskCustomField->type = 'enum';
+        $taskCustomField->name = ProjectCustomFields::find()->select('name')->where(['gid' => $custom_field_gid])->scalar();
+        $taskCustomField->display_value = ProjectCustomFieldEnumOptions::find()->select('name')->where(['gid' => $enum_option_gid])->scalar();
+        $taskCustomField->enum_option_name = ProjectCustomFieldEnumOptions::find()->select('name')->where(['gid' => $enum_option_gid])->scalar();
+        if(!$taskCustomField->save()){
+            Yii::error($taskCustomField->errors, __METHOD__);
+        }
     }
 
     /**
@@ -996,5 +1039,61 @@ class Task extends \yii\db\ActiveRecord
         return 'new_task_' . time();
     }
 
+    /**
+     * Создаем массив из задачи для отправки в Asana
+     *
+     * @param string $task_gid
+     * @return array
+     */
+    public static function prepareData($task_gid): array
+    {
+        $taskData = [];
+        // получаем задачу
+        $task = Task::findOne(['gid' => $task_gid]);
+        if ($task) {
+            $tcf = TaskCustomFields::find()->where(['task_gid' => $task->gid])->all();
 
+            if ($tcf) {
+                foreach ($tcf as $cf) {
+                    if ($cf->enum_option_gid) {
+                        $taskData['custom_fields']["$cf->custom_field_gid"] = $cf->enum_option_gid;
+                    }
+                    if ($cf->type === 'number' && $cf->number_value) {
+                        $taskData['custom_fields']["$cf->custom_field_gid"] = $cf->number_value;
+                    }
+                }
+            }
+
+            $taskData['name'] = $task->name;
+            $taskData['notes'] = $task->notes ?? '';
+            $taskData['assignee'] = $task->assignee_gid ?? null;
+            $taskData['start_on'] = $task->start_on ?? null;
+            $taskData['due_on'] = $task->due_on ?? null;
+            $taskData['section_gid'] = $task->section_project_gid ?? null;
+
+            // Удаляем пустые custom_fields, если они не заданы
+            if (empty($taskData['custom_fields'])) {
+                unset($taskData['custom_fields']);
+            }
+        }
+        return $taskData;
+    }
+
+
+
+    /**
+     * Получение custom_fields для задачи
+     *
+     * @param string $gid
+     * @return array
+     */
+    public function getProjectCustomFieldsOption($gid)
+    {
+        $data = ProjectCustomFieldEnumOptions::find()
+            ->where(['gid' => $gid])
+            ->orderBy('name ASC')
+            ->asArray()
+            ->one();
+        return $data ?? [];
+    }
 }

@@ -100,7 +100,9 @@ class TaskController extends Controller
         $model->created_at = date('Y-m-d H:i:s');
 
         if ($model->load($request->post()) && $model->save()) {
+
             Yii::$app->session->setFlash('success', 'Task created successfully');
+
             return $this->redirect(['update', 'gid' => $model->gid]);
         } else {
             Yii::$app->session->setFlash('error', 'Error while creating Task');

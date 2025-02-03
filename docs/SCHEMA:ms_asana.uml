@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>bcb1ed25-cb4d-412f-bac2-be4627420f20.SCHEMA:ms_asana</OriginalElement>
+  <nodes>
+    <node x="-184.0" y="1875.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task_custom_fields</node>
+    <node x="375.0" y="-45.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.payer</node>
+    <node x="272.0" y="943.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.section_project</node>
+    <node x="636.0" y="1579.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.migration</node>
+    <node x="-202.5066511085181" y="668.506651108518">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task</node>
+    <node x="65.5" y="-69.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.user</node>
+    <node x="215.5" y="1435.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task_attachment</node>
+    <node x="-25.5" y="379.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.project_custom_field_enum_options</node>
+    <node x="-208.0" y="15.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.asana_users</node>
+    <node x="111.0" y="1911.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task_changes</node>
+    <node x="-80.5" y="-333.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.project_custom_fields</node>
+    <node x="252.0" y="-297.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.project</node>
+    <node x="392.0" y="1851.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task_story</node>
+    <node x="-10.0" y="1495.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.timer</node>
+    <node x="446.5" y="319.0">bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.invoice</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task_custom_fields" target="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task" relationship="REFERENCES">
+      <point x="0.0" y="-129.0" />
+      <point x="-60.0" y="1616.0" />
+      <point x="-37.5066511085181" y="1616.0" />
+      <point x="0.0" y="333.0" />
+    </edge>
+    <edge source="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.section_project" target="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.project" relationship="REFERENCES">
+      <point x="0.0" y="-81.0" />
+      <point x="380.0" y="364.0" />
+      <point x="360.0" y="364.0" />
+      <point x="0.0" y="81.0" />
+    </edge>
+    <edge source="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task_attachment" target="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task" relationship="REFERENCES">
+      <point x="0.0" y="-189.0" />
+      <point x="360.0" y="1404.0" />
+      <point x="-37.5066511085181" y="1404.0" />
+      <point x="0.0" y="333.0" />
+    </edge>
+    <edge source="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.timer" target="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task" relationship="REFERENCES">
+      <point x="0.0" y="-129.0" />
+      <point x="80.0" y="1404.0" />
+      <point x="-37.5066511085181" y="1404.0" />
+      <point x="0.0" y="333.0" />
+    </edge>
+    <edge source="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.project_custom_field_enum_options" target="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.project_custom_fields" relationship="REFERENCES">
+      <point x="0.0" y="-105.0" />
+      <point x="160.0" y="344.0" />
+      <point x="40.0" y="344.0" />
+      <point x="0.0" y="117.0" />
+    </edge>
+    <edge source="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.invoice" target="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.payer" relationship="REFERENCES">
+      <point x="0.0" y="-165.0" />
+      <point x="0.0" y="129.0" />
+    </edge>
+    <edge source="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task_story" target="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task" relationship="REFERENCES">
+      <point x="0.0" y="-153.0" />
+      <point x="540.0" y="1404.0" />
+      <point x="-37.5066511085181" y="1404.0" />
+      <point x="0.0" y="333.0" />
+    </edge>
+    <edge source="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task_changes" target="bcb1ed25-cb4d-412f-bac2-be4627420f20.TABLE:ms_asana.task" relationship="REFERENCES">
+      <point x="0.0" y="-93.0" />
+      <point x="200.0" y="1404.0" />
+      <point x="-37.5066511085181" y="1404.0" />
+      <point x="0.0" y="333.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Compact" zoom="0.666863794820717" showDependencies="false" x="977.105810968495" y="317.05778296382744" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Columns</Category>
+    <Category>Comments</Category>
+    <Category>Key columns</Category>
+    <Category>Virtual foreign keys</Category>
+  </Categories>
+</Diagram>
+

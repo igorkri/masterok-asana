@@ -1,6 +1,7 @@
 <?php
 
 use igorkri\ckeditor\CKEditor;
+use kartik\date\DatePicker;
 use yii\bootstrap4\Modal;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -94,16 +95,7 @@ $this->title = 'Задача: ' . $model->name;
                                 </div>
 
                                 <div class="mb-4">
-                                    <?= $form->field($model, 'notes')->widget(CKEditor::class, [
-                                        'id' => 'notes',
-                                        'editorOptions' =>
-                                            ElFinder::ckeditorOptions('elfinder', [
-                                                'preset' => 'custom',
-                                                'height' => 200,
-                                                'language' => 'uk',
-                                                'controller' => 'elfinder',
-                                            ]),
-                                    ]) ?>
+                                    <?= $form->field($model, 'notes')->textarea(['rows' => 8]) ?>
                                 </div>
                                 <?php if (!$model->isNewRecord): ?>
                                     <div>
@@ -238,6 +230,32 @@ $this->title = 'Задача: ' . $model->name;
                                         'prompt' => 'Виберіть тип задачі',
                                         'class' => 'form-select'
                                     ])->label(false) ?>
+                            </div>
+                            <div class="card-body p-5">
+                                <?= $form->field($model, 'start_on')->widget(
+                                    DatePicker::class,
+                                    [
+                                        'options' => ['placeholder' => 'Оберіть дату ...'],
+                                        'pluginOptions' => [
+                                            'autoclose' => true,
+                                            'format' => 'yyyy-mm-dd',
+                                            'todayHighlight' => true,
+                                        ]
+                                    ]
+                                ) ?>
+                            </div>
+                            <div class="card-body p-5">
+                                <?= $form->field($model, 'due_on')->widget(
+                                    DatePicker::class,
+                                    [
+                                        'options' => ['placeholder' => 'Оберіть дату ...'],
+                                        'pluginOptions' => [
+                                            'autoclose' => true,
+                                            'format' => 'yyyy-mm-dd',
+                                            'todayHighlight' => true,
+                                        ]
+                                    ]
+                                ) ?>
                             </div>
                             <div class="card-body d-flex flex-column align-items-center">
                                 <div class="sa-divider my-5"></div>
