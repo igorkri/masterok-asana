@@ -94,7 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 <?php Modal::begin([
     "id" => "ajaxCrudModal",
-    //"size" => Modal::SIZE_EXTRA_LARGE,
+//    "size" => Modal::SIZE_EXTRA_LARGE,
 //    "scrollable" => true,
 //    "options" => [
 //        "data-bs-backdrop" => "static",

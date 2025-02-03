@@ -69,11 +69,6 @@ class SyncAsana
 
     public static function updateTask()
     {
-//        $asana = Client::accessToken(Yii::$app->params['tokenAsana']);
-//
-//        // Отключаем устаревшие API-изменения
-//        $asana->options['headers']['Asana-Disable'] = 'new_goal_memberships,new_user_task_lists';
-//
         $tasks = Task::find()->where(['task_sync' => Task::CRON_STATUS_UPDATE])->all();
         foreach ($tasks as $task) {
             /** @var $task Task */
@@ -81,9 +76,6 @@ class SyncAsana
             $data = Task::prepareData($task_gid);
             try {
                 self::requestUpdate($task_gid, $data);
-//                var_dump($asana->tasks->updateTask($task_gid, $data));
-//                $task->task_sync = Task::CRON_STATUS_SUCCESS;
-//                $task->save();
             } catch (\Asana\Errors\InvalidRequestError $e) {
                 Yii::error("Asana API Error: " . $e->getMessage());
                 Yii::error($e->response->raw_body);
@@ -93,8 +85,6 @@ class SyncAsana
 
     static function requestUpdate($taskGid, $data)
     {
-        print_r($data);
-
         $accessToken = Yii::$app->params['tokenAsana'];
         $url = "https://app.asana.com/api/1.0/tasks/{$taskGid}";
 
@@ -122,8 +112,38 @@ class SyncAsana
             if (isset($responseData['errors'])) {
                 echo "Ошибка: " . print_r($responseData['errors'], true);
             } else {
+                $task = Task::findOne(['gid' => $taskGid]);
+                $task->task_sync = Task::CRON_STATUS_SUCCESS;
+                $task->task_sync_out = date('Y-m-d H:i:s');
+                $task->save();
+                self::moveTaskToSection($taskGid, $task->section_project_gid);
                 echo "Задача успешно обновлена." . PHP_EOL;
             }
+        }
+    }
+
+    public static function moveTaskToSection($task_gid, $section_gid)
+    {
+        $accessToken = Yii::$app->params['tokenAsana'];
+        $url = "https://app.asana.com/api/1.0/sections/{$section_gid}/addTask";
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$accessToken}",
+            "Content-Type: application/json"
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['data' => ['task' => $task_gid]]));
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $responseData = json_decode($response, true);
+        if (isset($responseData['errors'])) {
+            echo "Ошибка: " . print_r($responseData['errors'], true);
+        } else {
+            echo "Задача перемещена в новую секцию." . PHP_EOL;
         }
     }
 

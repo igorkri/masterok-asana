@@ -29,20 +29,14 @@ use yii\widgets\ActiveForm;
                 ) ?></div>
             <div class="col-md-3"><?= $form->field($model, 'minute')->textInput() ?></div>
             <div class="col-md-3">
-                <?php //$form->field($model, 'coefficient')->widget(\kartik\select2\Select2::classname(), [
-//                    'data' => \common\models\Timer::$coefficientList,
-//                    'options' => ['placeholder' => 'Виберіть коефіцієнт ...'],
-//                    'pluginOptions' => [
-//                        'allowClear' => true
-//                    ],
-//                ]); ?>
 
                 <?php echo $form->field($model, 'coefficient')->dropDownList(
                     \common\models\Timer::$coefficientList
                 ) ?>
             </div>
             <div class="col-md-3"><?= $form->field($model, 'status')->dropDownList(
-                    \common\models\Timer::$statusList
+                    \common\models\Timer::$statusList,
+                    ['prompt' => '']
                 ) ?></div>
         </div>
 

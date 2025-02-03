@@ -52,6 +52,35 @@ class Timer extends \yii\db\ActiveRecord
     public $price;
     public $hour;
 
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        // Пересчитываем общее время и сохраняем его в задаче тбл. task_custom_field
+        $total_minute = Timer::find()->where(['task_gid' => $this->task_gid])->sum('minute');
+        $task_custom_field = TaskCustomFields::find()->where(['task_gid' => $this->task_gid, 'custom_field_gid' => '1202687202895302'])->one();
+        if ($task_custom_field) {
+            /* @var $task_custom_field TaskCustomFields */
+            $task_custom_field->display_value = $total_minute;
+            $task_custom_field->number_value = $total_minute;
+            $task_custom_field->save();
+        } else {
+            $task_custom_field = new TaskCustomFields();
+            $task_custom_field->task_gid = $this->task_gid;
+            $task_custom_field->name = 'Час, факт.';
+            $task_custom_field->type = 'number';
+            $task_custom_field->custom_field_gid = '1202687202895302';
+            $task_custom_field->display_value = $total_minute;
+            $task_custom_field->number_value = $total_minute;
+            $task_custom_field->save();
+        }
+
+        // Меняем статус задачи на "update"
+        $task = Task::findOne(['gid' => $this->task_gid]);
+        $task->task_sync = Task::CRON_STATUS_UPDATE;
+        $task->save();
+    }
+
     /**
      * @param int $total_minute
      *
@@ -209,6 +238,7 @@ class Timer extends \yii\db\ActiveRecord
 
         return $Hours + $Minutes / 60 + $Seconds / 3600;
     }
+
 
 
     /**

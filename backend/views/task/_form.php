@@ -70,6 +70,11 @@ $this->title = 'Задача: ' . $model->name;
                                 <span class="badge badge-sa-<?= $model->getPriority2()['color'] ?> me-2"><?= Html::encode($model->getPriority2()['name']) ?></span>
                                 <span class="badge badge-sa-<?= $model->getType2()['color'] ?> me-2"><?= Html::encode($model->getType2()['name']) ?></span>
                             </div>
+                            <?php if($model->task_sync === \common\models\Task::CRON_STATUS_STOP): ?>
+                                <div class="sa-page-meta__item">
+                                    <span class="badge badge-sa-danger">Задача не синхронізована статус: <?=$model->task_sync?></span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>

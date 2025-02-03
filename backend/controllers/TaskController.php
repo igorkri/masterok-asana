@@ -127,6 +127,9 @@ class TaskController extends Controller
         $request = Yii::$app->request;
         $model = Task::findOne(['gid' => $gid]);
         $timers = Timer::find()->where(['task_gid' => $model->gid])->all();
+        if ($model->task_sync !== Task::CRON_STATUS_STOP) {
+            $model->task_sync = Task::CRON_STATUS_UPDATE;
+        }
 
         if ($request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -380,7 +383,6 @@ class TaskController extends Controller
             'message' => 'Активного таймера не найдено.',
         ];
     }
-
 
 
 }

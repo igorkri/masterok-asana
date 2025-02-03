@@ -109,8 +109,8 @@ class Task extends \yii\db\ActiveRecord
     {
         parent::afterSave($insert, $changedAttributes);
 
-            $this->saveTaskField('1202674799521449', $this->priority, $this->gid); // Приоритет '1202674799521449'
-            $this->saveTaskField('1205860710071790', $this->type, $this->gid); // Тип задачі '1205860710071790'
+        $this->saveTaskField('1202674799521449', $this->priority, $this->gid); // Приоритет '1202674799521449'
+        $this->saveTaskField('1205860710071790', $this->type, $this->gid); // Тип задачі '1205860710071790'
 
     }
 
@@ -127,7 +127,7 @@ class Task extends \yii\db\ActiveRecord
         $taskCustomField->name = ProjectCustomFields::find()->select('name')->where(['gid' => $custom_field_gid])->scalar();
         $taskCustomField->display_value = ProjectCustomFieldEnumOptions::find()->select('name')->where(['gid' => $enum_option_gid])->scalar();
         $taskCustomField->enum_option_name = ProjectCustomFieldEnumOptions::find()->select('name')->where(['gid' => $enum_option_gid])->scalar();
-        if(!$taskCustomField->save()){
+        if (!$taskCustomField->save()) {
             Yii::error($taskCustomField->errors, __METHOD__);
         }
     }
@@ -635,17 +635,21 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getPriorityList($priority_gid = null)
     {
-        $priorities = ProjectCustomFieldEnumOptions::find()
-            ->select(['gid', 'name'])
-            ->where(['custom_field_gid' => '1202674799521449']) //'Приоритет'
-            ->orderBy('name ASC')
-            ->all();
+        if (ProjectCustomFields::find()->where(['gid' => '1202674799521449', 'project_gid' => $this->project_gid])->exists()) {
+            $priorities = ProjectCustomFieldEnumOptions::find()
+                ->select(['gid', 'name'])
+                ->where(['custom_field_gid' => '1202674799521449']) //'Приоритет'
+                ->orderBy('name ASC')
+                ->all();
 
-        $list = [];
-        foreach ($priorities as $priority) {
-            $list[$priority->gid] = $priority->name;
+            $list = [];
+            foreach ($priorities as $priority) {
+                $list[$priority->gid] = $priority->name;
+            }
+            return $priority_gid ? $list[$priority_gid] : $list;
+        } else {
+            return [];
         }
-        return $priority_gid ? $list[$priority_gid] : $list;
     }
 
     /**
@@ -653,6 +657,7 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getTypeList($priority_gid = null)
     {
+        if (ProjectCustomFields::find()->where(['gid' => '1205860710071790', 'project_gid' => $this->project_gid])->exists()) {
         $priorities = ProjectCustomFieldEnumOptions::find()
             ->select(['gid', 'name'])
             ->where(['custom_field_gid' => '1205860710071790']) //'Тип задачі'
@@ -663,6 +668,9 @@ class Task extends \yii\db\ActiveRecord
             $list[$priority->gid] = $priority->name;
         }
         return $priority_gid ? $list[$priority_gid] : $list;
+        } else {
+            return [];
+        }
     }
 
 
@@ -1069,7 +1077,6 @@ class Task extends \yii\db\ActiveRecord
             $taskData['assignee'] = $task->assignee_gid ?? null;
             $taskData['start_on'] = $task->start_on ?? null;
             $taskData['due_on'] = $task->due_on ?? null;
-            $taskData['section_gid'] = $task->section_project_gid ?? null;
 
             // Удаляем пустые custom_fields, если они не заданы
             if (empty($taskData['custom_fields'])) {
@@ -1078,7 +1085,6 @@ class Task extends \yii\db\ActiveRecord
         }
         return $taskData;
     }
-
 
 
     /**
