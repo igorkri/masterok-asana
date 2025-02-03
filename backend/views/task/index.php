@@ -34,9 +34,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     <h1 class="h3 m-0"><?= $this->title ?></h1>
                 </div>
                 <div class="col-auto d-flex">
-                    <a href="#" class="btn btn-secondary me-3">Import</a>
-                    <a href="<?=Url::to(['create', 'project_gid' => $project->gid, 'sync' => \common\models\Task::CRON_STATUS_STOP])?>" class="btn btn-secondary me-3">New local</a>
-                    <a href="<?=Url::to(['create', 'project_gid' => $project->gid, 'sync' => \common\models\Task::CRON_STATUS_NEW])?>" class="btn btn-primary">New product</a>
+<!--                    <a href="#" class="btn btn-secondary me-3">Import</a>-->
+                    <a href="<?=Url::to(['create', 'project_gid' => $project->gid, 'sync' => \common\models\Task::CRON_STATUS_STOP])?>" class="btn btn-secondary me-3">New local task</a>
+                    <a href="<?=Url::to(['create', 'project_gid' => $project->gid, 'sync' => \common\models\Task::CRON_STATUS_NEW])?>" class="btn btn-primary">New task</a>
                 </div>
             </div>
         </div>
