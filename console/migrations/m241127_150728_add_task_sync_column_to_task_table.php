@@ -10,8 +10,8 @@ class m241127_150728_add_task_sync_column_to_task_table extends Migration
     public function safeUp()
     {
         $this->addColumn('{{%task}}', 'task_sync', $this->string()->null()->comment('Task Sync'));
-        $this->addColumn('{{%task}}', 'task_sync_in', $this->string()->null()->comment('Task Sync In'));
-        $this->addColumn('{{%task}}', 'task_sync_out', $this->string()->null()->comment('Task Sync Out'));
+        $this->addColumn('{{%task}}', 'task_sync_in', $this->dateTime()->comment('Task Sync In'));
+        $this->addColumn('{{%task}}', 'task_sync_out', $this->dateTime()->comment('Task Sync Out'));
     }
 
     /**
