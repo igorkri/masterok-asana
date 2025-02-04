@@ -342,6 +342,21 @@ class Task extends \yii\db\ActiveRecord
         }
     }
 
+    public static function getClassColor($section_project_name)
+    {
+        if ($section_project_name == 'До роботи') {
+            return 'success';
+        } elseif ($section_project_name == 'В роботі') {
+            return 'warning';
+        } elseif ($section_project_name == 'Завершено') {
+            return 'danger';
+        } elseif ($section_project_name == 'Потребує уточнення') {
+            return 'primary';
+        } else {
+            return 'info';
+        }
+    }
+
     /**
      * Get priority color
      *
