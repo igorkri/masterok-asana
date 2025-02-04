@@ -57,7 +57,7 @@ class Timer extends \yii\db\ActiveRecord
         parent::afterSave($insert, $changedAttributes);
 
         // Пересчитываем общее время и сохраняем его в задаче тбл. task_custom_field
-        $total_minute = Timer::find()->where(['task_gid' => $this->task_gid, $this->status => self::STATUS_WAIT])->sum('minute');
+        $total_minute = Timer::find()->where(['task_gid' => $this->task_gid, 'status' => self::STATUS_WAIT])->sum('minute');
         $task_custom_field = TaskCustomFields::find()->where(['task_gid' => $this->task_gid, 'custom_field_gid' => '1202687202895302'])->one();
         if ($task_custom_field) {
             /* @var $task_custom_field TaskCustomFields */
