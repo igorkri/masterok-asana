@@ -15,7 +15,8 @@ use yii\widgets\ActiveForm;
         <?php echo $form->field($model, 'task_gid')->hiddenInput(['maxlength' => true])->label(false) ?>
 
         <div class="row">
-            <div class="col-md-3"><?= $form->field($model, 'time')->widget(
+            <div class="col-md-3">
+                <?= $form->field($model, 'time')->widget(
                     \kartik\time\TimePicker::classname(),
                     [
                         'pluginOptions' => [
@@ -26,7 +27,8 @@ use yii\widgets\ActiveForm;
                             'defaultTime' => '00:00:00', // default time
                         ]
                     ]
-                ) ?></div>
+                ) ?>
+            </div>
             <div class="col-md-3"><?= $form->field($model, 'minute')->textInput() ?></div>
             <div class="col-md-3">
 

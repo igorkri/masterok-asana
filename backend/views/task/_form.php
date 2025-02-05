@@ -2,7 +2,7 @@
 
 use igorkri\ckeditor\CKEditor;
 use kartik\date\DatePicker;
-use yii\bootstrap4\Modal;
+use yii\bootstrap5\Modal;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use igorkri\elfinder\ElFinder;
@@ -145,18 +145,26 @@ $this->title = 'Задача: ' . $model->name;
                             <div class="card w-100">
                                 <div class="card-body d-flex align-items-center justify-content-between pb-0 pt-4">
                                     <h2 class="fs-exact-16 mb-0">Таймер</h2>
-                                    <?= Html::a("Детальніше", '#', [
+                                    <?= Html::a("Детальніше", \yii\helpers\Url::to(['/task/timer-grid', 'task_gid' => $model->gid]), [
                                         'title' => '',
                                         'class' => 'pull-left detail-button',
 //                                    'style' => 'margin-right: 20px; font-size:22px; color:#35b5f4',
-                                        'data-bs-toggle' => "offcanvas",
-                                        'data-bs-target' => "#offcanvasSms",
-                                        'aria-controls' => "offcanvasSms",
-                                        'data-bs-html' => "true"
+//                                        'data-bs-toggle' => "offcanvas",
+//                                        'data-bs-target' => "#offcanvasSms",
+//                                        'aria-controls' => "offcanvasSms",
+//                                        'data-bs-html' => "true"
+                                        'role'=>'modal-remote'
                                     ]); ?>
                                 </div>
 
-                                <div class="card-body d-flex align-items-center pt-4">
+                                <?php Pjax::begin([
+                                        'id' => 'crud-datatable-pjax',
+                                    'options' => [
+                                        'class' => 'card-body d-flex align-items-center pt-4',
+                                        'tag' => 'div',
+                                    ],
+                                ]) ?>
+
                                     <div class="ms-3 ps-2">
                                         <div class="fs-exact-14 fw-medium">К-ть
                                             тайменгів <?= $model->getTimersCount() ?></div>
@@ -178,7 +186,7 @@ $this->title = 'Задача: ' . $model->name;
                                             </button>
                                         </div>
                                     </div>
-                                </div>
+                                <?php Pjax::end() ?>
                             </div>
                         <?php endif; ?>
 
@@ -302,7 +310,7 @@ $this->title = 'Задача: ' . $model->name;
     </div>
 </div>
 <!-- sa-app__body / end -->
-<?php echo $this->render('_timer', ['model' => $model, 'timers' => $timers]) ?>
+<?php //echo $this->render('_timer', ['model' => $model, 'timers' => $timers]) ?>
 <?php
 $this->registerJs(<<<JS
     function init() {
@@ -541,6 +549,9 @@ JS
 );
 ?>
 
+
+
+
 <?php Modal::begin([
     "id" => "ajaxCrudModal",
     "size" => Modal::SIZE_EXTRA_LARGE,
@@ -552,5 +563,3 @@ JS
     "footer" => "", // always need it for jquery plugin
 ]) ?>
 <?php Modal::end(); ?>
-
-

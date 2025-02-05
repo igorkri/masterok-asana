@@ -2,6 +2,7 @@
 
 use common\models\Timer;
 use yii\bootstrap5\Html;
+use yii\bootstrap4\Modal;
 use yii\widgets\Pjax;
 
 /* @var $model common\models\Task */
@@ -12,15 +13,10 @@ use yii\widgets\Pjax;
 $total_minute = 0;
 $total_price = 0;
 ?>
-<div style="width: 75%;" class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasSms"
-     aria-labelledby="offcanvasSmsLabel">
-    <div class="offcanvas-header">
-        <h5 id="offcanvasSmsLabel">Список таймінгів</h5>
-        <button type="button" class="sa-close sa-close--modal" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
+
     <div class="offcanvas-body">
         <?php Pjax::begin(['id' => 'crud-datatable-pjax']) ?>
-        <?=Html::a('+', ['/timer/create', 'task_id' => Yii::$app->request->get('gid')],
+        <?=Html::a('+', ['/timer/create', 'task_id' => $model->gid],
             [
                 'class' => 'btn btn-success',
                 'data-pjax' => 1,
@@ -74,7 +70,7 @@ $total_price = 0;
         </table>
         <?php Pjax::end() ?>
     </div>
-</div>
+
 <span id="task-id" data-task-id="<?= $model->gid ?>"></span>
 <?php
 $remainingSeconds = 0;
@@ -108,3 +104,6 @@ $('a.btn-secondary').on('click', function(e) {
 JS;
 
 //$this->registerJs($js);
+
+    ?>
+

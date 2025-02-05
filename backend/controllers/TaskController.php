@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 
+use backend\models\search\TimerSearch;
 use common\models\Project;
 use common\models\TaskAttachment;
 use common\models\TaskStory;
@@ -12,6 +13,7 @@ use common\models\Task;
 use backend\models\search\TaskSearch;
 use yii\db\Exception;
 use yii\web\Controller;
+use yii\web\GroupUrlRule;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use \yii\web\Response;
@@ -134,46 +136,49 @@ class TaskController extends Controller
             $model->task_sync = Task::CRON_STATUS_UPDATE;
         }
 
-        if ($request->isAjax) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            if ($request->isPost) {
-                $model->updateTaskPriority();
-                $model->updateTaskType();
-                if ($model->load($request->post()) && $model->save()) {
-                    return [
-                        'success' => true,
-                        'toast' => [
-                            'class' => 'toast-sa-success',
-                            'name' => "Task #" . $model->gid,
-                            'message' => 'Успішно оновлено!',
-                        ],
-                        'html' => $this->renderAjax('_update-form', [
-                            'model' => $model,
-                            'timers' => $timers,
-                        ]),
-                    ];
-                } else {
-                    $message = '';
-                    foreach ($model->getErrors() as $errors) {
-                        foreach ($errors as $error) {
-                            $message .= $error . '<br>';
-                        }
-                    }
-
-                    return [
-                        'success' => false,
-                        'toast' => [
-                            'class' => 'toast-sa-danger',
-                            'name' => "Task #" . $model->gid,
-                            'message' => $message,
-                        ],
-                    ];
-                }
-            }
-
-        }
+//        if ($request->isAjax) {
+//            Yii::$app->response->format = Response::FORMAT_JSON;
+//            if ($request->isPost) {
+//                $model->updateTaskPriority();
+//                $model->updateTaskType();
+//                if ($model->load($request->post()) && $model->save()) {
+//                    return [
+//                        'success' => true,
+//                        'toast' => [
+//                            'class' => 'toast-sa-success',
+//                            'name' => "Task #" . $model->gid,
+//                            'message' => 'Успішно оновлено!',
+//                        ],
+//                        'html' => $this->renderAjax('_update-form', [
+//                            'model' => $model,
+//                            'timers' => $timers,
+//                        ]),
+//                    ];
+//                } else {
+//                    $message = '';
+//                    foreach ($model->getErrors() as $errors) {
+//                        foreach ($errors as $error) {
+//                            $message .= $error . '<br>';
+//                        }
+//                    }
+//
+//                    return [
+//                        'success' => false,
+//                        'toast' => [
+//                            'class' => 'toast-sa-danger',
+//                            'name' => "Task #" . $model->gid,
+//                            'message' => $message,
+//                        ],
+//                    ];
+//                }
+//            }
+//
+//        }
 
         if ($model->load($request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', 'Task updated successfully');
+            $model->updateTaskPriority();
+            $model->updateTaskType();
             return $this->redirect(['update', 'gid' => $model->gid]);
         } else {
             return $this->render('update', [
@@ -361,6 +366,30 @@ class TaskController extends Controller
             'success' => false,
             'message' => 'Ошибка при сохранении таймера.' . $errors,
         ];
+    }
+
+    public function actionTimerGrid($task_gid)
+    {
+        $model = Task::findOne(['gid' => $task_gid]);
+        $timers = Timer::find()->where(['task_gid' => $model->gid])->all();
+        $model->task_sync_out = date('Y-m-d H:i:s');
+
+        $request = Yii::$app->request;
+        if ($request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return [
+                'title' => "Task #" . $task_gid,
+                'content' => $this->renderAjax('_timer', [
+                    'model' => $model, 'timers' => $timers
+                ]),
+                'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"])
+            ];
+        }
+
+//        return $this->render('/timer/index', [
+//            'searchModel' => $searchModel,
+//            'dataProvider' => $dataProvider,
+//        ]);
     }
 
     public function actionGetTimer(): array
