@@ -111,9 +111,32 @@ class Task extends \yii\db\ActiveRecord
 
         $this->saveTaskField('1202674799521449', $this->priority, $this->gid); // Приоритет '1202674799521449'
         $this->saveTaskField('1205860710071790', $this->type, $this->gid); // Тип задачі '1205860710071790'
+        $this->saveTimer();
 
     }
 
+
+    public function saveTimer(): void
+    {
+        // Пересчитываем общее время и сохраняем его в задаче тбл. task_custom_field
+        $total_minute = Timer::find()->where(['task_gid' => $this->gid, 'status' => Timer::STATUS_WAIT])->sum('minute');
+        $task_custom_field = TaskCustomFields::find()->where(['task_gid' => $this->gid, 'custom_field_gid' => '1202687202895302'])->one();
+        if ($task_custom_field) {
+            /* @var $task_custom_field TaskCustomFields */
+            $task_custom_field->display_value = $total_minute;
+            $task_custom_field->number_value = $total_minute;
+            $task_custom_field->save();
+        } else {
+            $task_custom_field = new TaskCustomFields();
+            $task_custom_field->task_gid = $this->gid;
+            $task_custom_field->name = 'Час, факт.';
+            $task_custom_field->type = 'number';
+            $task_custom_field->custom_field_gid = '1202687202895302';
+            $task_custom_field->display_value = $total_minute;
+            $task_custom_field->number_value = $total_minute;
+            $task_custom_field->save();
+        }
+    }
     public function saveTaskField($custom_field_gid, $enum_option_gid, $task_gid)
     {
         $taskCustomField = TaskCustomFields::findOne(['task_gid' => $task_gid, 'custom_field_gid' => $custom_field_gid]);
@@ -830,7 +853,7 @@ class Task extends \yii\db\ActiveRecord
     {
         /** @var Task $taskModel */
         $taskModel = $existingTask;
-        if ($taskModel) {
+        if ($taskModel && $taskModel->task_sync != Task::CRON_STATUS_UPDATE) {
             // Обновление существующей записи задачи
             $taskModel->name = !empty($fullTask->name) && isset($fullTask->name) ? $fullTask->name : '--- Без назви ---';
             $taskModel->assignee_gid = $fullTask->assignee->gid ?? null;

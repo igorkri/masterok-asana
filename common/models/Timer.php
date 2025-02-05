@@ -59,6 +59,9 @@ class Timer extends \yii\db\ActiveRecord
         // Пересчитываем общее время и сохраняем его в задаче тбл. task_custom_field
         $total_minute = Timer::find()->where(['task_gid' => $this->task_gid, 'status' => self::STATUS_WAIT])->sum('minute');
         $task_custom_field = TaskCustomFields::find()->where(['task_gid' => $this->task_gid, 'custom_field_gid' => '1202687202895302'])->one();
+
+        Yii::warning($total_minute, 'test ' . __METHOD__);
+
         if ($task_custom_field) {
             /* @var $task_custom_field TaskCustomFields */
             $task_custom_field->display_value = $total_minute;
