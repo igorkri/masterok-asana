@@ -309,6 +309,7 @@ $this->title = 'Задача: ' . $model->name;
         </div>
     </div>
 </div>
+    <span id="task-id" data-task-id="<?= $model->gid ?>"></span>
 <!-- sa-app__body / end -->
 <?php //echo $this->render('_timer', ['model' => $model, 'timers' => $timers]) ?>
 <?php

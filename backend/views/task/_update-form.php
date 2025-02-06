@@ -1,6 +1,7 @@
 <?php
 
 use igorkri\ckeditor\CKEditor;
+use kartik\date\DatePicker;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use igorkri\elfinder\ElFinder;
