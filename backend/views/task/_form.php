@@ -311,7 +311,7 @@ $this->title = 'Задача: ' . $model->name;
 </div>
     <span id="task-id" data-task-id="<?= $model->gid ?>"></span>
 <!-- sa-app__body / end -->
-<?php //echo $this->render('_timer', ['model' => $model, 'timers' => $timers]) ?>
+<?php echo $this->render('_timer', ['model' => $model, 'timers' => $timers]) ?>
 <?php
 $this->registerJs(<<<JS
     function init() {
