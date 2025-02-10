@@ -210,6 +210,10 @@ foreach (\common\models\Timer::$statusList as $k => $st) {
   -webkit-user-select: none;
 
 }
+
+hr {
+    margin: 1px;
+}
 CSS;
 
 $this->registerCss($css);

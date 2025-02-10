@@ -19,6 +19,9 @@ return [
 //     [
 //     'class'=>'\kartik\grid\DataColumn',
 //     'attribute'=>'id',
+//         'value' => function ($model) {
+//             return $model->taskG->project->name;
+//         },
 //     'width' => '5%',
 //     'vAlign' => GridView::ALIGN_MIDDLE,
 //     'hAlign' => GridView::ALIGN_CENTER,
@@ -31,6 +34,7 @@ return [
             if (!$model->taskG) {
                 return '⸺';
             }
+            $projectName = $model->taskG->project->name ?? '⸺';
             // Основное значение
             $taskLink = \yii\helpers\Html::a(
                 $model->taskG->name,
@@ -45,7 +49,7 @@ return [
                 ['class' => 'row-description', 'style' => 'font-size: 12px; color: #666; margin-top: 5px;']
             );
 
-            return $taskLink . "\n" . $description; // Основное значение + описание
+            return "<div class='text-info'>" . $projectName . "</div>" . "<hr>" . $taskLink . "<hr>" . $description; // Основное значение + описание
         },
         'width' => '30%',
         'vAlign' => GridView::ALIGN_MIDDLE,
