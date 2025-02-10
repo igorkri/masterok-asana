@@ -23,6 +23,20 @@ class SyncAsana
 //        return Client::accessToken(self::$TOKEN);
 //    }
 
+    public static function createAsanaTask($gid)
+    {
+        /** @var $task Task */
+        $task = Task::find()->where(['gid' => $gid])->one();
+        $task_gid = $task->gid;
+        $data = Task::prepareData($task_gid, Task::CRON_STATUS_NEW);
+        try {
+//            $task->delete(); // Удаляем задачу из таблицы
+            return self::requestCreate($task_gid, $data);
+        } catch (\Asana\Errors\InvalidRequestError $e) {
+            Yii::error("Asana API Error: " . $e->getMessage());
+            Yii::error($e->response->raw_body);
+        }
+    }
 
     /**
      * Создание задачи в Asana
@@ -40,34 +54,10 @@ class SyncAsana
      *  ]
      * @throws \Exception
      */
-    public static function createTask()
+    public
+    static function createTask()
     {
-
-//        $asana = Client::accessToken(Yii::$app->params['tokenAsana']);
-//
-//        // Отключаем устаревшие API-изменения
-//        $asana->options['headers']['Asana-Disable'] = 'new_goal_memberships,new_user_task_lists';
-//
-//        try {
-//
-//            // Создаем задачу
-//            $task = $asana->tasks->createTask($data);
-//            $task_gid = $task->gid; // Получаем GID созданной задачи
-//
-//            // Перемещаем задачу в нужную секцию
-//            if (!empty($data['section_project_gid'])) {
-//                $asana->sections->addTask($data['section_project_gid'], ['task' => $task_gid]);
-//            }
-//
-//            return $task;
-//
-//        } catch (\Asana\Errors\InvalidRequestError $e) {
-//            Yii::error("Asana API Error: " . $e->getMessage());
-//            return ['error' => $e->getMessage(), 'response' => $e->response->raw_body];
-//        }
-
         $tasks = Task::find()->where(['task_sync' => Task::CRON_STATUS_NEW])->all();
-        print_r($tasks);
         foreach ($tasks as $task) {
             /** @var $task Task */
             $task_gid = $task->gid;
@@ -81,7 +71,8 @@ class SyncAsana
         }
     }
 
-    public static function updateTask()
+    public
+    static function updateTask()
     {
         $tasks = Task::find()->where(['task_sync' => Task::CRON_STATUS_UPDATE])->all();
         foreach ($tasks as $task) {
@@ -136,7 +127,8 @@ class SyncAsana
         }
     }
 
-    public static function moveTaskToSection($task_gid, $section_gid)
+    public
+    static function moveTaskToSection($task_gid, $section_gid)
     {
         $accessToken = Yii::$app->params['tokenAsana'];
         $url = "https://app.asana.com/api/1.0/sections/{$section_gid}/addTask";
@@ -155,9 +147,9 @@ class SyncAsana
 
         $responseData = json_decode($response, true);
         if (isset($responseData['errors'])) {
-            echo "Ошибка: " . print_r($responseData['errors'], true);
+           // echo "Ошибка: " . print_r($responseData['errors'], true);
         } else {
-            echo "Задача перемещена в новую секцию." . PHP_EOL;
+            //echo "Задача перемещена в новую секцию." . PHP_EOL;
         }
     }
 
@@ -185,13 +177,15 @@ class SyncAsana
             $responseData = json_decode($response, true);
             if (isset($responseData['errors'])) {
                 echo "Ошибка: " . print_r($responseData['errors'], true);
+                return false;
             } else {
                 $task = Task::findOne(['gid' => $task_gid]);
                 $task->task_sync = Task::CRON_STATUS_SUCCESS;
                 $task->task_sync_out = date('Y-m-d H:i:s');
                 $task->save();
                 self::moveTaskToSection($task_gid, $task->section_project_gid);
-                echo "Задача успешно создана." . PHP_EOL;
+//                Yii::warning($responseData['data']['gid'], "Задача успешно создана.");
+                return $responseData['data']['gid'];
             }
         }
     }

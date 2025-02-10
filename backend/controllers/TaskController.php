@@ -4,14 +4,17 @@ namespace backend\controllers;
 
 
 use backend\models\search\TimerSearch;
+use common\components\SyncAsana;
 use common\models\Project;
 use common\models\TaskAttachment;
+use common\models\TaskCustomFields;
 use common\models\TaskStory;
 use common\models\Timer;
 use Yii;
 use common\models\Task;
 use backend\models\search\TaskSearch;
 use yii\db\Exception;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\GroupUrlRule;
 use yii\web\NotFoundHttpException;
@@ -104,8 +107,17 @@ class TaskController extends Controller
 
         if ($model->load($request->post()) && $model->save()) {
 
-            Yii::$app->session->setFlash('success', 'Task created successfully');
+            Yii::warning('Task created successfully', __METHOD__);
+            if( $gid = SyncAsana::createAsanaTask($model->gid) ){
+                $tcf = TaskCustomFields::findOne(['task_gid' => $model->gid]);
+                $tcf->delete();
 
+                Yii::warning('Task created successfully in Asana' . $gid, __METHOD__);
+                $model->gid = $gid;
+                $model->save(false);
+            }
+
+            Yii::$app->session->setFlash('success', 'Task created successfully');
             return $this->redirect(['update', 'gid' => $model->gid]);
         } else {
             Yii::$app->session->setFlash('error', 'Error while creating Task');

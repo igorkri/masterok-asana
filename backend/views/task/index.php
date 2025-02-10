@@ -71,18 +71,18 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'type' => '',
                                 'heading' => '',
                                 //'before'=>'<em>* Змінюйте розмір стовпців таблиці так само, як у електронній таблиці, перетягуючи краї стовпців.</em>',
-//                                'after' => BulkButtonWidget::widget([
-//                                        'buttons' => Html::a('<i class="far fa-trash-alt"></i>&nbsp; Видалити',
-//                                            ["bulkdelete"],
-//                                            [
-//                                                "class" => "btn btn-danger btn-xs",
-//                                                'role' => 'modal-remote-bulk',
-//                                                'data-confirm' => false, 'data-method' => false,// for overide yii data api
-//                                                'data-request-method' => 'post',
-//                                                'data-confirm-title' => 'Ви впевнені?',
-//                                                'data-confirm-message' => 'Ви впевнені, що хочете видалити цей елемент?'
-//                                            ]),
-//                                    ]) .
+                                'after' => BulkButtonWidget::widget([
+                                        'buttons' => Html::a('<i class="far fa-trash-alt"></i>&nbsp; Видалити',
+                                            ["bulkdelete"],
+                                            [
+                                                "class" => "btn btn-danger btn-xs",
+                                                'role' => 'modal-remote-bulk',
+                                                'data-confirm' => false, 'data-method' => false,// for overide yii data api
+                                                'data-request-method' => 'post',
+                                                'data-confirm-title' => 'Ви впевнені?',
+                                                'data-confirm-message' => 'Ви впевнені, що хочете видалити цей елемент?'
+                                            ]),
+                                    ]) .
                                     '<div class="clearfix"></div>',
                             ]
                         ]) ?>
