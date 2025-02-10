@@ -111,7 +111,7 @@ $this->title = 'Задача: ' . $model->name;
                                             'editorOptions' =>
                                                 ElFinder::ckeditorOptions('elfinder', [
                                                     'preset' => 'custom',
-                                                    'height' => 200,
+                                                    'height' => 400,
                                                     'language' => 'uk',
                                                     'controller' => 'elfinder',
                                                 ]),
@@ -132,7 +132,7 @@ $this->title = 'Задача: ' . $model->name;
                                 ]) ?>
                             <?php endif; ?>
                             <div class="card w-100 mt-5">
-                                <div class="card-body p-5">
+                                <div class="card-body p-5" style="height: 400px; overflow-y: auto;">
                                     <?= $this->render('_chat', [
                                         'model' => $model
                                     ]) ?>
@@ -311,7 +311,7 @@ $this->title = 'Задача: ' . $model->name;
 </div>
     <span id="task-id" data-task-id="<?= $model->gid ?>"></span>
 <!-- sa-app__body / end -->
-<?php echo $this->render('_timer', ['model' => $model, 'timers' => $timers]) ?>
+<?php //echo $this->render('_timer', ['model' => $model, 'timers' => $timers]) ?>
 <?php
 $this->registerJs(<<<JS
     function init() {
