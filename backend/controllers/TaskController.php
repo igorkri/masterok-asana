@@ -56,6 +56,7 @@ class TaskController extends Controller
 
         $project = Project::findOne(['gid' => $project_gid]);
 
+//        return $this->render('index-data-table', [
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
