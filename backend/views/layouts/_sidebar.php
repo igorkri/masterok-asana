@@ -166,6 +166,12 @@ use yii\helpers\Url;
                                         <span class="sa-nav__title">Платники</span>
                                     </a>
                                 </li>
+                                <li class="sa-nav__menu-item">
+                                    <a href="<?= Url::to(['/report/accounting-entries/index']) ?>" class="sa-nav__link">
+                                        <span class="sa-nav__menu-item-padding"></span>
+                                        <span class="sa-nav__title">Звірка</span>
+                                    </a>
+                                </li>
 
                             </ul>
                         </li>
