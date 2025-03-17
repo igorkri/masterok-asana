@@ -48,6 +48,7 @@ class Timer extends \yii\db\ActiveRecord
 
     // стоимость за час
     const PRICE = 400;
+    const COEFFICIENT_VALUE = 1.2;
 
     public $price;
     public $hour;

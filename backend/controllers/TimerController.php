@@ -85,7 +85,7 @@ class TimerController extends Controller
         $model = new Timer();
         $model->task_gid = $task_id;
         $model->status = Timer::STATUS_PLANNED;
-        $model->coefficient = 1.0;
+        $model->coefficient = Timer::COEFFICIENT_VALUE;
         $model->created_at = date('Y-m-d H:i:s');
         $model->minute = 0;
 
