@@ -38,6 +38,7 @@ return [
     [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'debit',
+        'format' => ['decimal', 2],
         // 'width' => '5%',
         'pageSummary' => function ($summary, $data, $widget) {
             return Yii::$app->formatter->asDecimal($summary, 2);
@@ -48,6 +49,7 @@ return [
     [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'credit',
+        'format' => ['decimal', 2],
         // 'width' => '5%',
         'pageSummary' => function ($summary, $data, $widget) {
             return Yii::$app->formatter->asDecimal($summary, 2);
