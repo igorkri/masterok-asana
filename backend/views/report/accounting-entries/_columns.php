@@ -39,6 +39,9 @@ return [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'debit',
         // 'width' => '5%',
+        'pageSummary' => function ($summary, $data, $widget) {
+            return Yii::$app->formatter->asDecimal($summary, 2);
+        },
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_CENTER,
     ],
@@ -46,6 +49,9 @@ return [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'credit',
         // 'width' => '5%',
+        'pageSummary' => function ($summary, $data, $widget) {
+            return Yii::$app->formatter->asDecimal($summary, 2);
+        },
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_CENTER,
     ],

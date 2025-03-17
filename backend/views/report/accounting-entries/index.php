@@ -61,7 +61,8 @@ CrudAsset::register($this);
                 ],          
                 'striped' => true,
                 'condensed' => true,
-                'responsive' => true,          
+                'responsive' => true,
+                'showPageSummary' => true,
                 'panel' => [
                     'type' => 'primary', 
                     'heading' => '<i class="fas fa-list"></i> Accounting Entries список',
