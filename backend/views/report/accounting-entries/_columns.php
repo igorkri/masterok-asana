@@ -67,6 +67,7 @@ return [
      [
          'class'=>'\kartik\grid\DataColumn',
          'attribute'=>'document_at',
+         'format' => ['datetime', 'php:d.m.Y'],
          'width' => '5%',
          'vAlign' => GridView::ALIGN_MIDDLE,
          'hAlign' => GridView::ALIGN_CENTER,
@@ -74,6 +75,7 @@ return [
      [
          'class'=>'\kartik\grid\DataColumn',
          'attribute'=>'created_at',
+         'format' => ['datetime', 'php:d.m.Y H:i:s'],
          'width' => '5%',
          'vAlign' => GridView::ALIGN_MIDDLE,
          'hAlign' => GridView::ALIGN_CENTER,

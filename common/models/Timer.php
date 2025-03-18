@@ -21,6 +21,9 @@ use yii\web\Response;
  * @property int $status
  * @property string|null $created_at
  * @property string|null $updated_at
+ * @property string|null $date_invoice
+ * @property string|null $date_report
+ * @property string|null $pks
  *
  * @property Task $taskG
  */
@@ -52,6 +55,7 @@ class Timer extends \yii\db\ActiveRecord
 
     public $price;
     public $hour;
+    public $pks;
 
     public function afterSave($insert, $changedAttributes)
     {
@@ -319,7 +323,7 @@ class Timer extends \yii\db\ActiveRecord
     {
         return [
             [['task_gid', 'time', 'minute', 'coefficient'], 'required'],
-            [['status', 'time', 'created_at', 'updated_at'], 'safe'],
+            [['status', 'time', 'created_at', 'updated_at', 'date_invoice', 'date_report', 'pks'], 'safe'],
             [['minute'], 'integer'],
             [['coefficient'], 'number'],
             [['comment'], 'string'],
@@ -344,6 +348,8 @@ class Timer extends \yii\db\ActiveRecord
             'created_at' => 'Дата створення',
             'updated_at' => 'Дата оновлення',
             'price' => 'Ціна',
+            'date_report' => 'Дата звіту',
+            'date_invoice' => 'Дата виставлення рахунку',
         ];
     }
 

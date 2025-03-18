@@ -1,6 +1,7 @@
 <?php
 
 use kartik\bs5dropdown\ButtonDropdown;
+use yii\bootstrap4\Dropdown;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\bootstrap5\Modal;
@@ -20,13 +21,13 @@ $list = [];
 foreach (\common\models\Timer::$statusList as $k => $st) {
     $list[] = [
         'label' => $st,
-        'url' => ['update-status', 'status' => $k],
+        'url' => ['update-status', 'status' => $k, 'date_report' => null],
         'linkOptions' => [
             'role' => 'modal-remote-bulk',
             'data-confirm' => false, 'data-method' => false,// for overide yii data api
             'data-request-method' => 'post',
             'data-confirm-title' => 'Ви впевнені?',
-            'data-confirm-message' => 'Ви впевнені, що хочете змінити статус?'
+            'data-confirm-message' => 'Ви впевнені, що хочете змінити статус?',
         ],
         'encode' => false
     ];
@@ -149,35 +150,9 @@ foreach (\common\models\Timer::$statusList as $k => $st) {
                                                     'data-confirm-message' => 'Ви впевнені, що хочете згенерувати EXCEL?'
                                                 ])
                                             . ' ' .
-                                            ButtonDropdown::widget([
-                                                'label' => '<i class="fa-solid fa-cogs"></i> Змінити статус',
-                                                'encodeLabel' => false,
-                                                'buttonOptions' => ['class' => 'btn btn-sm btn-primary'],
-                                                'dropdown' => [
-                                                    'items' => $list
-                                                ],
-                                            ])
-//                                            Html::a('Згенерувати акти',
-//                                                ["generate-acts"],
-//                                                [
-//                                                    "class" => "btn btn-sm btn-success btn-xs",
-//                                                    'role' => 'modal-remote-bulk',
-//                                                    'data-confirm' => false, 'data-method' => false,// for overide yii data api
-//                                                    'data-request-method' => 'post',
-//                                                    'data-confirm-title' => 'Ви впевнені?',
-//                                                    'data-confirm-message' => 'Ви впевнені, що хочете згенерувати акти?'
-//                                                ])
-//                                            . ' ' .
-//                                            Html::a('Згенерувати акти та рахунки',
-//                                                ["generate-acts-invoices"],
-//                                                [
-//                                                    "class" => "btn btn-sm btn-success btn-xs",
-//                                                    'role' => 'modal-remote-bulk',
-//                                                    'data-confirm' => false, 'data-method' => false,// for overide yii data api
-//                                                    'data-request-method' => 'post',
-//                                                    'data-confirm-title' => 'Ви впевнені?',
-//                                                    'data-confirm-message' => 'Ви впевнені, що хочете згенерувати акти та рахунки?'
-//                                                ]),
+                                            '<a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-sm btn-primary">
+                                             <i class="fa-solid fa-cogs"></i> Змінити статус <b class="caret"></b>
+                                             </a>' . Dropdown::widget(['items' => $list])
                                     ]) .
                                     '<div class="clearfix"></div>',
                             ],

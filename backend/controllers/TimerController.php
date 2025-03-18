@@ -302,18 +302,20 @@ class TimerController extends Controller
      * @param integer $status
      *
      */
-    public function actionUpdateStatus($status)
+    public function actionUpdateStatus($status, $date_report = null)
     {
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
         $request = Yii::$app->request;
         $pks = explode(',', $request->post( 'pks' ));
         foreach ( $pks as $pk ) {
             $model = $this->findModel($pk);
             $model->status = $status;
+            $model->date_invoice = date('Y-m-d H:i:s');
             $model->save();
         }
 
         if($request->isAjax){
-            Yii::$app->response->format = Response::FORMAT_JSON;
             return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
         }else{
             return $this->redirect(['index']);
