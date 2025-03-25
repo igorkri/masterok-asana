@@ -41,7 +41,7 @@ class AsanaProjectController extends Controller
         $searchModel = new ProjectSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-        return $this->render('index', [
+        return $this->render('_index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
