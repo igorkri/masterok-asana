@@ -33,7 +33,6 @@ foreach (\common\models\Timer::$statusList as $k => $st) {
     ];
 }
 
-//debugDie($list);
 ?>
     <div id="top" class="sa-app__body">
     <div class="mx-xxl-3 px-4 px-sm-5">
@@ -56,11 +55,10 @@ foreach (\common\models\Timer::$statusList as $k => $st) {
     <div class="mx-xxl-3 px-4 px-sm-5 pb-6">
         <div class="sa-layout">
             <div class="sa-layout__backdrop" data-sa-layout-sidebar-close=""></div>
-            <?php //echo $this->render('_filter-project', ['project' => $project, 'searchModel' => $searchModel]) ?>
+            <?php //echo $this->render('_advanced-filter', []) ?>
             <div class="sa-layout__content">
                 <div class="card">
                     <div id="ajaxCrudDatatable">
-
                         <?= GridView::widget([
                             'id' => 'crud-datatable',
                             'dataProvider' => $dataProvider,
@@ -75,12 +73,17 @@ foreach (\common\models\Timer::$statusList as $k => $st) {
                                             'role' => 'modal-remote',
                                             'title' => 'Створити Timers',
                                             'class' => 'btn btn-success',
-                                        ]) .
+                                        ]) . '   ' .
                                         Html::a('<i class="fas fa-redo"></i>', [''], [
                                             'data-pjax' => 1,
                                             'class' => 'btn btn-default',
                                             'title' => 'Оновити таблицю',
-                                        ]),
+                                        ]). '   ' .
+                                        Html::a('<i class="fas fa-filter"></i>', ['advanced-filter'], [
+                                            'role' => 'modal-remote',
+                                            'title' => 'Розширені фільтри',
+                                            'class' => 'btn btn-info',
+                                        ]). '   ',
                                 ],
                                 '{toggleData}',
 //                                '{export}',

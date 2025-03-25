@@ -321,4 +321,36 @@ class TimerController extends Controller
             return $this->redirect(['index']);
         }
     }
+
+    /**
+     * Advanced filter for Timer model
+     */
+    public function actionAdvancedFilter()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $searchModel = new TimerSearch();
+        $selected = Yii::$app->session->has('advanced-filter') ? Yii::$app->session->get('advanced-filter') : ['projectIds' => [], 'exclude' => 'no'];
+
+        return [
+            'title' => "Розширені фільтри",
+            'content' => $this->renderAjax('_advanced-filter', [
+                'searchModel' => $searchModel,
+                'selected' => $selected,
+            ]),
+            'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"]) .
+                Html::a('Закрити та скинути фільтри', 'remove-advanced-filter', ['class' => 'btn btn-default pull-left'])
+        ];
+    }
+
+    /**
+     * Remove advanced filter for Timer model
+     */
+    public function actionRemoveAdvancedFilter()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        Yii::$app->session->remove('advanced-filter');
+        return $this->redirect(['index']); // можно добавить 'TimerSearch' => [] если хочешь сбросить вручную
+    }
+
 }

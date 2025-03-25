@@ -56,6 +56,8 @@ class Timer extends \yii\db\ActiveRecord
     public $price;
     public $hour;
     public $pks;
+    public $project_id;
+    public $exclude;
 
     public function afterSave($insert, $changedAttributes)
     {
@@ -323,7 +325,7 @@ class Timer extends \yii\db\ActiveRecord
     {
         return [
             [['task_gid', 'time', 'minute', 'coefficient'], 'required'],
-            [['status', 'time', 'created_at', 'updated_at', 'date_invoice', 'date_report', 'pks'], 'safe'],
+            [['status', 'time', 'created_at', 'updated_at', 'date_invoice', 'date_report', 'pks', 'project_id', 'exclude'], 'safe'],
             [['minute'], 'integer'],
             [['coefficient'], 'number'],
             [['comment'], 'string'],
