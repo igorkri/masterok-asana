@@ -21,11 +21,11 @@ AppAsset::register($this);
 <body class="d-flex flex-column h-100">
 <?php $this->beginBody() ?>
 
-<main role="main">
-    <div class="container">
-        <?= $content ?>
+<div class="min-h-100 p-0 p-sm-6 d-flex align-items-stretch">
+    <div class="card w-25x flex-grow-1 flex-sm-grow-0 m-sm-auto">
+        <?=$content?>
     </div>
-</main>
+</div>
 
 <?php $this->endBody() ?>
 </body>

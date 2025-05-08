@@ -13,7 +13,7 @@ return [
     'bootstrap' => ['log', 'access'],
     'language' => 'uk-UA',
     'modules' => [
-        'gridview' =>  [
+        'gridview' => [
             'class' => '\kartik\grid\Module'
         ],
 //        'treemanager' =>  [
@@ -114,16 +114,36 @@ return [
         'rules' => [
             [
                 'allow' => true,
-                'roles' => ['@'], // Только для авторизованных пользователей
+                'controllers' => ['site'],
+                'actions' => ['login', 'request-password-reset', 'reset-password'],
+                'roles' => ['?'], // для гостей
+            ],
+            [
+                'allow' => true,
+                'roles' => ['@'], // для авторизованих
             ],
         ],
+
         'denyCallback' => function ($rule, $action) {
-            if (Yii::$app->controller->id === 'site' && Yii::$app->controller->action->id === 'login') {
-                return; // Не перенаправляем, если уже на странице логина
+            $host = Yii::$app->request->hostInfo;
+            $route = Yii::$app->controller->id . '/' . Yii::$app->controller->action->id;
+
+            if (Yii::$app->user->isGuest) {
+                if ($route !== 'site/login') { // Перевіряємо що не на сторінці логіна
+                    if (!headers_sent()) {
+                        header('Location: '. $host .'/admin/site/login', true, 302); // або інший сайт, якщо потрібно
+                        exit;
+                    } else {
+                        echo '<script>window.location.href="'.$host.'/admin/site/login";</script>';
+                        Yii::$app->end();
+                    }
+                }
+                //echo "Якщо вже на сторінці логіна — НІЧОГО НЕ РОБИМО";
             }
-            Yii::$app->response->redirect(['/site/login'])->send();
-            Yii::$app->end();
         },
+
+
     ],
+
     'params' => $params,
 ];
