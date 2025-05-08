@@ -35,6 +35,7 @@ return [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
+            'loginUrl' => ['/site/login'], // Указываем URL для редиректа
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
@@ -107,6 +108,19 @@ return [
                 'name' => 'Каталог',
             ],
         ],
+    ],
+    'as beforeAction' => [
+        'class' => 'yii\filters\AccessControl',
+        'rules' => [
+            [
+                'allow' => true,
+                'roles' => ['@'], // Только для авторизованных пользователей
+            ],
+        ],
+        'denyCallback' => function ($rule, $action) {
+            Yii::$app->response->redirect(['/site/login'])->send();
+            Yii::$app->end();
+        },
     ],
     'params' => $params,
 ];
