@@ -118,6 +118,9 @@ return [
             ],
         ],
         'denyCallback' => function ($rule, $action) {
+            if (Yii::$app->controller->id === 'site' && Yii::$app->controller->action->id === 'login') {
+                return; // Не перенаправляем, если уже на странице логина
+            }
             Yii::$app->response->redirect(['/site/login'])->send();
             Yii::$app->end();
         },
