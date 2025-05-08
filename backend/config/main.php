@@ -10,7 +10,7 @@ return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'access'],
     'language' => 'uk-UA',
     'modules' => [
         'gridview' =>  [
@@ -67,7 +67,13 @@ return [
                 ],
             ],
         ],
-
+        'access' => [
+            'class' => 'yii\filters\AccessControl',
+            'denyCallback' => function ($rule, $action) {
+                Yii::$app->response->redirect(['/site/login'])->send();
+                Yii::$app->end();
+            },
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
