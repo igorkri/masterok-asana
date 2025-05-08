@@ -113,9 +113,18 @@ class Project extends \yii\db\ActiveRecord
      */
     public function getTaskExecution()
     {
+        if (Yii::$app->user->isGuest) {
+            return null; // Возвращаем null, если пользователь не авторизован
+        }
+
+        $user = Yii::$app->user->identity;
+        if ($user === null || !isset($user->user_asana_gid)) {
+            return null; // Возвращаем null, если данные пользователя отсутствуют
+        }
+
         return $this->hasMany(Task::class, ['project_gid' => 'gid'])
             ->where(['section_project_name' => 'До роботи'])
-            ->andWhere(['assignee_gid' => Yii::$app->user->identity->user_asana_gid])
+            ->andWhere(['assignee_gid' => $user->user_asana_gid])
             ->count();
     }
 
@@ -295,3 +304,4 @@ class Project extends \yii\db\ActiveRecord
     }
 
 }
+
