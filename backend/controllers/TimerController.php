@@ -298,10 +298,10 @@ class TimerController extends Controller
 
     }
 
-    static function generateFileExcel($pks)
+    static function generateFileExcel($pks, $prefix = '')
     {
         $models = Timer::findAll($pks);
-        return Timer::exportExcel($models);
+        return Timer::exportExcel($models, $prefix);
     }
 
     /*
@@ -327,7 +327,7 @@ class TimerController extends Controller
             $akt->status = ActOfWork::STATUS_PENDING;
             $akt->user_id = Yii::$app->user->id ?? 1;
             $akt->date = date('Y-m-d H:i:s');
-            $akt->file_excel = null; // TODO: implement file upload
+            $akt->file_excel = null;
             $akt->total_amount = 0;
             $akt->paid_amount = 0;
             if ($akt->save()) {
@@ -337,6 +337,12 @@ class TimerController extends Controller
                     Yii::warning($timer, 'TimerController::actionUpdateStatus');
                     if (!$timer) {
                         Yii::error("Timer with ID $pk not found", __METHOD__);
+                        continue;
+                    }
+                    // Проверяем, что timer отсутствует в акте
+                    if ($actOfWorkDetail = ActOfWorkDetail::find()->where(['time_id' => $pk])->one()) {
+                        // Если таймер уже есть в акте, пропускаем его и пишем данные в отдельный лог файл act-detail.log
+                        Yii::info("Таймер з ID $pk Вже існує в ActOfworkDetail з ID {$actOfWorkDetail->id}",'application.exportact');
                         continue;
                     }
 
@@ -372,7 +378,8 @@ class TimerController extends Controller
                     $timer->status_act = Timer::STATUS_ACT_OK;
                     $timer->save(false);
                 }
-                $akt->file_excel = self::generateFileExcel($pks);
+                $prefix = ActOfWork::$periodTypeList[$post['period_type']] .'_'. ActOfWork::$monthsList[$post['period_mount']] .'_'. ActOfWork::$yearsList[$post['period_year']];
+                $akt->file_excel = self::generateFileExcel($pks, $prefix);
                 $akt->total_amount = ActOfWorkDetail::find()
                     ->where(['act_of_work_id' => $akt->id])
                     ->sum('amount');

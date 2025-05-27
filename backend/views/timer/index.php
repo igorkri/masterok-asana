@@ -17,8 +17,6 @@ $this->title = 'Timers';
 $this->params['breadcrumbs'][] = $this->title;
 
 CrudAsset::register($this);
-// Регистрация JavaScript для инициализации DateRangePicker в модальном окне
-$this->registerJsFile('@web/js/daterangepicker-init.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 
 $list = [];
 $statusName = '~не визначено~';

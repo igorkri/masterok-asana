@@ -177,7 +177,7 @@ class Timer extends \yii\db\ActiveRecord
      *
      * @return string
      */
-    public static function exportExcel(array $models)
+    public static function exportExcel(array $models, $prefix = '')
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -235,7 +235,7 @@ class Timer extends \yii\db\ActiveRecord
         $sheet->getStyle("A1:H" . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
         // Сохранение в файл
-        $date = date('Y-m-d', time());
+        $date = $prefix . '-' . date('Y-m-d_H:i:s', time());
         $filePath = Yii::getAlias('@frontend/web/report/time/Звіт_' . $date . '.xlsx');
         $path = Yii::$app->request->hostInfo . '/report/time/Звіт_' . $date . '.xlsx';
         // Создаем папку для хранения

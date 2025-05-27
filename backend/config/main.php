@@ -47,6 +47,26 @@ return [
                 [
                     'class' => \yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
+                    'logFile' => '@runtime/logs/backend.log', // Specify the log file for backend
+                    'categories' => ['application'],
+                ],
+                [
+                    'class' => \yii\log\FileTarget::class,
+                    'levels' => ['info'],
+                    'logFile' => '@runtime/logs/export-act.log', // Specify the log file for backend info
+                    'categories' => ['application.exportact'],
+                ],
+                [
+                    'class' => \yii\log\FileTarget::class,
+                    'levels' => ['trace'],
+                    'logFile' => '@runtime/logs/backend-trace.log', // Specify the log file for backend trace
+                    'categories' => ['application.trace'],
+                ],
+                [
+                    'class' => \yii\log\FileTarget::class,
+                    'levels' => ['profile'],
+                    'logFile' => '@runtime/logs/backend-profile.log', // Specify the log file for backend profile
+                    'categories' => ['application.profile'],
                 ],
             ],
         ],
