@@ -96,7 +96,7 @@ class Timer extends \yii\db\ActiveRecord
      *
      * @return float
      */
-    public static function getPrice(int $total_minute, float $coefficient = 1.0)
+    public static function getPrice(int $total_minute, float $coefficient = 1.2)
     {
         // Учитываем коэффициент в стоимости
         return round((($total_minute / 60) * self::PRICE) * $coefficient, 2);

@@ -17,8 +17,58 @@ $this->title = 'Timers';
 $this->params['breadcrumbs'][] = $this->title;
 
 CrudAsset::register($this);
+// Регистрация JavaScript для инициализации DateRangePicker в модальном окне
+$this->registerJsFile('@web/js/daterangepicker-init.js', ['depends' => [\yii\web\JqueryAsset::class]]);
+
 $list = [];
+$statusName = '~не визначено~';
+$statusKey = null;
+
 foreach (\common\models\Timer::$statusList as $k => $st) {
+    $statusName = $st;
+    $statusKey = $k;
+
+    $html = <<<HTML
+    <h3> Зміна статусу таймерів</h3> 
+    <p>Ви впевнені, що хочете змінити статус вибраних <br> таймерів на <b style="color: red">{$statusName}</b>?</p>
+HTML;
+
+    if ($k == 0) {
+        $html .= "<h4 style='color: red; text-align: center'>Увага! дані трекери будуть скопійовані в акти</h4>";
+        $html .= '<br>';
+        $html .= '<p>Потрібно заповнити всі поля</p>';
+        $html .= Html::label('Період тип', 'period_type', ['class' => 'form-label']);
+        $html .= Html::dropDownList('period_type', 'first_half_month', \common\models\ActOfWork::$periodTypeList,
+        ['class' => 'form-select', 'id' => 'period_type', 'required' => true, 'prompt' => 'Виберіть період']);
+        $html .= '<br>';
+        $html .= Html::label('Період місяць', 'period_mount', ['class' => 'form-label']);
+        $html .= Html::dropDownList('period_mount', date('F', strtotime('-1 mounts')),
+            \common\models\ActOfWork::$monthsList,
+            ['class' => 'form-select', 'id' => 'period_mount', 'prompt' => 'Виберіть місяць']);
+
+        $html .= '<br>';
+        $html .= Html::label('Період рік', 'period_year', ['class' => 'form-label']);
+        $html .= Html::dropDownList('period_year', date('Y'),
+            array_combine(
+                range(date('Y', strtotime('-1 year')), date('Y', strtotime('+1 year'))),
+                range(date('Y', strtotime('-1 year')), date('Y', strtotime('+1 year')))
+            ),
+            ['class' => 'form-select', 'id' => 'period_year', 'prompt' => 'Виберіть рік']
+        );
+        $html .= '<br>';
+        // коментар до поля
+        $html .= Html::label('Коментар', 'comment', ['class' => 'form-label']);
+        $html .= Html::textarea('comment', '', [
+            'class' => 'form-control',
+            'id' => 'comment',
+            'placeholder' => 'Коментар до звітності (необов\'язково)',
+            'rows' => 3,
+            'required' => true
+        ]);
+    }
+
+
+
     $list[] = [
         'label' => $st,
         'url' => ['update-status', 'status' => $k, 'date_report' => null],
@@ -27,7 +77,8 @@ foreach (\common\models\Timer::$statusList as $k => $st) {
             'data-confirm' => false, 'data-method' => false,// for overide yii data api
             'data-request-method' => 'post',
             'data-confirm-title' => 'Ви впевнені?',
-            'data-confirm-message' => 'Ви впевнені, що хочете змінити статус?',
+            'data-confirm-message' => $html,
+
         ],
         'encode' => false
     ];
@@ -168,12 +219,12 @@ foreach (\common\models\Timer::$statusList as $k => $st) {
     </div>
 <?php Modal::begin([
     "id" => "ajaxCrudModal",
-    "size" => Modal::SIZE_EXTRA_LARGE,
-    "scrollable" => true,
-    "options" => [
-        "data-bs-backdrop" => "static",
-        "class" => "modal-dialog-scrollable",
-    ],
+//    "size" => Modal::SIZE_EXTRA_LARGE,
+//    "scrollable" => true,
+//    "options" => [
+//        "data-bs-backdrop" => "static",
+//        "class" => "modal-dialog-scrollable",
+//    ],
     "footer" => "", // always need it for jquery plugin
 ]) ?>
 <?php Modal::end(); ?>

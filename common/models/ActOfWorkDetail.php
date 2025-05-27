@@ -10,8 +10,8 @@ use Yii;
  * @property int $id
  * @property int $act_of_work_id ID акту ремонту
  * @property int $time_id ID часу
- * @property int $task_id ID завдання
- * @property int $project_id ID проекту
+ * @property int $task_gid ID завдання
+ * @property int $project_gid ID проекту
  * @property string|null $project Проект
  * @property string|null $task Завдання
  * @property string|null $description Опис
@@ -41,15 +41,15 @@ class ActOfWorkDetail extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['act_of_work_id', 'time_id', 'task_id', 'project_id', 'amount', 'hours'], 'required'],
-            [['act_of_work_id', 'time_id', 'task_id', 'project_id'], 'integer'],
+            [['act_of_work_id', 'time_id', 'task_gid', 'project_gid', 'amount', 'hours'], 'required'],
+            [['act_of_work_id', 'time_id', 'task_gid', 'project_gid'], 'integer'],
             [['description'], 'string'],
             [['amount', 'hours'], 'number'],
             [['created_at', 'updated_at'], 'safe'],
             [['project', 'task'], 'string', 'max' => 255],
             [['act_of_work_id'], 'exist', 'skipOnError' => true, 'targetClass' => ActOfWork::class, 'targetAttribute' => ['act_of_work_id' => 'id']],
-            [['project_id'], 'exist', 'skipOnError' => true, 'targetClass' => Project::class, 'targetAttribute' => ['project_id' => 'id']],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['project_gid'], 'exist', 'skipOnError' => true, 'targetClass' => Project::class, 'targetAttribute' => ['project_gid' => 'id']],
+            [['task_gid'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_gid' => 'id']],
             [['time_id'], 'exist', 'skipOnError' => true, 'targetClass' => Timer::class, 'targetAttribute' => ['time_id' => 'id']],
         ];
     }
@@ -63,8 +63,8 @@ class ActOfWorkDetail extends \yii\db\ActiveRecord
             'id' => 'ID',
             'act_of_work_id' => 'ID акту ремонту',
             'time_id' => 'ID часу',
-            'task_id' => 'ID завдання',
-            'project_id' => 'ID проекту',
+            'task_gid' => 'ID завдання',
+            'project_gid' => 'ID проекту',
             'project' => 'Проект',
             'task' => 'Завдання',
             'description' => 'Опис',
@@ -92,7 +92,7 @@ class ActOfWorkDetail extends \yii\db\ActiveRecord
      */
     public function getProject0()
     {
-        return $this->hasOne(Project::class, ['id' => 'project_id']);
+        return $this->hasOne(Project::class, ['id' => 'project_gid']);
     }
 
     /**
@@ -102,7 +102,7 @@ class ActOfWorkDetail extends \yii\db\ActiveRecord
      */
     public function getTask0()
     {
-        return $this->hasOne(Task::class, ['id' => 'task_id']);
+        return $this->hasOne(Task::class, ['id' => 'task_gid']);
     }
 
     /**

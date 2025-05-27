@@ -2,6 +2,9 @@
 
 namespace backend\controllers;
 
+use common\models\ActOfWork;
+use common\models\ActOfWorkDetail;
+use common\models\Task;
 use Yii;
 use common\models\Timer;
 use backend\models\search\TimerSearch;
@@ -281,19 +284,24 @@ class TimerController extends Controller
     {
         $request = Yii::$app->request;
         $pks = explode(',', $request->post( 'pks' ));
-        $models = Timer::findAll($pks);
-        $path = Timer::exportExcel($models);
+        $path = self::generateFileExcel($pks);
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return [
+                'forceReload' => '#crud-datatable-pjax',
+                'title' => "Завантаження звіту",
+                'content' => $this->renderAjax('/report/invoice/download', [
+                    'type_doc' => 'excel',
+                    'path' => $path,
+                ]),
+                'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"])
+            ];
 
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        return [
-            'forceReload' => '#crud-datatable-pjax',
-            'title' => "Завантаження звіту",
-            'content' => $this->renderAjax('/report/invoice/download', [
-                'type_doc' => 'excel',
-                'path' => $path,
-            ]),
-            'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"])
-        ];
+    }
+
+    static function generateFileExcel($pks)
+    {
+        $models = Timer::findAll($pks);
+        return Timer::exportExcel($models);
     }
 
     /*
@@ -304,21 +312,98 @@ class TimerController extends Controller
      */
     public function actionUpdateStatus($status, $date_report = null)
     {
+        // очищаем кеш
+        Yii::$app->cache->flush();
 
-        Yii::$app->response->format = Response::FORMAT_JSON;
         $request = Yii::$app->request;
+        $post = $request->post();
         $pks = explode(',', $request->post( 'pks' ));
+        if ($status == Timer::STATUS_WAIT) {
+//            Yii::warning($post, __METHOD__);
+            $akt = new ActOfWork();
+            $akt->number = ActOfWork::generateNumber();
+            $akt->period = json_encode([$post['period_type'], $post['period_mount'], $post['period_year']]); // store period as JSON
+            $akt->description = $post['comment'];
+            $akt->status = ActOfWork::STATUS_PENDING;
+            $akt->user_id = Yii::$app->user->id ?? 1;
+            $akt->date = date('Y-m-d H:i:s');
+            $akt->file_excel = null; // TODO: implement file upload
+            $akt->total_amount = 0;
+            $akt->paid_amount = 0;
+            if ($akt->save()) {
+                foreach ($pks as $pk) {
+                    /** @var ActOfWorkDetail $detail */
+                    $timer = Timer::find()->where(['id' => $pk])->one();
+                    Yii::warning($timer, 'TimerController::actionUpdateStatus');
+                    if (!$timer) {
+                        Yii::error("Timer with ID $pk not found", __METHOD__);
+                        continue;
+                    }
+
+                    // Получаем связанную запись Task из базы данных по task_gid
+                    $task = Task::find()->where(['gid' => $timer->task_gid])->one();
+                    if (!$task) {
+                        Yii::error("Task with GID {$timer->task_gid} not found", __METHOD__);
+                        continue;
+                    }
+
+                    // Получаем связанный проект
+                    $project = $task->project;
+                    if (!$project) {
+                        Yii::error("Project not found for task with ID {$task->id}", __METHOD__);
+                        continue;
+                    }
+
+                    $detail = new ActOfWorkDetail();
+                    $detail->act_of_work_id = $akt->id;
+                    $detail->time_id = $pk;
+                    $detail->task_gid = $task->id; // Используем ID задачи из локальной базы данных
+                    $detail->project_gid = $project->id; // Используем ID проекта из локальной базы данных
+                    $detail->project = $project->name ?? '⸺';
+                    $detail->task = $task->name ?? '⸺';
+                    $detail->description = $timer->comment;
+                    $detail->amount = $timer->getPrice($timer->minute, $timer->coefficient);
+                    $detail->hours = $timer->minute / 60;
+                    if (!$detail->save()) {
+                        Yii::$app->response->format = Response::FORMAT_JSON;
+                        Yii::error('Failed to save ActOfWorkDetail: ' . json_encode($detail->getErrors()), __METHOD__);
+                        return ['forceClose' => true, 'forceReload' => '#crud-datatable-pjax'];
+                    }
+                }
+                $akt->file_excel = self::generateFileExcel($pks);
+                $akt->total_amount = ActOfWorkDetail::find()
+                    ->where(['act_of_work_id' => $akt->id])
+                    ->sum('amount');
+                $akt->paid_amount = 0; // TODO: implement paid amount logic
+                if (!$akt->save()) {
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+                    Yii::error('Failed to save ActOfWork: ' . json_encode($akt->getErrors()), __METHOD__);
+                    return ['forceClose' => true, 'forceReload' => '#crud-datatable-pjax'];
+                }
+                $this->pks($pks, $status);
+            } else {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                Yii::error('Failed to save ActOfWork: ' . json_encode($akt->getErrors()), __METHOD__);
+                return ['forceClose' => true, 'forceReload' => '#crud-datatable-pjax'];
+            }
+        }
+        //$this->pks($pks, $status);
+        if($request->isAjax){
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
+        }else{
+            return $this->redirect(['index']);
+        }
+    }
+
+
+    protected function pks($pks, $status)
+    {
         foreach ( $pks as $pk ) {
             $model = $this->findModel($pk);
             $model->status = $status;
             $model->date_invoice = date('Y-m-d H:i:s');
             $model->save();
-        }
-
-        if($request->isAjax){
-            return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
-        }else{
-            return $this->redirect(['index']);
         }
     }
 

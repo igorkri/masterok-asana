@@ -25,6 +25,62 @@ use Yii;
  */
 class ActOfWork extends \yii\db\ActiveRecord
 {
+
+    const STATUS_PENDING = 'pending'; // Очікує
+    const STATUS_IN_PROGRESS = 'in_progress'; // В процесі
+    const STATUS_PAID = 'paid'; // Оплачено
+    const STATUS_PARTIALLY_PAID = 'partially_paid'; // Частково оплачено
+    const STATUS_CANCELLED = 'cancelled'; // Скасовано
+    const STATUS_ARCHIVED = 'archived'; // Архівовано
+    const STATUS_DRAFT = 'draft'; // Чернетка
+
+    /**
+     * @var mixed|null
+     */
+    public static mixed $statusList = [
+        self::STATUS_PENDING => 'Очікує',
+        self::STATUS_IN_PROGRESS => 'В процесі',
+        self::STATUS_PAID => 'Оплачено',
+        self::STATUS_PARTIALLY_PAID => 'Частково оплачено',
+        self::STATUS_CANCELLED => 'Скасовано',
+        self::STATUS_ARCHIVED => 'Архівовано',
+        self::STATUS_DRAFT => 'Чернетка',
+    ];
+
+    /**
+     * @var mixed|null
+     */
+    public static mixed $monthsList = [
+        "January" => "Січень",
+        "February" => "Лютий",
+        "March" => "Березень",
+        "April" => "Квітень",
+        "May" => "Травень",
+        "June" => "Червень",
+        "July" => "Липень",
+        "August" => "Серпень",
+        "September" => "Вересень",
+        "October" => "Жовтень",
+        "November" => "Листопад",
+        "December" => "Грудень",
+    ];
+    /**
+     * @var mixed|null
+     */
+    public static mixed $periodTypeList = [
+        // перша половина місяця, друга половина місяця, тиждень, місяць, рік
+        'year' => 'Рік',
+        'first_half_month' => 'Перша половина місяця',
+        'second_half_month' => 'Друга половина місяця',
+        'month' => 'Місяць',
+        'week' => 'Тиждень',
+        'day' => 'День',
+    ];
+
+    /**
+     * @var mixed|null
+     *
+
     /**
      * {@inheritdoc}
      */
@@ -33,21 +89,27 @@ class ActOfWork extends \yii\db\ActiveRecord
         return 'act_of_work';
     }
 
+    public static function generateNumber(): string
+    {
+        return (string)time();
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['number', 'period', 'user_id', 'date', 'description', 'total_amount'], 'required'],
+            [['number', 'period', 'user_id', 'date', 'total_amount'], 'required'],
             [['user_id'], 'integer'],
             [['date', 'created_at', 'updated_at'], 'safe'],
             [['description'], 'string'],
             [['total_amount', 'paid_amount'], 'number'],
-            [['number', 'period'], 'string', 'max' => 50],
+            [['number'], 'string', 'max' => 50],
             [['status'], 'string', 'max' => 20],
             [['file_excel'], 'string', 'max' => 255],
             [['number'], 'unique'],
+            [['period'], 'safe'],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
