@@ -129,13 +129,14 @@ return [
     [
         'class' => 'kartik\grid\ActionColumn',
         'dropdown' => false,
+        'template' => '{update} {delete}',
         'vAlign' => 'middle',
-        'width' => '150px',
+        'width' => '120px',
         'urlCreator' => function ($action, $model, $key, $index) {
             return Url::to([$action, 'id' => $key]);
         },
         'viewOptions' => ['role' => 'modal-remote', 'title' => 'Детальніше', 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-primary'],
-        'updateOptions' => ['role' => 'modal-remote', 'title' => 'Редагувати', 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-info'],
+        'updateOptions' => [/*'role' => 'modal-remote', */'title' => 'Редагувати', 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-info'],
         'deleteOptions' => ['role' => 'modal-remote', 'title' => 'Видалити', 'class' => 'btn btn-sm btn-danger',
             'data-confirm' => false, 'data-method' => false,// for overide yii data api
             'data-request-method' => 'post',

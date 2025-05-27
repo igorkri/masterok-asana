@@ -17,7 +17,7 @@ class ActOfWorkDetailSearch extends ActOfWorkDetail
     public function rules()
     {
         return [
-            [['id', 'act_of_work_id', 'time_id', 'task_id', 'project_id'], 'integer'],
+            [['id', 'act_of_work_id', 'time_id', 'task_gid', 'project_gid'], 'integer'],
             [['project', 'task', 'description', 'created_at', 'updated_at'], 'safe'],
             [['amount', 'hours'], 'number'],
         ];
@@ -62,8 +62,8 @@ class ActOfWorkDetailSearch extends ActOfWorkDetail
             'id' => $this->id,
             'act_of_work_id' => $this->act_of_work_id,
             'time_id' => $this->time_id,
-            'task_id' => $this->task_id,
-            'project_id' => $this->project_id,
+            'task_id' => $this->task_gid,
+            'project_id' => $this->project_gid,
             'amount' => $this->amount,
             'hours' => $this->hours,
             'created_at' => $this->created_at,

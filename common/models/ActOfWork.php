@@ -64,6 +64,19 @@ class ActOfWork extends \yii\db\ActiveRecord
         "November" => "Листопад",
         "December" => "Грудень",
     ];
+
+    // роки
+    public static mixed $yearsList = [
+        '2023' => '2023',
+        '2024' => '2024',
+        '2025' => '2025',
+        '2026' => '2026',
+        '2027' => '2027',
+        '2028' => '2028',
+        '2029' => '2029',
+        '2030' => '2030',
+    ];
+
     /**
      * @var mixed|null
      */
