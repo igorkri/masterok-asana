@@ -1,10 +1,10 @@
 <?php
 
 use common\models\ActOfWorkDetail;
+use igorkri\ajaxcrud\BulkButtonWidget;
+use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\grid\ActionColumn;
-use yii\grid\GridView;
+
 
 /** @var yii\web\View $this */
 /** @var backend\models\search\ActOfWorkDetailSearch $searchModel */
@@ -34,8 +34,34 @@ $this->params['breadcrumbs'][] = $this->title;
             'project',
             'task',
             'description:ntext',
-            'amount',
-            'hours',
+            [
+                'class' => '\kartik\grid\DataColumn',
+                'attribute' => 'amount',
+                'format' => 'decimal',
+                'value' => function ($model) {
+                    return $model->amount ?? '0.00';
+                },
+                'pageSummary' => function ($summary, $data, $widget) {
+                    return Yii::$app->formatter->asDecimal($summary);
+                },
+                // 'width' => '5%',
+                'vAlign' => GridView::ALIGN_MIDDLE,
+                'hAlign' => GridView::ALIGN_RIGHT,
+            ],
+            [
+                'class' => '\kartik\grid\DataColumn',
+                'attribute' => 'hours',
+                'format' => 'decimal',
+                'pageSummary' => function ($summary, $data, $widget) {
+                    return Yii::$app->formatter->asDecimal($summary);
+                },
+                'value' => function ($model) {
+                    return $model->hours;
+                },
+                // 'width' => '5%',
+                'vAlign' => GridView::ALIGN_MIDDLE,
+                'hAlign' => GridView::ALIGN_RIGHT,
+            ],
             //'created_at',
             //'updated_at',
 //            [
@@ -44,6 +70,16 @@ $this->params['breadcrumbs'][] = $this->title;
 //                    return Url::toRoute([$action, 'id' => $model->id]);
 //                 }
 //            ],
+        ],
+        'showPageSummary' => true,
+        'toolbar' => false,
+        'striped' => true,
+        'condensed' => true,
+        'responsive' => true,
+        'panel' => [
+            'type' => 'dark',
+            'heading' => '<i class="fas fa-list"></i> список',
+            'after' => false,
         ],
     ]); ?>
     </div>

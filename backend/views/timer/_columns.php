@@ -89,7 +89,7 @@ return [
             return Yii::$app->formatter->asDecimal($summary, 2);
         },
         'value' => function ($model) {
-            return \common\models\Timer::getPrice($model->minute, $model->coefficient);
+            return $model->getCalcPrice();
         },
         // 'width' => '5%',
         'vAlign' => GridView::ALIGN_MIDDLE,
@@ -112,7 +112,9 @@ return [
             ],
         ],
         'value' => function ($model) {
-            return \common\models\Timer::$statusList[$model->status];
+            return $model->status_act == \common\models\Timer::STATUS_ACT_OK
+                ? '<span class="text-success">Актовано</span>'
+                : \common\models\Timer::$statusList[$model->status];
         },
         'width' => '10%',
         'vAlign' => GridView::ALIGN_MIDDLE,
@@ -181,6 +183,42 @@ return [
     [
         'class' => 'kartik\grid\ActionColumn',
         'dropdown' => false,
+        'template' => '{view} {update} {delete}',
+        'buttons' => [
+            'view' => function ($url, $model, $key) {
+                return \yii\helpers\Html::a('<span class="fas fa-eye"></span>', $url, [
+                    'role' => 'modal-remote',
+                    'title' => 'Детальніше',
+                    'data-toggle' => 'tooltip',
+                    'class' => 'btn btn-sm btn-primary',
+                ]);
+            },
+            'update' => function ($url, $model, $key) {
+                if ($model->status_act == \common\models\Timer::STATUS_ACT_OK) {
+                    return '';
+                }
+                return \yii\helpers\Html::a('<span class="fas fa-pencil-alt"></span>', $url, [
+                    'role' => 'modal-remote',
+                    'title' => 'Редагувати',
+                    'data-toggle' => 'tooltip',
+                    'class' => 'btn btn-sm btn-info',
+                ]);
+            },
+            'delete' => function ($url, $model, $key) {
+                return \yii\helpers\Html::a('<span class="fas fa-trash"></span>', $url, [
+                    'role' => 'modal-remote',
+                    'title' => 'Видалити',
+                    'data-toggle' => 'tooltip',
+                    'class' => 'btn btn-sm btn-danger',
+                    'data-confirm' => false,
+                    'data-method' => false,
+                    // for overide yii data api
+                    'data-request-method' => 'post',
+                    'data-confirm-title' => 'Ви впевнені?',
+                    'data-confirm-message' => 'Ви впевнені, що хочете видалити?',
+                ]);
+            },
+        ],
         'vAlign' => 'middle',
         'width' => '180px',
         'urlCreator' => function ($action, $model, $key, $index) {

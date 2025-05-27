@@ -138,6 +138,30 @@ class ActOfWorkController extends Controller
         return $this->redirect(['index']);
     }
 
+    public function actionBulkdelete()
+    {
+        $request = Yii::$app->request;
+        $pks = explode(',', $request->post( 'pks' )); // Array or selected records primary keys
+        foreach ( $pks as $pk ) {
+            $model = $this->findModel($pk);
+            $model->delete();
+        }
+
+        if($request->isAjax){
+            /*
+            *   Process for ajax request
+            */
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
+        }else{
+            /*
+            *   Process for non-ajax request
+            */
+            return $this->redirect(['index']);
+        }
+
+    }
+
     /**
      * Finds the ActOfWork model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

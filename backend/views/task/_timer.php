@@ -32,6 +32,7 @@ $total_price = 0;
                 <th scope="col">Хвилини</th>
                 <th scope="col">Коефіцієнт</th>
                 <th scope="col">Коментар</th>
+                <th scope="col">Статус акт</th>
             </tr>
             </thead>
             <tbody>
@@ -39,14 +40,18 @@ $total_price = 0;
             if (isset($timers)){
                 foreach ($timers as $timer):
                     $total_minute += $timer->minute;
-                    $total_price += Timer::getPrice($timer->minute, $timer->coefficient);
+                    $total_price += $timer->getCalcPrice();
                     ?>
                     <tr>
                         <th scope="row">
+                            <?php if ($timer->status_act != Timer::STATUS_ACT_OK): ?>
                             <?=Html::a($i, ['/timer/update', 'id' => $timer->id], [
                                 'class' => 'text-reset', 'data-pjax' => 1,
                                 'role'=>'modal-remote','title'=>'Update', 'data-toggle'=>'tooltip'
                             ]) ?>
+                            <?php else: ?>
+                                <?= $i ?>
+                            <?php endif; ?>
                         </th>
                         <td><?= Yii::$app->formatter->asDatetime($timer->created_at, 'php:d.m.Y H:i:s') ?></td>
                         <td><?= $timer->getStatusText($timer->status) ?></td>
@@ -54,6 +59,7 @@ $total_price = 0;
                         <td width="120"><?= $timer->minute ?> (<?=round($timer->getTimeHour(), 2)?>)</td>
                         <td><?= $timer->coefficient ?></td>
                         <td><?= $timer->comment ?></td>
+                        <td><?= $timer->status_act == Timer::STATUS_ACT_OK ? 'Актовано' : 'Не актовано' ?></td>
                     </tr>
                     <?php $i++; endforeach;
             }

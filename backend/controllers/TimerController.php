@@ -285,16 +285,16 @@ class TimerController extends Controller
         $request = Yii::$app->request;
         $pks = explode(',', $request->post( 'pks' ));
         $path = self::generateFileExcel($pks);
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return [
-                'forceReload' => '#crud-datatable-pjax',
-                'title' => "Завантаження звіту",
-                'content' => $this->renderAjax('/report/invoice/download', [
-                    'type_doc' => 'excel',
-                    'path' => $path,
-                ]),
-                'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"])
-            ];
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return [
+            'forceReload' => '#crud-datatable-pjax',
+            'title' => "Завантаження звіту",
+            'content' => $this->renderAjax('/report/invoice/download', [
+                'type_doc' => 'excel',
+                'path' => $path,
+            ]),
+            'footer' => Html::button('Закрити', ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => "modal"])
+        ];
 
     }
 
@@ -318,7 +318,7 @@ class TimerController extends Controller
         $request = Yii::$app->request;
         $post = $request->post();
         $pks = explode(',', $request->post( 'pks' ));
-        if ($status == Timer::STATUS_WAIT) {
+        if ($status == Timer::STATUS_INVOICE) {
 //            Yii::warning($post, __METHOD__);
             $akt = new ActOfWork();
             $akt->number = ActOfWork::generateNumber();
@@ -362,13 +362,15 @@ class TimerController extends Controller
                     $detail->project = $project->name ?? '⸺';
                     $detail->task = $task->name ?? '⸺';
                     $detail->description = $timer->comment;
-                    $detail->amount = $timer->getPrice($timer->minute, $timer->coefficient);
-                    $detail->hours = $timer->minute / 60;
+                    $detail->amount = $timer->getCalcPrice();
+                    $detail->hours = $timer->getTimeHour();
                     if (!$detail->save()) {
                         Yii::$app->response->format = Response::FORMAT_JSON;
                         Yii::error('Failed to save ActOfWorkDetail: ' . json_encode($detail->getErrors()), __METHOD__);
                         return ['forceClose' => true, 'forceReload' => '#crud-datatable-pjax'];
                     }
+                    $timer->status_act = Timer::STATUS_ACT_OK;
+                    $timer->save(false);
                 }
                 $akt->file_excel = self::generateFileExcel($pks);
                 $akt->total_amount = ActOfWorkDetail::find()

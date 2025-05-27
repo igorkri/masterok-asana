@@ -33,7 +33,7 @@ foreach (\common\models\Timer::$statusList as $k => $st) {
     <p>Ви впевнені, що хочете змінити статус вибраних <br> таймерів на <b style="color: red">{$statusName}</b>?</p>
 HTML;
 
-    if ($k == 0) {
+    if ($k == \common\models\Timer::STATUS_INVOICE) {
         $html .= "<h4 style='color: red; text-align: center'>Увага! дані трекери будуть скопійовані в акти</h4>";
         $html .= '<br>';
         $html .= '<p>Потрібно заповнити всі поля</p>';

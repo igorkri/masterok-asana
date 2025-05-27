@@ -19,6 +19,7 @@ use yii\web\Response;
  * @property float $coefficient
  * @property string|null $comment
  * @property int $status
+ * @property string $status_act
  * @property string|null $created_at
  * @property string|null $updated_at
  * @property string|null $date_invoice
@@ -48,6 +49,9 @@ class Timer extends \yii\db\ActiveRecord
     const STATUS_INVOICE = 3;
     const STATUS_PAID = 4;
     const STATUS_NEED_CLARIFICATION = 5;
+
+    const STATUS_ACT_OK = 'ok'; //
+    const STATUS_ACT_NOT_OK = 'not_ok'; // Не ок
 
     // стоимость за час
     const PRICE = 400;
@@ -100,6 +104,17 @@ class Timer extends \yii\db\ActiveRecord
     {
         // Учитываем коэффициент в стоимости
         return round((($total_minute / 60) * self::PRICE) * $coefficient, 2);
+    }
+
+    /**
+     * Получаем стоимость с учетом коэффициента
+     *
+     * @return float
+     */
+    public function getCalcPrice(): float
+    {
+        // Учитываем коэффициент в стоимости
+        return round(($this->getTimeHour() * self::PRICE) * $this->coefficient, 2);
     }
 
     /**
@@ -196,7 +211,7 @@ class Timer extends \yii\db\ActiveRecord
             $taskName = $model->taskG->name ?? '';
             $taskUrl = $model->taskG->permalink_url ?? '';
             $projectName = $model->taskG->project->name ?? '';
-            $price = $model->getPrice($model->minute, $model->coefficient);
+            $price = $model->getCalcPrice();
             $createdAt = Yii::$app->formatter->asDatetime($model->created_at, 'php:d.m.Y H:i:s');
 
             // Установка значений в строку
@@ -268,6 +283,8 @@ class Timer extends \yii\db\ActiveRecord
     }
 
 
+
+
     // Coefficient list
     static public array $coefficientList = [
         '0.0' => '0',
@@ -284,9 +301,9 @@ class Timer extends \yii\db\ActiveRecord
         self::STATUS_WAIT => 'Чекає на звіт', // 0
         self::STATUS_PROCESS => 'В процесі', // 1
         self::STATUS_PLANNED => 'Заплановано', // 2
-        self::STATUS_INVOICE => 'Рахунок виставлено', // 3
+        self::STATUS_INVOICE => 'Копіювати в акти та згенерувати файл', // 3
         self::STATUS_PAID => 'Оплачено', // 4
-        self::STATUS_NEED_CLARIFICATION => 'Потребує уточнення', // 5
+//        self::STATUS_NEED_CLARIFICATION => 'Потребує уточнення', // 5
     ];
 
     // создаем beforeSave для поля minute который будет пересчитывать время в минуты из time (00:00:00)
@@ -330,6 +347,7 @@ class Timer extends \yii\db\ActiveRecord
             [['coefficient'], 'number'],
             [['comment'], 'string'],
             [['task_gid'], 'string', 'max' => 255],
+            [['status_act'], 'string', 'max' => 50],
             [['task_gid'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_gid' => 'gid']],
         ];
     }
@@ -347,6 +365,7 @@ class Timer extends \yii\db\ActiveRecord
             'coefficient' => 'Коефіцієнт',
             'comment' => 'Коментар',
             'status' => 'Статус',
+            'status_act' => 'Статус акту виконаних робіт',
             'created_at' => 'Дата створення',
             'updated_at' => 'Дата оновлення',
             'price' => 'Ціна',
