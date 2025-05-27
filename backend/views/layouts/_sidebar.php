@@ -128,6 +128,12 @@ use common\models\Project;
                                         <span class="sa-nav__title">Звірка</span>
                                     </a>
                                 </li>
+                                <li class="sa-nav__menu-item">
+                                    <a href="<?= Url::to(['/act-of-work/index']) ?>" class="sa-nav__link">
+                                        <span class="sa-nav__menu-item-padding"></span>
+                                        <span class="sa-nav__title">Акти</span>
+                                    </a>
+                                </li>
 
                             </ul>
                         </li>
