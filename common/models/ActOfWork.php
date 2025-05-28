@@ -104,7 +104,7 @@ class ActOfWork extends \yii\db\ActiveRecord
             'month' => $periodsArr[1] ?? '-',
             'year' => $periodsArr[2] ?? '-',
         ];
-        debugDie([$periodData, $periodsArr]);
+        
         return
             (self::$monthsList[$periodData['month']] ?? '-') . ' ' .
             ($periodData['year'] ?? '-') . ' (' .
