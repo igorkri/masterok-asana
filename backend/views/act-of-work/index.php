@@ -1,12 +1,12 @@
 <?php
 
+use common\components\CustomGridView;
 use common\components\Modal;
 use common\models\ActOfWork;
 use igorkri\ajaxcrud\BulkButtonWidget;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\grid\ActionColumn;
 
 
 /** @var yii\web\View $this */
@@ -15,6 +15,17 @@ use yii\grid\ActionColumn;
 
 $this->title = 'Act Of Works';
 $this->params['breadcrumbs'][] = $this->title;
+
+$totlalSum = [
+    'total_amount' => [],
+    'paid_amount' => [],
+];
+
+foreach ($dataProvider->models as $model) {
+    $totlalSum['total_amount'][] = $model->total_amount;
+    $totlalSum['paid_amount'][] = $model->paid_amount;
+}
+
 ?>
 <div id="top" class="sa-app__body">
     <div class="mx-xxl-3 px-4 px-sm-5">
@@ -46,6 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'dataProvider' => $dataProvider,
                             'filterModel' => $searchModel,
                             'pjax' => true,
+//                            'showPageSummary' => true,
                             'rowOptions' => function ($model, $key, $index, $grid) {
                                 return ['data-sortable-id' => $model->id];
                             },
@@ -56,7 +68,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ]
                             ],
                             'columns' => require(__DIR__ . '/_columns.php'),
-//                            'showPageSummary' => true,
                             'toolbar' => [
                                 [
                                     'content' =>
@@ -115,6 +126,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'responsive' => true,
                             'panel' => [
                                 'type' => 'dark',
+                                'before' => "Загальна сума: <b>" . Yii::$app->formatter->asCurrency(array_sum($totlalSum['total_amount'])) . "</b> | Оплачено: <b>" . Yii::$app->formatter->asCurrency(array_sum($totlalSum['paid_amount'])) . "</b>",
                                 'heading' => '<i class="fas fa-list"></i> список',
                                 'after' => BulkButtonWidget::widget([
                                         'buttons' => Html::a('<i class="far fa-trash-alt"></i>&nbsp; Видалити',

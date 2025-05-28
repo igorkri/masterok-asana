@@ -9,6 +9,7 @@ use yii\helpers\Url;
 return [
     [
         'class' => \common\components\SortTable::class,
+//        'attribute' => 'sort',
         'width' => '30px',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_CENTER,
@@ -33,6 +34,7 @@ return [
             return $model->number;
         },
         'width' => '5%',
+        'pageSummary' => false,
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_LEFT,
     ],
@@ -47,6 +49,7 @@ return [
         },
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_LEFT,
+        'pageSummary' => false,
     ],
     [
         'class' => '\kartik\grid\DataColumn',
@@ -67,6 +70,7 @@ return [
         },
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_LEFT,
+        'pageSummary' => false,
     ],
     [
         'class' => '\kartik\grid\DataColumn',
@@ -75,7 +79,7 @@ return [
         'attribute' => 'total_amount',
         'format' => ['decimal', 2],
         'pageSummary' => true,
-        'pageSummaryFunc' => GridView::F_SUM,
+//        'pageSummaryFunc' => GridView::F_SUM,
         'pageSummaryOptions' => ['class' => 'text-right text-bold'],
         'width' => '5%',
         'vAlign' => GridView::ALIGN_MIDDLE,
@@ -89,7 +93,7 @@ return [
         'format' => ['decimal', 2],
         'width' => '5%',
         'pageSummary' => true,
-        'pageSummaryFunc' => GridView::F_SUM,
+//        'pageSummaryFunc' => GridView::F_SUM,
         'pageSummaryOptions' => ['class' => 'text-right text-bold'],
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_RIGHT,
@@ -114,6 +118,7 @@ return [
         'width' => '11%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_LEFT,
+         'pageSummary' => false,
      ],
       [
         'class' => '\kartik\grid\DataColumn',
@@ -123,6 +128,7 @@ return [
         'width' => '10%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_CENTER,
+          'pageSummary' => false,
       ],
     [
         'class' => '\kartik\grid\DataColumn',
@@ -132,6 +138,7 @@ return [
         'width' => '10%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_CENTER,
+        'pageSummary' => false,
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
@@ -139,6 +146,7 @@ return [
         'template' => '{update} {delete}',
         'vAlign' => 'middle',
         'width' => '120px',
+        'pageSummary' => false,
         'urlCreator' => function ($action, $model, $key, $index) {
             return Url::to([$action, 'id' => $key]);
         },
