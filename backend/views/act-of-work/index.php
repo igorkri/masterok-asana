@@ -81,6 +81,10 @@ foreach ($dataProvider->models as $model) {
 //                                            'title' => 'Розширені фільтри',
 //                                            'class' => 'btn btn-info',
 //                                        ]). '   ',
+                                        . Html::a('скинути сесію та відобразити всі', ['', 'bulk-hide' => 'clear'], [
+                                            'title' => '',
+                                            'class' => 'btn btn-info',
+                                        ]),
                                 ],
                                 '{toggleData}',
 //                                '{export}',
@@ -139,21 +143,21 @@ foreach ($dataProvider->models as $model) {
                                                     'data-confirm-title' => 'Ви впевнені?',
                                                     'data-confirm-message' => 'Ви впевнені, що хочете видалити цей елемент?'
                                                 ])
-                                            . ' '
-//                                            Html::a('<i class="fa-solid fa-file-excel"></i> Згенерувати EXCEL',
-//                                                ["export-excel"],
-//                                                [
-//                                                    "class" => "btn btn-sm btn-info",
-//                                                    'role' => 'modal-remote-bulk',
-//                                                    'data-confirm' => false, 'data-method' => false,// for overide yii data api
-//                                                    'data-request-method' => 'post',
-//                                                    'data-confirm-title' => 'Ви впевнені?',
-//                                                    'data-confirm-message' => 'Ви впевнені, що хочете згенерувати EXCEL?'
-//                                                ])
-//                                            . ' ' .
-//                                            '<a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-sm btn-primary">
-//                                             <i class="fa-solid fa-cogs"></i> Змінити статус <b class="caret"></b>
-//                                             </a>'
+                                            . ' ' .
+                                            Html::a(' Не відображати',
+                                                ["", 'bulk-hide' => 1],
+                                                [
+                                                    "class" => "btn btn-sm btn-info",
+                                                    'role' => 'modal-remote-bulk',
+                                                    'data-confirm' => false, 'data-method' => false,// for overide yii data api
+                                                    'data-request-method' => 'post',
+                                                    'data-confirm-title' => 'Ви впевнені?',
+                                                    'data-confirm-message' => 'Ви впевнені не відображати зі списку?'
+                                                ])
+                                            . ' ' .
+                                            '<a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-sm btn-primary">
+                                             <i class="fa-solid fa-cogs"></i> Змінити статус <b class="caret"></b>
+                                             </a>'
                                     ]) .
                                     '<div class="clearfix"></div>',
                             ],

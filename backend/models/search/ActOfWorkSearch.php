@@ -43,6 +43,18 @@ class ActOfWorkSearch extends ActOfWork
     {
         $query = ActOfWork::find();
 
+        // Проверяем, есть ли данные в сессии
+        $session = \Yii::$app->session;
+//                debugDie($session->get('bulk-hide'));
+        if ($session->has('bulk-hide')) {
+            $hideIds = $session->get('bulk-hide', []);
+
+            if (!empty($hideIds)) {
+                // Если есть, фильтруем запрос
+                $query->andWhere(['not in', 'id', explode(',', $hideIds)]);
+            }
+        }
+
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

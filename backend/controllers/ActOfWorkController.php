@@ -42,8 +42,29 @@ class ActOfWorkController extends Controller
      */
     public function actionIndex()
     {
+        $session = Yii::$app->session;
+
+//        debugDie($this->request->queryParams);
+        $bulkHide = Yii::$app->request->get('bulk-hide');
+
+        if (Yii::$app->request->isPost) {
+            // Если запрос POST, сохраняем Id в сессии
+            $pks = Yii::$app->request->post('pks', []);
+            if (!empty($pks)) {
+                $session->set('bulk-hide', $pks);
+            }
+        }
+        if ($bulkHide == 'clear') {
+
+            $session->remove('bulk-hide');
+        }
+
         $searchModel = new ActOfWorkSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+
+        if(Yii::$app->request->isAjax){
+            $this->redirect(['index']);
+        }
 
         return $this->render('index', [
             'searchModel' => $searchModel,
