@@ -19,9 +19,9 @@ return [
      [
      'class'=>'\kartik\grid\DataColumn',
      'attribute'=>'id',
-         'value' => function ($model) {
-             return $model->taskG->project->name;
-         },
+//         'value' => function ($model) {
+//             return $model->taskG->project->name;
+//         },
      'width' => '5%',
      'vAlign' => GridView::ALIGN_MIDDLE,
      'hAlign' => GridView::ALIGN_CENTER,
