@@ -8,15 +8,21 @@ use yii\helpers\Url;
 
 return [
     [
+        'class' => \common\components\SortTable::class,
+        'width' => '30px',
+        'vAlign' => GridView::ALIGN_MIDDLE,
+        'hAlign' => GridView::ALIGN_CENTER,
+        'pageSummary' => false,
+    ],
+    [
         'class' => 'kartik\grid\CheckboxColumn',
         'width' => '40px',
+        'pageSummary' => false,
     ],
     [
         'class' => 'kartik\grid\SerialColumn',
         'width' => '30px',
-        // 'width' => '5%',
-        // 'vAlign' => GridView::ALIGN_MIDDLE,
-        // 'hAlign' => GridView::ALIGN_CENTER,
+        'pageSummary' => false,
     ],
     [
         'class' => '\kartik\grid\DataColumn',
@@ -59,23 +65,18 @@ return [
                 return "{$month} {$period[2]} ({$firstHalf})";
             }
         },
-//        'width' => '20%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_LEFT,
     ],
-    //                    'user_id',
-//                            'date',
-    //'description:ntext',
-//    'total_amount',
     [
         'class' => '\kartik\grid\DataColumn',
         'headerOptions' => ['class' => 'text-nowrap', 'style' => 'text-align: center;'],
         'label' => 'Сума',
         'attribute' => 'total_amount',
         'format' => ['decimal', 2],
-        'pageSummary' => function ($summary, $data, $widget) {
-            return Yii::$app->formatter->asDecimal($summary);
-        },
+        'pageSummary' => true,
+        'pageSummaryFunc' => GridView::F_SUM,
+        'pageSummaryOptions' => ['class' => 'text-right text-bold'],
         'width' => '5%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_RIGHT,
@@ -87,9 +88,9 @@ return [
         'attribute' => 'paid_amount',
         'format' => ['decimal', 2],
         'width' => '5%',
-        'pageSummary' => function ($summary, $data, $widget) {
-            return Yii::$app->formatter->asDecimal($summary);
-        },
+        'pageSummary' => true,
+        'pageSummaryFunc' => GridView::F_SUM,
+        'pageSummaryOptions' => ['class' => 'text-right text-bold'],
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_RIGHT,
     ],
@@ -151,3 +152,4 @@ return [
             'data-confirm-message' => 'Ви впевнені, що хочете видалити?'],
     ],
 ];
+

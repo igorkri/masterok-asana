@@ -46,8 +46,17 @@ $this->params['breadcrumbs'][] = $this->title;
                             'dataProvider' => $dataProvider,
                             'filterModel' => $searchModel,
                             'pjax' => true,
+                            'rowOptions' => function ($model, $key, $index, $grid) {
+                                return ['data-sortable-id' => $model->id];
+                            },
+                            'options' => [
+                                'data' => [
+                                    'sortable-widget' => 1,
+                                    'sortable-url' => \yii\helpers\Url::toRoute(['/ajax/sorting', 'modelName' => ActOfWork::class]),
+                                ]
+                            ],
                             'columns' => require(__DIR__ . '/_columns.php'),
-                            'showPageSummary' => true,
+//                            'showPageSummary' => true,
                             'toolbar' => [
                                 [
                                     'content' =>
