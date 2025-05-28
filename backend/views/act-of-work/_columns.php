@@ -73,6 +73,9 @@ return [
         'label' => 'Сума',
         'attribute' => 'total_amount',
         'format' => ['decimal', 2],
+        'pageSummary' => function ($summary, $data, $widget) {
+            return Yii::$app->formatter->asDecimal($summary);
+        },
         'width' => '5%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_RIGHT,
@@ -84,6 +87,9 @@ return [
         'attribute' => 'paid_amount',
         'format' => ['decimal', 2],
         'width' => '5%',
+        'pageSummary' => function ($summary, $data, $widget) {
+            return Yii::$app->formatter->asDecimal($summary);
+        },
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_RIGHT,
     ],
