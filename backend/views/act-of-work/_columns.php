@@ -57,16 +57,12 @@ return [
         'attribute' => 'period',
         'format' => 'raw',
         'value' => function ($model) {
+            /** @var $model ActOfWork */
             // json ["first_half_month","May","2025"]
             if (!$model->period) {
                 return '⸺';
             }
-            $period = json_decode($model->period, true);
-            if (is_array($period) && count($period) === 3) {
-                $month = ActOfWork::$monthsList[$period[1]] ?? $period[1];
-                $firstHalf = ActOfWork::$periodTypeList[$period[0]] ?? $period[0];
-                return "{$month} {$period[2]} ({$firstHalf})";
-            }
+            return $model->getPeriodText();
         },
 //        'width' => '20%',
         'vAlign' => GridView::ALIGN_MIDDLE,
