@@ -16,16 +16,16 @@ return [
         // 'vAlign' => GridView::ALIGN_MIDDLE,
         // 'hAlign' => GridView::ALIGN_CENTER,
     ],
-//     [
-//     'class'=>'\kartik\grid\DataColumn',
-//     'attribute'=>'id',
-//         'value' => function ($model) {
-//             return $model->taskG->project->name;
-//         },
-//     'width' => '5%',
-//     'vAlign' => GridView::ALIGN_MIDDLE,
-//     'hAlign' => GridView::ALIGN_CENTER,
-//     ],
+     [
+     'class'=>'\kartik\grid\DataColumn',
+     'attribute'=>'id',
+         'value' => function ($model) {
+             return $model->taskG->project->name;
+         },
+     'width' => '5%',
+     'vAlign' => GridView::ALIGN_MIDDLE,
+     'hAlign' => GridView::ALIGN_CENTER,
+     ],
     [
         'class' => '\kartik\grid\DataColumn',
         'attribute' => 'task_gid',
