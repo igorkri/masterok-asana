@@ -341,6 +341,18 @@ class TimerController extends Controller
                     }
                     // Проверяем, что timer отсутствует в акте
                     if ($actOfWorkDetail = ActOfWorkDetail::find()->where(['time_id' => $pk])->one()) {
+                        $actOfWork = ActOfWork::findOne($actOfWorkDetail->act_of_work_id);
+                        $log = new \common\models\ActWorkLog();
+                        $log->act_of_work_id = $akt->id;
+                        $log->act_of_work_detail_id = $actOfWorkDetail->id;
+                        $log->timer_id = $pk;
+                        $log->task_id = $actOfWorkDetail->task_gid; // Используем ID задачи из локальной базы данных
+                        $log->project_id = $actOfWorkDetail->project_gid; // Используем ID проекта из локальной базы данных
+                        $log->message = "Виявлено спробу додати час в акт (".ActOfWork::$monthsList[$post['period_mount']] .' '. ActOfWork::$yearsList[$post['period_year']] .' ('. ActOfWork::$periodTypeList[$post['period_type']]."))
+                        але даний час вже існує в акті (". $actOfWork->getPeriodText() .")";
+                        if (!$log->save()) {
+                            Yii::error($log->errors, __METHOD__);
+                        }
                         // Если таймер уже есть в акте, пропускаем его и пишем данные в отдельный лог файл act-detail.log
                         Yii::info("Таймер з ID $pk Вже існує в ActOfworkDetail з ID {$actOfWorkDetail->id}",'application.exportact');
                         continue;

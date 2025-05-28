@@ -23,8 +23,6 @@ $periodData = [
     'type' => $periodsArr[0] ?? '',
     'month' => $periodsArr[1] ?? date('n'),
     'year' => $periodsArr[2] ?? date('Y'),
-    'week' => $periodsArr[3] ?? 1,
-    'day' => $periodsArr[4] ?? date('j'),
 ];
 $selectedPeriodType = $periodData['type'] ?? '';
 $selectedYear = $periodData['year'] ?? date('Y');

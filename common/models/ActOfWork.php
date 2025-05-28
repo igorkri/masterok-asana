@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\helpers\Json;
 
 /**
  * This is the model class for table "act_of_work".
@@ -89,6 +90,24 @@ class ActOfWork extends \yii\db\ActiveRecord
         'week' => 'Тиждень',
         'day' => 'День',
     ];
+
+    public function getPeriodText()
+    {
+        $periodsArr = Json::decode($this->period);
+        if (empty($periodsArr)) {
+            return '-';
+        }
+
+        $periodData = [
+            'type' => $periodsArr[0] ?? '-',
+            'month' => $periodsArr[1] ?? '-',
+            'year' => $periodsArr[2] ?? '-',
+        ];
+        return
+            (self::$monthsList[$periodData['month']] ?? '-') . ' ' .
+            ($periodData['year'] ?? '-') . ' (' .
+            (self::$periodTypeList[$periodData['type']] ?? '-') . ')';
+    }
 
     /**
      * @var mixed|null
