@@ -20,6 +20,7 @@ use yii\helpers\Json;
  * @property string|null $file_excel Файл Excel
  * @property string|null $created_at Дата створення
  * @property string|null $updated_at Дата оновлення
+ * @property int $sort
  *
  * @property ActOfWorkDetail[] $actOfWorkDetails
  * @property User $user
@@ -133,7 +134,7 @@ class ActOfWork extends \yii\db\ActiveRecord
     {
         return [
             [['number', 'period', 'user_id', 'date', 'total_amount'], 'required'],
-            [['user_id'], 'integer'],
+            [['user_id', 'sort'], 'integer'],
             [['date', 'created_at', 'updated_at'], 'safe'],
             [['description'], 'string'],
             [['total_amount', 'paid_amount'], 'number'],

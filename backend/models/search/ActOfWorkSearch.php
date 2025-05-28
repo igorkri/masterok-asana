@@ -17,7 +17,7 @@ class ActOfWorkSearch extends ActOfWork
     public function rules()
     {
         return [
-            [['id', 'user_id'], 'integer'],
+            [['id', 'user_id', 'sort'], 'integer'],
             [['number', 'status', 'period', 'date', 'description', 'file_excel', 'created_at', 'updated_at'], 'safe'],
             [['total_amount', 'paid_amount'], 'number'],
         ];
@@ -48,6 +48,10 @@ class ActOfWorkSearch extends ActOfWork
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        // order by sort
+        $query->orderBy(['sort' => SORT_ASC, 'id' => SORT_DESC]);
+
 
         $this->load($params);
 
