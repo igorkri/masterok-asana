@@ -100,16 +100,26 @@ class TimerSearch extends Timer
             }
         }
 
-        // Диапазон по created_at
+//        // Диапазон по created_at
+//        if (!empty($this->created_at) && strpos($this->created_at, ' - ') !== false) {
+//            list($start, $end) = explode(' - ', $this->created_at);
+//            $query->andFilterWhere(['between', 'created_at', date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end))]);
+//        }
+//
+//        // Диапазон по updated_at
+//        if (!empty($this->updated_at) && strpos($this->updated_at, ' - ') !== false) {
+//            list($start, $end) = explode(' - ', $this->updated_at);
+//            $query->andFilterWhere(['between', 'updated_at', date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end))]);
+//        }
+
         if (!empty($this->created_at) && strpos($this->created_at, ' - ') !== false) {
             list($start, $end) = explode(' - ', $this->created_at);
-            $query->andFilterWhere(['between', 'created_at', date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end))]);
+            $query->andFilterWhere(['between', 'timer.created_at', date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end))]);
         }
 
-        // Диапазон по updated_at
         if (!empty($this->updated_at) && strpos($this->updated_at, ' - ') !== false) {
             list($start, $end) = explode(' - ', $this->updated_at);
-            $query->andFilterWhere(['between', 'updated_at', date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end))]);
+            $query->andFilterWhere(['between', 'timer.updated_at', date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end))]);
         }
 
         $query->andFilterWhere([
