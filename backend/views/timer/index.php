@@ -205,7 +205,17 @@ HTML;
                                             '<a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-sm btn-primary">
                                              <i class="fa-solid fa-cogs"></i> Змінити статус <b class="caret"></b>
                                              </a>' . Dropdown::widget(['items' => $list])
-                                    ]) .
+                                    ]) . ' ' .
+                                    Html::a('<i class="fa-solid fa-archive"></i> Архівувати',
+                                        ['archive'],
+                                        [
+                                            'class' => 'btn btn-sm btn-warning',
+                                            'role' => 'modal-remote-bulk',
+                                            'data-confirm' => false, 'data-method' => false,// for overide yii data api
+                                            'data-request-method' => 'post',
+                                            'data-confirm-title' => 'Ви впевнені?',
+                                            'data-confirm-message' => 'Ви впевнені, що хочете архівувати вибрані елементи?'
+                                        ]),
                                     '<div class="clearfix"></div>',
                             ],
                         ]) ?>

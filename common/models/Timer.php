@@ -19,6 +19,7 @@ use yii\web\Response;
  * @property float $coefficient
  * @property string|null $comment
  * @property int $status
+ * @property int $archive
  * @property string $status_act
  * @property string|null $created_at
  * @property string|null $updated_at
@@ -343,7 +344,7 @@ class Timer extends \yii\db\ActiveRecord
         return [
             [['task_gid', 'time', 'minute', 'coefficient'], 'required'],
             [['status', 'time', 'created_at', 'updated_at', 'date_invoice', 'date_report', 'pks', 'project_id', 'exclude'], 'safe'],
-            [['minute'], 'integer'],
+            [['minute', 'archive'], 'integer'],
             [['coefficient'], 'number'],
             [['comment'], 'string'],
             [['task_gid'], 'string', 'max' => 255],
@@ -365,6 +366,7 @@ class Timer extends \yii\db\ActiveRecord
             'coefficient' => 'Коефіцієнт',
             'comment' => 'Коментар',
             'status' => 'Статус',
+            'archive' => 'Архів',
             'status_act' => 'Статус акту виконаних робіт',
             'created_at' => 'Дата створення',
             'updated_at' => 'Дата оновлення',

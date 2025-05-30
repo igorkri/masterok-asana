@@ -41,7 +41,7 @@ class TimerSearch extends Timer
     public function rules()
     {
         return [
-            [['id', 'minute', 'status'], 'integer'],
+            [['id', 'minute', 'status', 'archive'], 'integer'],
             [['task_gid', 'time', 'comment', 'created_at', 'updated_at', 'project_id', 'exclude'], 'safe'],
             [['coefficient'], 'number'],
 //            [['status'], 'each', 'rule' => ['in', 'range' => array_keys(self::$statusList)]],
@@ -122,6 +122,14 @@ class TimerSearch extends Timer
             $query->andFilterWhere(['between', 'timer.updated_at', date('Y-m-d', strtotime($start)), date('Y-m-d', strtotime($end))]);
         }
 
+        // Фильтрация по archive
+        if (isset($this->archive) && $this->archive !== '') {
+            $query->andFilterWhere(['archive' => $this->archive]);
+        } else {
+            // Если archive не указан, то исключаем архивные записи
+            $query->andWhere(['archive' => 0]);
+        }
+
         $query->andFilterWhere([
             'id' => $this->id,
             'time' => $this->time,
@@ -136,71 +144,4 @@ class TimerSearch extends Timer
         return $dataProvider;
     }
 
-
-
-//    public function search($params)
-//    {
-////        debugDie($this->status);
-//
-//        $query = Timer::find();
-//
-//        $dataProvider = new ActiveDataProvider([
-//            'query' => $query,
-//        ]);
-//
-//        $this->load($params);
-//
-//        if (!$this->validate()) {
-//            // uncomment the following line if you do not want to return any records when validation fails
-//            // $query->where('0=1');
-//            return $dataProvider;
-//        }
-//
-//
-//        Yii::warning($params, '$params');
-//
-//        if (isset($params['TimerSearch']['exclude']) && !empty($params['TimerSearch']['exclude'])) {
-//            $query->joinWith('taskG.project');
-//            if ($params['TimerSearch']['exclude'] == 'no') {
-//                $query->andWhere(['in', 'project.id', $params['TimerSearch']['project_id']]);
-//            } else {
-//                $query->andWhere(['not in', 'project.id', $params['TimerSearch']['project_id']]);
-//            }
-//        }
-//
-//        // ищем в диапазоне дат (01.01.2025 - 23.01.2025) - это в формате даты, нужно преобразовать в формат даты для БД (2025-01-01 - 2025-01-23)
-//        if (isset($params['TimerSearch']['created_at']) && !empty($params['TimerSearch']['created_at'])) {
-//            $date = explode(' - ', $params['TimerSearch']['created_at']);
-//            $query->andFilterWhere(['between', 'created_at', date('Y-m-d', strtotime($date[0])), date('Y-m-d', strtotime($date[1]))]);
-//        }
-//
-//        // ищем в диапазоне дат (01.01.2025 - 23.01.2025) - это в формате даты, нужно преобразовать в формат даты для БД (2025-01-01 - 2025-01-23)
-//        if (isset($params['TimerSearch']['updated_at']) && !empty($params['TimerSearch']['updated_at'])) {
-//            $date = explode(' - ', $params['TimerSearch']['updated_at']);
-//            $query->andFilterWhere(['between', 'updated_at', date('Y-m-d', strtotime($date[0])), date('Y-m-d', strtotime($date[1]))]);
-//        }
-//
-//        $query->andFilterWhere([
-//            'id' => $this->id,
-//            'time' => $this->time,
-//            'minute' => $this->minute,
-//            'coefficient' => $this->coefficient,
-//            'status' => $this->status,
-////            'created_at' => $this->created_at,
-////            'updated_at' => $this->updated_at,
-//        ]);
-//
-////        if (is_array($this->status) && !empty($this->status)) {
-////            $query->andFilterWhere(['IN', 'status', $this->status]);
-////        } elseif (!empty($this->status)) {
-////            debugDie($this->status);
-////            $query->andFilterWhere(['status' => $this->status]);
-////        }
-//
-//
-//        $query->andFilterWhere(['like', 'task_gid', $this->task_gid])
-//            ->andFilterWhere(['like', 'comment', $this->comment]);
-//
-//        return $dataProvider;
-//    }
 }

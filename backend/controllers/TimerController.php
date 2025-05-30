@@ -459,4 +459,27 @@ class TimerController extends Controller
         return $this->redirect(['index']); // можно добавить 'TimerSearch' => [] если хочешь сбросить вручную
     }
 
+    // archive
+    public function actionArchive()
+    {
+        $request = Yii::$app->request;
+        $pks = explode(',', $request->post( 'pks' )); // Array or selected records primary keys
+        foreach ( $pks as $pk ) {
+            $model = $this->findModel($pk);
+            $model->archive = 1; // Устанавливаем флаг архивации
+            if (!$model->save()) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                Yii::error('Failed to archive Timer: ' . json_encode($model->getErrors()), __METHOD__);
+                return ['forceClose' => true, 'forceReload' => '#crud-datatable-pjax'];
+            }
+        }
+
+        if($request->isAjax){
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
+        }else{
+            return $this->redirect(['index']);
+        }
+    }
+
 }
