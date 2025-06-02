@@ -135,7 +135,10 @@ foreach ($dataProvider->models as $model) {
                             'responsive' => true,
                             'panel' => [
                                 'type' => 'dark',
-                                'before' => "Загальна сума: <b>" . Yii::$app->formatter->asCurrency(array_sum($totlalSum['total_amount'])) . "</b> | Оплачено: <b>" . Yii::$app->formatter->asCurrency(array_sum($totlalSum['paid_amount'])) . "</b>",
+                                'before' => "Загальна сума: <b>" .
+                                    Yii::$app->formatter->asCurrency(array_sum($totlalSum['total_amount'])) .
+                                    "</b> | Оплачено: <b>" .
+                                    Yii::$app->formatter->asCurrency(array_sum($totlalSum['paid_amount'])) . "</b> | "  . Yii::$app->formatter->asCurrency(array_sum($totlalSum['total_amount']) - array_sum($totlalSum['paid_amount'])) . "</b>",
                                 'heading' => '<i class="fas fa-list"></i> список',
                                 'after' => BulkButtonWidget::widget([
                                         'buttons' => Html::a('<i class="far fa-trash-alt"></i>&nbsp; Видалити',
