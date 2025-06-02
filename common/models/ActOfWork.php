@@ -247,7 +247,7 @@ class ActOfWork extends \yii\db\ActiveRecord
                 return false;
             }
 
-            $title = "Звіт " . self::$periodTypeList[$this->period_type] . ' '
+            $title = "🧾 Звіт " . self::$periodTypeList[$this->period_type] . ' '
                 . self::$monthsList[$this->period_month] . ' '
                 . $this->period_year . ' дата складання: ' . $this->date . ' № ' . $this->number;
 

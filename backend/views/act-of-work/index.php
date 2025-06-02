@@ -15,6 +15,7 @@ use yii\helpers\Url;
 
 $this->title = 'Act Of Works';
 $this->params['breadcrumbs'][] = $this->title;
+$sumDebit = 0;
 
 $totlalSum = [
     'total_amount' => [],
@@ -25,6 +26,14 @@ foreach ($dataProvider->models as $model) {
     $totlalSum['total_amount'][] = $model->total_amount;
     $totlalSum['paid_amount'][] = $model->paid_amount;
 }
+
+if (count($totlalSum['total_amount']) > 0) {
+    $sumDebit = array_sum($totlalSum['total_amount']) - array_sum($totlalSum['paid_amount']);
+    // делаем сумму по цвету если сумма больше + то зеленая, если меньше - красная
+    $sumDebit = $sumDebit > 0 ? '<span class="text-success">' . Yii::$app->formatter->asCurrency($sumDebit) . '</span>' : '<span class="text-danger">' . Yii::$app->formatter->asCurrency($sumDebit) . '</span>';
+}
+
+
 
 ?>
 <div id="top" class="sa-app__body">
@@ -138,7 +147,7 @@ foreach ($dataProvider->models as $model) {
                                 'before' => "Загальна сума: <b>" .
                                     Yii::$app->formatter->asCurrency(array_sum($totlalSum['total_amount'])) .
                                     "</b> | Оплачено: <b>" .
-                                    Yii::$app->formatter->asCurrency(array_sum($totlalSum['paid_amount'])) . "</b> | "  . Yii::$app->formatter->asCurrency(array_sum($totlalSum['total_amount']) - array_sum($totlalSum['paid_amount'])) . "</b>",
+                                    Yii::$app->formatter->asCurrency(array_sum($totlalSum['paid_amount'])) . "</b> | <b>Сума боргу: " . $sumDebit . "</b>",
                                 'heading' => '<i class="fas fa-list"></i> список',
                                 'after' => BulkButtonWidget::widget([
                                         'buttons' => Html::a('<i class="far fa-trash-alt"></i>&nbsp; Видалити',

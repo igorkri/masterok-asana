@@ -54,6 +54,19 @@ return [
     [
         'class' => '\kartik\grid\DataColumn',
         'headerOptions' => ['class' => 'text-nowrap', 'style' => 'text-align: center;'],
+        'attribute' => 'telegram_status',
+        'filter' => ActOfWork::$telegramStatusList,
+        'width' => '10%',
+        'value' => function ($model) {
+            return ActOfWork::$telegramStatusList[$model->telegram_status] ?? '⸺';
+        },
+        'vAlign' => GridView::ALIGN_MIDDLE,
+        'hAlign' => GridView::ALIGN_LEFT,
+        'pageSummary' => false,
+    ],
+    [
+        'class' => '\kartik\grid\DataColumn',
+        'headerOptions' => ['class' => 'text-nowrap', 'style' => 'text-align: center;'],
         'attribute' => 'type',
         'filter' => ActOfWork::$type,
         'width' => '10%',
