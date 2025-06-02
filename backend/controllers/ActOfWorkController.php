@@ -205,4 +205,34 @@ class ActOfWorkController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionSendTelegram()
+    {
+        $request = Yii::$app->request;
+        $pks = explode(',', $request->post( 'pks' )); // Array or selected records primary keys
+        foreach ( $pks as $pk ) {
+            $model = $this->findModel($pk);
+            if ($model->telegram_status == ActOfWork::TELEGRAM_STATUS_SEND) {
+                Yii::$app->session->setFlash('error', 'Акт уже був надісланий в Telegram.');
+
+                continue;
+            }
+            if ($model->telegram_status == ActOfWork::TELEGRAM_STATUS_FAILED) {
+                Yii::$app->session->setFlash('error', 'Акт не може бути надісланий, оскільки попередня спроба завершилася невдачею.');
+                continue;
+            }
+            if ($model->sendTelegram()) {
+                Yii::$app->session->setFlash('success', 'Акт успішно надіслано в Telegram.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Помилка при надсиланні акту в Telegram: ' . implode(', ', $model->getErrorSummary(true)));
+            }
+        }
+
+        if($request->isAjax){
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
+        }else{
+            return $this->redirect(['index']);
+        }
+    }
 }

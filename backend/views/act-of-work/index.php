@@ -163,9 +163,16 @@ foreach ($dataProvider->models as $model) {
                                                     'data-confirm-message' => 'Ви впевнені не відображати зі списку?'
                                                 ])
                                             . ' ' .
-                                            '<a href="#" data-toggle="dropdown" class="dropdown-toggle btn btn-sm btn-primary">
-                                             <i class="fa-solid fa-cogs"></i> Змінити статус <b class="caret"></b>
-                                             </a>'
+                                    Html::a('відправити в Telegram',
+                                        ["send-telegram"],
+                                        [
+                                            "class" => "btn btn-sm btn-success",
+                                            'role' => 'modal-remote-bulk',
+                                            'data-confirm' => false, 'data-method' => false,// for overide yii data api
+                                            'data-request-method' => 'post',
+                                            'data-confirm-title' => 'Ви впевнені?',
+                                            'data-confirm-message' => 'Ви впевнені, що хочете відправити цей акт в Telegram?'
+                                        ]) . ' '
                                     ]) .
                                     '<div class="clearfix"></div>',
                             ],

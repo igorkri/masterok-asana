@@ -232,4 +232,41 @@ class ActOfWork extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
+
+    public function sendTelegram()
+    {
+        if ($this->file_excel) {
+            // Удаляем домен из URL
+            $fileUrl = str_replace(Yii::$app->params['domain'], '', $this->file_excel);
+            $filePath = Yii::getAlias('@frontend/web') . $fileUrl;
+
+            if (!file_exists($filePath)) {
+                Yii::error("Файл не найден: {$filePath}", 'telegram');
+                $this->telegram_status = self::TELEGRAM_STATUS_FAILED;
+                $this->save(false, ['telegram_status']);
+                return false;
+            }
+
+            $title = "Звіт " . self::$periodTypeList[$this->period_type] . ' '
+                . self::$monthsList[$this->period_month] . ' '
+                . $this->period_year . ' дата складання: ' . $this->date . ' № ' . $this->number;
+
+            $res = Yii::$app->telegram->sendDocument($filePath, $title);
+
+            if (!$res) {
+                Yii::error("Помилка надсилання звіту №{$this->number} від {$this->date} до Telegram.", 'telegram');
+                $this->telegram_status = self::TELEGRAM_STATUS_FAILED;
+                $this->save(false, ['telegram_status']);
+                return false;
+            }
+
+            $this->telegram_status = self::TELEGRAM_STATUS_SEND;
+        } else {
+            Yii::$app->telegram->sendMessage("⚠️ Звіт відсутній! @masterokpl перевір, будь ласка, файл акту №{$this->number} від {$this->date}.");
+            $this->telegram_status = self::TELEGRAM_STATUS_FAILED;
+        }
+
+        $this->save(false, ['telegram_status']);
+        return true;
+    }
 }
