@@ -54,6 +54,19 @@ return [
     [
         'class' => '\kartik\grid\DataColumn',
         'headerOptions' => ['class' => 'text-nowrap', 'style' => 'text-align: center;'],
+        'attribute' => 'type',
+        'filter' => ActOfWork::$type,
+        'width' => '10%',
+        'value' => function ($model) {
+            return ActOfWork::$type[$model->type] ?? '⸺';
+        },
+        'vAlign' => GridView::ALIGN_MIDDLE,
+        'hAlign' => GridView::ALIGN_LEFT,
+        'pageSummary' => false,
+    ],
+    [
+        'class' => '\kartik\grid\DataColumn',
+        'headerOptions' => ['class' => 'text-nowrap', 'style' => 'text-align: center;'],
         'attribute' => 'period',
         'format' => 'raw',
         'value' => function ($model) {
@@ -64,7 +77,7 @@ return [
             }
             return $model->getPeriodText();
         },
-//        'width' => '20%',
+        'width' => '20%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_LEFT,
         'pageSummary' => false,
@@ -101,33 +114,33 @@ return [
         'attribute' => 'description',
         'filter' => false,
         'format' => 'raw',
-        'width' => '10%',
+//        'width' => '10%',
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_LEFT,
         'pageSummary' => false,
     ],
-     [
-         'class' => '\kartik\grid\DataColumn',
-         'headerOptions' => ['class' => 'text-nowrap', 'style' => 'text-align: center;'],
-        'attribute' => 'file_excel',
-         'filter' => false,
-        'format' => 'raw',
-        'value' => function ($model) {
-            //http://masterok-asana.loc/report/time/Звіт_2025-05-27.xlsx
-            if ($model->file_excel) {
-                return Html::a(
-                    '<i class="fas fa-file-excel"></i> ' . basename($model->file_excel),
-                    $model->file_excel,
-                    ['target' => '_blank', 'title' => 'Завантажити Excel файл', 'data-pjax' => 0]
-                );
-            }
-            return '⸺';
-        },
-//        'width' => '250px',
-        'vAlign' => GridView::ALIGN_MIDDLE,
-        'hAlign' => GridView::ALIGN_LEFT,
-         'pageSummary' => false,
-     ],
+//     [
+//         'class' => '\kartik\grid\DataColumn',
+//         'headerOptions' => ['class' => 'text-nowrap', 'style' => 'text-align: center;'],
+//        'attribute' => 'file_excel',
+//         'filter' => false,
+//        'format' => 'raw',
+//        'value' => function ($model) {
+//            //http://masterok-asana.loc/report/time/Звіт_2025-05-27.xlsx
+//            if ($model->file_excel) {
+//                return Html::a(
+//                    '<i class="fas fa-file-excel"></i> ' . basename($model->file_excel),
+//                    $model->file_excel,
+//                    ['target' => '_blank', 'title' => 'Завантажити Excel файл', 'data-pjax' => 0]
+//                );
+//            }
+//            return '⸺';
+//        },
+////        'width' => '250px',
+//        'vAlign' => GridView::ALIGN_MIDDLE,
+//        'hAlign' => GridView::ALIGN_LEFT,
+//         'pageSummary' => false,
+//     ],
 //      [
 //        'class' => '\kartik\grid\DataColumn',
 //        'headerOptions' => ['class' => 'text-nowrap', 'style' => 'text-align: center;'],

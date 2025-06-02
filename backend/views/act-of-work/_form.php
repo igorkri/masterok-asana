@@ -105,6 +105,17 @@ $selectedMonth = $periodData['month'] ?? date('n');
                                             ['class' => 'form-select', 'id' => 'period-month', 'prompt' => 'Виберіть місяць']
                                         ) ?>
                                     </div>
+                                    <div id="month-container" class="col-md-3">
+                                        <?= $form->field($model, 'type')->dropDownList(
+                                            \common\models\ActOfWork::$type,
+                                            ['prompt' => 'Виберіть тип акту', 'id' => 'period-type']
+                                        ) ?>
+
+                                        <?= $form->field($model, 'telegram_status')->dropDownList(
+                                            \common\models\ActOfWork::$telegramStatusList,
+                                            ['prompt' => 'Виберіть', 'id' => 'period-type']
+                                        ) ?>
+                                    </div>
                                 </div>
                             </div>
                             <br>
@@ -112,6 +123,10 @@ $selectedMonth = $periodData['month'] ?? date('n');
 
 
                             <?php if (!$model->isNewRecord): ?>
+                                <?=Html::a(
+                                    '<i class="fas fa-file-excel"></i> ' . basename($model->file_excel),
+                                    $model->file_excel,
+                                    ['target' => '_blank', 'title' => 'Завантажити Excel файл', 'data-pjax' => 0])?>
                                 <?= $form->field($model, 'file_excel')->textInput(['maxlength' => true]) ?>
                             <?php endif; ?>
 

@@ -23,6 +23,8 @@ use yii\helpers\Json;
  * @property string|null $file_excel Файл Excel
  * @property string|null $created_at Дата створення
  * @property string|null $updated_at Дата оновлення
+ * @property string|null $type Тип акту (наприклад, "receipt_of_funds" - надходження коштів)
+ * @property string|null $telegram_status Статус Telegram
  * @property int $sort
  *
  * @property ActOfWorkDetail[] $actOfWorkDetails
@@ -39,6 +41,15 @@ class ActOfWork extends \yii\db\ActiveRecord
     const STATUS_ARCHIVED = 'archived'; // Архівовано
     const STATUS_DRAFT = 'draft'; // Чернетка
     const STATUS_DONE = 'done'; // Превірено, оплачено
+
+    const TELEGRAM_STATUS_SEND = 'send'; // Надіслано
+    const TELEGRAM_STATUS_FAILED = 'failed'; // Помилка надсилання
+    const TELEGRAM_STATUS_PENDING = 'pending'; // Очікує на надсилання
+
+    const TYPE_ACT = 'act'; // Тип запису - акт
+    const TYPE_RECEIPT_OF_FUNDS = 'receipt_of_funds'; // Тип запису - надходження коштів
+    const TYPE_NEW_PROJECT = 'new_project'; // Тип запису - новий проект
+    const TYPE_OTHER = 'other'; // Інший тип запису
 
 
 
@@ -114,6 +125,22 @@ class ActOfWork extends \yii\db\ActiveRecord
 
     ];
 
+    public static mixed $type = [
+        self::TYPE_ACT => 'Акт',
+        self::TYPE_RECEIPT_OF_FUNDS => 'Надходження коштів',
+        self::TYPE_NEW_PROJECT => 'Новий проект',
+        self::TYPE_OTHER => 'Інший тип',
+    ];
+
+    /**
+     * @var string|null
+     */
+    public static mixed $telegramStatusList = [
+        self::TELEGRAM_STATUS_SEND => 'Надіслано',
+        self::TELEGRAM_STATUS_FAILED => 'Помилка надсилання',
+        self::TELEGRAM_STATUS_PENDING => 'Очікує на надсилання',
+    ];
+
     public function getPeriodText()
     {
         $period_type = $this->period_type ? self::$periodTypeList[$this->period_type] : '⸺';
@@ -151,7 +178,7 @@ class ActOfWork extends \yii\db\ActiveRecord
             [['date', 'created_at', 'updated_at'], 'safe'],
             [['description'], 'string'],
             [['total_amount', 'paid_amount'], 'number'],
-            [['number', 'period_type', 'period_year', 'period_month'], 'string', 'max' => 50],
+            [['number', 'period_type', 'period_year', 'period_month', 'type', 'telegram_status'], 'string', 'max' => 50],
             [['status'], 'string', 'max' => 20],
             [['file_excel'], 'string', 'max' => 255],
             [['number'], 'unique'],
@@ -169,6 +196,8 @@ class ActOfWork extends \yii\db\ActiveRecord
             'id' => 'ID',
             'number' => 'Номер акту',
             'status' => 'Статус акту',
+            'type' => 'Тип',
+            'telegram_status' => 'Статус Telegram',
             'period' => 'Період виконання робіт',
             'period_type' => 'Тип періоду',
             'period_year' => 'Рік періоду',

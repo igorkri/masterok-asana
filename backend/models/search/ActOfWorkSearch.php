@@ -18,7 +18,7 @@ class ActOfWorkSearch extends ActOfWork
     {
         return [
             [['id', 'user_id', 'sort'], 'integer'],
-            [['number', 'status', 'period', 'date', 'description', 'file_excel', 'created_at', 'updated_at'], 'safe'],
+            [['number', 'status', 'period', 'date', 'description', 'file_excel', 'created_at', 'updated_at', 'type', 'telegram_status'], 'safe'],
             [['total_amount', 'paid_amount'], 'number'],
         ];
     }
@@ -78,6 +78,8 @@ class ActOfWorkSearch extends ActOfWork
             'id' => $this->id,
             'user_id' => $this->user_id,
             'date' => $this->date,
+            'telegram_status' => $this->telegram_status,
+            'type' => $this->type,
             'total_amount' => $this->total_amount,
             'paid_amount' => $this->paid_amount,
             'created_at' => $this->created_at,
