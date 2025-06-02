@@ -215,12 +215,13 @@ class Timer extends \yii\db\ActiveRecord
             $taskUrl = $model->taskG->permalink_url ?? '';
             $projectName = $model->taskG->project->name ?? '';
             $price = $model->getCalcPrice();
-            $createdAt = Yii::$app->formatter->asDatetime($model->created_at, 'php:d.m.Y H:i:s');
+            $createdAt = $model->taskG->modified_at ? Yii::$app->formatter->asDatetime($model->taskG->modified_at, 'php:d.m.Y H:i:s') : '';
+//            $createdAt = Yii::$app->formatter->asDatetime($model->created_at, 'php:d.m.Y H:i:s');
 
             // Установка значений в строку
             $sheet->setCellValue("A$row", $taskName);
             $sheet->setCellValue("B$row", $projectName);
-            $sheet->fromArray([$model->time, $model->coefficient, $price, $model->comment, $createdAt, $taskUrl], null, "C$row");
+            $sheet->fromArray([$model->getTimeHour(), $model->coefficient, $price, $model->comment, $createdAt, $taskUrl], null, "C$row");
 
             // Гиперссылка на задачу
             if ($taskUrl) {
