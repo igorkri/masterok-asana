@@ -319,10 +319,13 @@ class TimerController extends Controller
         $post = $request->post();
         $pks = explode(',', $request->post( 'pks' ));
         if ($status == Timer::STATUS_INVOICE) {
-//            Yii::warning($post, __METHOD__);
+            Yii::warning($post, __METHOD__);
             $akt = new ActOfWork();
             $akt->number = ActOfWork::generateNumber();
-            $akt->period = json_encode([$post['period_type'], $post['period_mount'], $post['period_year']]); // store period as JSON
+            //$akt->period = json_encode([$post['period_type'], $post['period_mount'], $post['period_year']]); // store period as JSON
+            $akt->period_type = $post['period_type'];
+            $akt->period_year = $post['period_year'];
+            $akt->period_month = $post['period_mount'];
             $akt->description = $post['comment'];
             $akt->status = ActOfWork::STATUS_PENDING;
             $akt->user_id = Yii::$app->user->id ?? 1;
@@ -390,7 +393,7 @@ class TimerController extends Controller
                     $timer->status_act = Timer::STATUS_ACT_OK;
                     $timer->save(false);
                 }
-                $prefix = ActOfWork::$periodTypeList[$post['period_type']] .'_'. ActOfWork::$monthsList[$post['period_mount']] .'_'. ActOfWork::$yearsList[$post['period_year']];
+                $prefix = ActOfWork::$periodTypeList[$akt['period_type']] .'_'. ActOfWork::$monthsList[$akt['period_month']] .'_'. ActOfWork::$yearsList[$akt['period_year']];
                 $akt->file_excel = self::generateFileExcel($pks, $prefix);
                 $akt->total_amount = ActOfWorkDetail::find()
                     ->where(['act_of_work_id' => $akt->id])
