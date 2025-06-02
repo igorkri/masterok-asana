@@ -186,7 +186,7 @@ class Timer extends \yii\db\ActiveRecord
         $sheet = $spreadsheet->getActiveSheet();
 
         // Заголовки колонок
-        $headers = ['Назва задачі', 'Проект', 'Час', 'Коефіцієнт', 'Ціна', 'Коментар', 'Дата створення', 'Посилання на задачу'];
+        $headers = ['Назва задачі', 'Проект', 'Час', 'Коефіцієнт', 'Ціна', 'Коментар', 'Дата модифікації таксу', 'Посилання на задачу'];
         $sheet->fromArray([$headers], null, 'A1');
 
         // Форматирование заголовков
@@ -257,7 +257,7 @@ class Timer extends \yii\db\ActiveRecord
      *
      * @return float
      */
-    public function getTimeHour()
+    public function getTimeHour($round = true): float
     {
         list($hours, $minutes, $seconds) = explode(":", $this->time);
         // Суммируем общее время
@@ -265,6 +265,11 @@ class Timer extends \yii\db\ActiveRecord
         $Minutes = (int)$minutes;
         $Seconds = (int)$seconds;
 
+        // Если нужно округлить, то округляем до двух знаков после запятой
+        if ($round) {
+            return round($Hours + $Minutes / 60 + $Seconds / 3600, 2);
+        }
+        // Если не нужно округлять, то возвращаем без округления
         return $Hours + $Minutes / 60 + $Seconds / 3600;
     }
 
