@@ -38,6 +38,23 @@ $form = ActiveForm::begin([
     ],
 ])->label('Проєкт') ?>
 
+<?= $form->field($searchModel, 'archive')->widget(Select2::class, [
+//    'theme' => Select2::THEME_KRAJEE_BS4,
+    'data' => [
+        Timer::ARCHIVE_NO => 'Не архівні',
+        Timer::ARCHIVE_YES => 'Архівні',
+    ],
+    'value' => $selected['archive'] ?? Timer::ARCHIVE_NO,
+    'options' => [
+        'placeholder' => 'Виберіть ...',
+        'multiple' => true,
+        'value' => $selected['archive'] ?? [],
+    ],
+    'pluginOptions' => [
+        'allowClear' => true,
+    ],
+])->label('Статус архіва') ?>
+
 
 <div class="form-group">
     <?= Html::submitButton('Застосувати', ['class' => 'btn btn-primary']) ?>

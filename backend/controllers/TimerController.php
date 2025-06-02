@@ -435,7 +435,7 @@ class TimerController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $searchModel = new TimerSearch();
-        $selected = Yii::$app->session->has('advanced-filter') ? Yii::$app->session->get('advanced-filter') : ['projectIds' => [], 'exclude' => 'no'];
+        $selected = Yii::$app->session->has('advanced-filter') ? Yii::$app->session->get('advanced-filter') : ['projectIds' => [], 'exclude' => 'no', 'archive' => []];
 
         return [
             'title' => "Розширені фільтри",

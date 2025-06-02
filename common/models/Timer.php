@@ -57,6 +57,8 @@ class Timer extends \yii\db\ActiveRecord
     // стоимость за час
     const PRICE = 400;
     const COEFFICIENT_VALUE = 1.2;
+    const ARCHIVE_NO = 0; // Не архівні
+    const ARCHIVE_YES = 1; // Архівні
 
     public $price;
     public $hour;

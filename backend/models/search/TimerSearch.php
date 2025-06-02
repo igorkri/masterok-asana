@@ -41,8 +41,8 @@ class TimerSearch extends Timer
     public function rules()
     {
         return [
-            [['id', 'minute', 'status', 'archive'], 'integer'],
-            [['task_gid', 'time', 'comment', 'created_at', 'updated_at', 'project_id', 'exclude'], 'safe'],
+            [['id', 'minute', 'status'], 'integer'],
+            [['task_gid', 'time', 'comment', 'created_at', 'updated_at', 'project_id', 'exclude', 'archive'], 'safe'],
             [['coefficient'], 'number'],
 //            [['status'], 'each', 'rule' => ['in', 'range' => array_keys(self::$statusList)]],
         ];
@@ -81,12 +81,12 @@ class TimerSearch extends Timer
 
 
 
+        $nameSession = 'advanced-filter';
+        Yii::$app->session->set($nameSession, ['projectIds' => $this->project_id, 'exclude' => $this->exclude, 'archive' => $this->archive]);
 
         // Фильтрация по проектам (включение / исключение)
         if (!empty($this->project_id)) {
             // создем сессию для фильтрации по проектам
-            $nameSession = 'advanced-filter';
-            Yii::$app->session->set($nameSession, ['projectIds' => $this->project_id, 'exclude' => $this->exclude]);
 
             // project_id может быть строкой (если один выбран), приводим к массиву
             $projectIds = (array)$this->project_id;
@@ -129,6 +129,14 @@ class TimerSearch extends Timer
 //            // Если archive не указан, то исключаем архивные записи
 //            $query->andWhere(['archive' => 0]);
 //        }
+
+        // Фильтрация по archive
+        if (isset($this->archive) && $this->archive !== '') {
+            $query->andFilterWhere(['archive' => $this->archive]);
+        } else {
+            // Если archive не указан, то исключаем архивные записи
+            $query->andWhere(['archive' => Timer::ARCHIVE_NO]);
+        }
 
         $query->andFilterWhere([
             'id' => $this->id,
