@@ -110,6 +110,8 @@ class ActOfWork extends \yii\db\ActiveRecord
         'second_half_month' => 'Друга половина місяця',
         'month' => 'Місяць',
         'new_project' => 'Новий проект',
+        'receipt_of_funds' => 'надходження коштів', // надходження коштів
+
     ];
 
     public function getPeriodText()

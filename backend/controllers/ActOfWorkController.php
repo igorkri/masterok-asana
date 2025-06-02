@@ -105,10 +105,16 @@ class ActOfWorkController extends Controller
     public function actionCreate()
     {
         $model = new ActOfWork();
+        $model->number = time();
+        $model->date = date("Y-m-d");
+        $model->user_id = Yii::$app->user->identity->id ?? 1;
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['index']);
+            } else {
+                debugDie($model->getErrors());
+                Yii::$app->session->setFlash('error', 'Помилка при створенні акту. Будь ласка, перевірте введені дані.');
             }
         } else {
             $model->loadDefaultValues();

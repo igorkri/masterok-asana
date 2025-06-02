@@ -71,6 +71,11 @@ foreach ($dataProvider->models as $model) {
                             'toolbar' => [
                                 [
                                     'content' =>
+                                        Html::a('<i class="fas fa-plus"></i> Додати', ['create'], [
+//                                            'role' => 'modal-remote',
+                                            'title' => 'Додати новий акт',
+                                            'class' => 'btn btn-success',
+                                        ]) . '   ' .
                                         Html::a('<i class="fas fa-redo"></i>', [''], [
                                             'data-pjax' => 1,
                                             'class' => 'btn btn-default',

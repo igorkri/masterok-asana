@@ -94,15 +94,15 @@ $selectedMonth = $periodData['month'] ?? date('n');
                                 </div>
                                 <div class="card-body row g-3">
                                     <div class="col-md-3">
-                                        <?=$form->field($model, 'period_type')->dropDownList(\common\models\ActOfWork::$periodTypeList, [])?>
+                                        <?=$form->field($model, 'period_type')->dropDownList(\common\models\ActOfWork::$periodTypeList, ['prompt' => 'Виберіть тип'])?>
                                     </div>
                                     <div id="year-container" class="col-md-3">
-                                        <?=$form->field($model, 'period_year')->dropDownList(\common\models\ActOfWork::$yearsList,)?>
+                                        <?=$form->field($model, 'period_year')->dropDownList(\common\models\ActOfWork::$yearsList, ['prompt' => 'Виберіть рік'])?>
                                     </div>
                                     <div id="month-container" class="col-md-3">
                                         <?= $form->field($model, 'period_month')->dropDownList(
                                             \common\models\ActOfWork::$monthsList,
-                                            ['class' => 'form-select', 'id' => 'period-month']
+                                            ['class' => 'form-select', 'id' => 'period-month', 'prompt' => 'Виберіть місяць']
                                         ) ?>
                                     </div>
                                 </div>
@@ -115,6 +115,7 @@ $selectedMonth = $periodData['month'] ?? date('n');
                                 <?= $form->field($model, 'file_excel')->textInput(['maxlength' => true]) ?>
                             <?php endif; ?>
 
+                            <?php if (!$model->isNewRecord ): ?>
                             <div class="card mt-4">
                                 <div class="card-header bg-secondary text-black">
                                     <h5 class="mb-0">Деталі</h5>
@@ -127,6 +128,7 @@ $selectedMonth = $periodData['month'] ?? date('n');
                                     ]) ?>
                                 </div>
                             </div>
+                            <?php endif; ?>
 
                             <?php ActiveForm::end(); ?>
                         </div>
