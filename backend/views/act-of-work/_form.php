@@ -94,35 +94,17 @@ $selectedMonth = $periodData['month'] ?? date('n');
                                 </div>
                                 <div class="card-body row g-3">
                                     <div class="col-md-3">
-                                        <?= Html::dropDownList(
-                                            'period_type',
-                                            $periodData['type'],
-                                            \common\models\ActOfWork::$periodTypeList,
-                                            [
-                                                'class' => 'form-select',
-                                                'id' => 'period-type',
-                                                'prompt' => 'Тип періоду',
-                                                'onchange' => 'togglePeriodFields(this.value)'
-                                            ]
-                                        ) ?>
+                                        <?=$form->field($model, 'period_type')->dropDownList(\common\models\ActOfWork::$periodTypeList, [])?>
                                     </div>
                                     <div id="year-container" class="col-md-3">
-                                        <?= Html::dropDownList(
-                                            'period_year',
-                                            $periodData['year'],
-                                            \common\models\ActOfWork::$yearsList,
-                                            ['class' => 'form-select', 'id' => 'period-year']
-                                        ) ?>
+                                        <?=$form->field($model, 'period_year')->dropDownList(\common\models\ActOfWork::$yearsList,)?>
                                     </div>
                                     <div id="month-container" class="col-md-3">
-                                        <?= Html::dropDownList(
-                                            'period_month',
-                                            $periodData['month'],
-                                            array_combine(range(1, 12), array_values(\common\models\ActOfWork::$monthsList)),
+                                        <?= $form->field($model, 'period_month')->dropDownList(
+                                            \common\models\ActOfWork::$monthsList,
                                             ['class' => 'form-select', 'id' => 'period-month']
                                         ) ?>
                                     </div>
-                                    <?php //$form->field($model, 'period', ['options' => ['style' => 'display:none']])->hiddenInput(['id' => 'period-json']) ?>
                                 </div>
                             </div>
                             <br>

@@ -95,6 +95,17 @@ return [
         'vAlign' => GridView::ALIGN_MIDDLE,
         'hAlign' => GridView::ALIGN_RIGHT,
     ],
+    [
+        'class' => '\kartik\grid\DataColumn',
+        'headerOptions' => ['class' => 'text-nowrap', 'style' => 'text-align: center;'],
+        'attribute' => 'description',
+        'filter' => false,
+        'format' => 'raw',
+        'width' => '10%',
+        'vAlign' => GridView::ALIGN_MIDDLE,
+        'hAlign' => GridView::ALIGN_LEFT,
+        'pageSummary' => false,
+    ],
      [
          'class' => '\kartik\grid\DataColumn',
          'headerOptions' => ['class' => 'text-nowrap', 'style' => 'text-align: center;'],

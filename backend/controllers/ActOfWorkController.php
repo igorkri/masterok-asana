@@ -135,6 +135,7 @@ class ActOfWorkController extends Controller
         $dataProvider->pagination->pageSize = false; // Set a default page size for the data provider
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', 'Акт успішно оновлено.');
             return $this->redirect(['update', 'id' => $model->id]);
         }
 
