@@ -123,12 +123,12 @@ class TimerSearch extends Timer
         }
 
         // Фильтрация по archive
-        if (isset($this->archive) && $this->archive !== '') {
-            $query->andFilterWhere(['archive' => $this->archive]);
-        } else {
-            // Если archive не указан, то исключаем архивные записи
-            $query->andWhere(['archive' => 0]);
-        }
+//        if (isset($this->archive) && $this->archive !== '') {
+//            $query->andFilterWhere(['archive' => $this->archive]);
+//        } else {
+//            // Если archive не указан, то исключаем архивные записи
+//            $query->andWhere(['archive' => 0]);
+//        }
 
         $query->andFilterWhere([
             'id' => $this->id,
