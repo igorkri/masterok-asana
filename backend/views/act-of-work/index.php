@@ -146,7 +146,7 @@ if (count($totlalSum['total_amount']) > 0) {
                                 'before' => "Загальна сума: <b>" .
                                     Yii::$app->formatter->asCurrency(array_sum($totlalSum['total_amount'])) .
                                     "</b> | Оплачено: <b>" .
-                                    Yii::$app->formatter->asCurrency(array_sum($totlalSum['paid_amount'])) . "</b> | <b>Сума боргу: " . $sumDebit . "</b>" . ' | Зароблено (Timer)' . $timerTotalPrice,
+                                    Yii::$app->formatter->asCurrency(array_sum($totlalSum['paid_amount'])) . "</b> | <b>Сума боргу: " . $sumDebit . "</b>" . ' | <br><b>Зароблено (Timer)</b> ' . Yii::$app->formatter->asCurrency($timerTotalPrice),
                                 'heading' => '<i class="fas fa-list"></i> список',
                                 'after' => BulkButtonWidget::widget([
                                         'buttons' => Html::a('<i class="far fa-trash-alt"></i>&nbsp; Видалити',
