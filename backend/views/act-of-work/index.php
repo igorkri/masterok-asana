@@ -34,7 +34,6 @@ if (count($totlalSum['total_amount']) > 0) {
 }
 
 
-
 ?>
 <div id="top" class="sa-app__body">
     <div class="mx-xxl-3 px-4 px-sm-5">
@@ -147,7 +146,7 @@ if (count($totlalSum['total_amount']) > 0) {
                                 'before' => "Загальна сума: <b>" .
                                     Yii::$app->formatter->asCurrency(array_sum($totlalSum['total_amount'])) .
                                     "</b> | Оплачено: <b>" .
-                                    Yii::$app->formatter->asCurrency(array_sum($totlalSum['paid_amount'])) . "</b> | <b>Сума боргу: " . $sumDebit . "</b>",
+                                    Yii::$app->formatter->asCurrency(array_sum($totlalSum['paid_amount'])) . "</b> | <b>Сума боргу: " . $sumDebit . "</b>" . ' | Зароблено (Timer)' . $timerTotalPrice,
                                 'heading' => '<i class="fas fa-list"></i> список',
                                 'after' => BulkButtonWidget::widget([
                                         'buttons' => Html::a('<i class="far fa-trash-alt"></i>&nbsp; Видалити',

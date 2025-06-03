@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\models\search\ActOfWorkDetailSearch;
 use common\models\ActOfWork;
 use backend\models\search\ActOfWorkSearch;
+use common\models\Timer;
 use Yii;
 use yii\helpers\Html;
 use yii\web\Controller;
@@ -55,7 +56,6 @@ class ActOfWorkController extends Controller
             }
         }
         if ($bulkHide == 'clear') {
-
             $session->remove('bulk-hide');
         }
 
@@ -66,9 +66,22 @@ class ActOfWorkController extends Controller
             $this->redirect(['index']);
         }
 
+        $timers = Timer::find()
+            ->where(['status' => [Timer::STATUS_WAIT, Timer::STATUS_PROCESS, Timer::STATUS_PLANNED, Timer::STATUS_NEED_CLARIFICATION]])
+            ->andWhere(['status_act' => Timer::STATUS_ACT_NOT_OK])
+            ->all();
+        $timerTotalPrice = 0;
+        if (!empty($timers)) {
+            foreach ($timers as $timer) {
+                /** @var $timer Timer */
+                $timerTotalPrice += $timer->getTotalPrice();
+            }
+        }
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'timerTotalPrice' => $timerTotalPrice,
         ]);
     }
 

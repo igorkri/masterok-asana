@@ -398,4 +398,9 @@ class Timer extends \yii\db\ActiveRecord
     {
         return self::$statusList[$status];
     }
+
+    public function getTotalPrice()
+    {        // Если статус акта не ок, то цена 0
+        return $this->getCalcPrice();
+    }
 }
