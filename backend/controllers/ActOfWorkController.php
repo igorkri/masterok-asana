@@ -69,7 +69,10 @@ class ActOfWorkController extends Controller
         $timers = Timer::find()
             ->where(['status' => [Timer::STATUS_WAIT, Timer::STATUS_PROCESS, Timer::STATUS_PLANNED, Timer::STATUS_NEED_CLARIFICATION]])
             ->andWhere(['status_act' => Timer::STATUS_ACT_NOT_OK])
+            ->andWhere(['not', ['archive' => Timer::ARCHIVE_YES]])
+            ->asArray()
             ->all();
+
         $timerTotalPrice = 0;
         if (!empty($timers)) {
             foreach ($timers as $timer) {
