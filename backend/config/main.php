@@ -101,6 +101,33 @@ return [
             'rules' => [
                 'POST webhook-handler' => 'asana-webhook/webhook-handler',
                 'GET webhook-handler' => 'asana-webhook/webhook-handler',
+
+                // API Routes for Timer
+                'GET api/timer/list' => 'api/timer-api/list',
+                'GET api/timer/view' => 'api/timer-api/view',
+                'POST api/timer/create' => 'api/timer-api/create',
+                'PUT api/timer/update' => 'api/timer-api/update',
+                'DELETE api/timer/delete' => 'api/timer-api/delete',
+                'GET api/timer/statistics' => 'api/timer-api/statistics',
+                'POST api/timer/toggle-archive' => 'api/timer-api/toggle-archive',
+
+                // API Routes for ActOfWork
+                'GET api/act-of-work/list' => 'api/act-of-work-api/list',
+                'GET api/act-of-work/view' => 'api/act-of-work-api/view',
+                'POST api/act-of-work/create' => 'api/act-of-work-api/create',
+                'PUT api/act-of-work/update' => 'api/act-of-work-api/update',
+                'DELETE api/act-of-work/delete' => 'api/act-of-work-api/delete',
+                'POST api/act-of-work/change-status' => 'api/act-of-work-api/change-status',
+                'GET api/act-of-work/statistics' => 'api/act-of-work-api/statistics',
+
+                // API Routes for ActOfWorkDetail
+                'GET api/act-of-work-detail/list' => 'api/act-of-work-detail-api/list',
+                'GET api/act-of-work-detail/view' => 'api/act-of-work-detail-api/view',
+                'POST api/act-of-work-detail/create' => 'api/act-of-work-detail-api/create',
+                'PUT api/act-of-work-detail/update' => 'api/act-of-work-detail-api/update',
+                'DELETE api/act-of-work-detail/delete' => 'api/act-of-work-detail-api/delete',
+                'GET api/act-of-work-detail/by-act' => 'api/act-of-work-detail-api/by-act',
+                'GET api/act-of-work-detail/statistics' => 'api/act-of-work-detail-api/statistics',
             ],
         ],
 
@@ -137,6 +164,11 @@ return [
                 'controllers' => ['site'],
                 'actions' => ['login', 'request-password-reset', 'reset-password'],
                 'roles' => ['?'], // для гостей
+            ],
+            [
+                'allow' => true,
+                'controllers' => ['api/timer-api', 'api/act-of-work-api', 'api/act-of-work-detail-api'],
+                'roles' => ['?', '@'], // Доступ к API без авторизации
             ],
             [
                 'allow' => true,

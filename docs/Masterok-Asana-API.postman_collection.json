@@ -1,0 +1,479 @@
+{
+  "info": {
+    "name": "Masterok-Asana API",
+    "description": "API для управління Timer, ActOfWork та ActOfWorkDetail",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost/admin/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Timer API",
+      "item": [
+        {
+          "name": "Get Timers List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/timer/list?status=0&archive=0&per-page=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["timer", "list"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "0",
+                  "description": "Статус таймера (0-5)"
+                },
+                {
+                  "key": "archive",
+                  "value": "0",
+                  "description": "Архівний статус (0-1)"
+                },
+                {
+                  "key": "per-page",
+                  "value": "20",
+                  "description": "Кількість записів на сторінці"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Timer by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/timer/view?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["timer", "view"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID таймера"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Timer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"task_gid\": \"12345\",\n  \"time\": \"02:30:00\",\n  \"coefficient\": 1.2,\n  \"comment\": \"Робота над задачею\",\n  \"status\": 0,\n  \"archive\": 0,\n  \"status_act\": \"ok\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/timer/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["timer", "create"]
+            }
+          }
+        },
+        {
+          "name": "Update Timer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"time\": \"03:00:00\",\n  \"coefficient\": 1.5,\n  \"comment\": \"Оновлений коментар\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/timer/update?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["timer", "update"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Timer",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/timer/delete?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["timer", "delete"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Timer Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/timer/statistics?status=0&archive=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["timer", "statistics"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "0"
+                },
+                {
+                  "key": "archive",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Toggle Timer Archive",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/timer/toggle-archive?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["timer", "toggle-archive"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ActOfWork API",
+      "item": [
+        {
+          "name": "Get Acts List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work/list?status=pending&per-page=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work", "list"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                },
+                {
+                  "key": "per-page",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Act by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work/view?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work", "view"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Act",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"pending\",\n  \"type\": \"act\",\n  \"period_type\": \"month\",\n  \"period_year\": \"2025\",\n  \"period_month\": \"January\",\n  \"user_id\": 1,\n  \"date\": \"2025-01-25\",\n  \"description\": \"Акт за січень 2025\",\n  \"total_amount\": 50000.00,\n  \"paid_amount\": 0.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work", "create"]
+            }
+          }
+        },
+        {
+          "name": "Update Act",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"paid\",\n  \"paid_amount\": 50000.00,\n  \"description\": \"Оновлений опис\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work/update?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work", "update"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Act",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work/delete?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work", "delete"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change Act Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"paid\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work/change-status?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work", "change-status"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Act Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work/statistics?status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work", "statistics"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ActOfWorkDetail API",
+      "item": [
+        {
+          "name": "Get Details List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work-detail/list?act_of_work_id=1&per-page=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work-detail", "list"],
+              "query": [
+                {
+                  "key": "act_of_work_id",
+                  "value": "1"
+                },
+                {
+                  "key": "per-page",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Detail by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work-detail/view?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work-detail", "view"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Detail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"act_of_work_id\": 1,\n  \"time_id\": 10,\n  \"task_gid\": 12345,\n  \"project_gid\": 67890,\n  \"project\": \"Назва проекту\",\n  \"task\": \"Назва задачі\",\n  \"description\": \"Опис деталі\",\n  \"amount\": 5000.00,\n  \"hours\": 12.5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work-detail/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work-detail", "create"]
+            }
+          }
+        },
+        {
+          "name": "Update Detail",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 6000.00,\n  \"hours\": 15.0,\n  \"description\": \"Оновлений опис\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work-detail/update?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work-detail", "update"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Detail",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work-detail/delete?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work-detail", "delete"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Details by Act ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work-detail/by-act?act_id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work-detail", "by-act"],
+              "query": [
+                {
+                  "key": "act_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Detail Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/act-of-work-detail/statistics?act_of_work_id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["act-of-work-detail", "statistics"],
+              "query": [
+                {
+                  "key": "act_of_work_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
