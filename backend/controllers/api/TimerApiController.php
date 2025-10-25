@@ -71,9 +71,10 @@ class TimerApiController extends Controller
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => [
-                'pageSize' => Yii::$app->request->get('per-page', 20),
-            ],
+//            'pagination' => [
+//                'pageSize' => Yii::$app->request->get('per-page', 20),
+//            ],
+            'pagination' => false,
         ]);
 
         return $dataProvider;
