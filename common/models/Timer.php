@@ -343,7 +343,7 @@ class Timer extends \yii\db\ActiveRecord
     {
         return 'timer';
     }
-
+    
     /**
      * {@inheritdoc}
      */

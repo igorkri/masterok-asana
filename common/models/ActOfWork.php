@@ -205,8 +205,8 @@ class ActOfWork extends \yii\db\ActiveRecord
             'user_id' => 'ID користувача',
             'date' => 'Дата складання акту',
             'description' => 'Опис робіт',
-            'total_amount' => 'Загальна сума',
-            'paid_amount' => 'Сума, вже сплачена',
+            'total_amount' => 'Сума виконаних робіт',
+            'paid_amount' => 'Сума надходження коштів',
             'file_excel' => 'Файл Excel',
             'created_at' => 'Дата створення',
             'updated_at' => 'Дата оновлення',
@@ -240,7 +240,10 @@ class ActOfWork extends \yii\db\ActiveRecord
             $fileUrl = str_replace(Yii::$app->params['domain'], '', $this->file_excel);
             $filePath = Yii::getAlias('@frontend/web') . $fileUrl;
 
+            Yii::warning('filePath: ' . $filePath, 'telegram');
+
             if (!file_exists($filePath)) {
+                Yii::warning('not filePath: ' . $filePath, 'telegram');
                 Yii::error("Файл не найден: {$filePath}", 'telegram');
                 $this->telegram_status = self::TELEGRAM_STATUS_FAILED;
                 $this->save(false, ['telegram_status']);
@@ -253,7 +256,10 @@ class ActOfWork extends \yii\db\ActiveRecord
 
             $res = Yii::$app->telegram->sendDocument($filePath, $title);
 
+            Yii::warning('res: ' . print_r($res, true), 'telegram');
+
             if (!$res) {
+                Yii::warning('not res', 'telegram');
                 Yii::error("Помилка надсилання звіту №{$this->number} від {$this->date} до Telegram.", 'telegram');
                 $this->telegram_status = self::TELEGRAM_STATUS_FAILED;
                 $this->save(false, ['telegram_status']);
@@ -262,6 +268,7 @@ class ActOfWork extends \yii\db\ActiveRecord
 
             $this->telegram_status = self::TELEGRAM_STATUS_SEND;
         } else {
+            Yii::warning('33 filePath: ' . $this->file_excel, 'telegram');
             Yii::$app->telegram->sendMessage("⚠️ Звіт відсутній! @masterokpl перевір, будь ласка, файл акту №{$this->number} від {$this->date}.");
             $this->telegram_status = self::TELEGRAM_STATUS_FAILED;
         }

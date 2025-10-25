@@ -914,11 +914,11 @@ class Task extends \yii\db\ActiveRecord
             $model->gid = $story['gid'];
             $model->task_gid = $task->gid;
             $model->created_at = date('Y-m-d H:i:s', strtotime($story['created_at']));
-            $model->created_by_gid = $story['created_by']['gid'];
-            $model->created_by_name = $story['created_by']['name'];
-            $model->created_by_resource_type = $story['type'];
-            $model->text = $story['text'];
-            $model->resource_subtype = $story['resource_subtype'];
+            $model->created_by_gid = $story['created_by']['gid'] ?? null;
+            $model->created_by_name = $story['created_by']['name'] ?? null;
+            $model->created_by_resource_type = $story['type'] ?? null;
+            $model->text = $story['text'] ?? null;
+            $model->resource_subtype = $story['resource_subtype'] ?? null;
 
             if (!$model->save()) {
                 Yii::error('Error saving TaskStory: ' . print_r($model->getErrors(), true));
